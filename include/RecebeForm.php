@@ -49,9 +49,11 @@ function Resposta() {
 
 
 function Limpeza($x) {
+    $x = strip_tags($x);
+    $x=trim($x);
     return $x;
 }
 
-
+function Contato(){}
 
 
