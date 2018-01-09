@@ -37,6 +37,9 @@ function entradaForm($atts) {
 }
 
 
+
+
+
 function Resposta() {
     print_r(us::$dadosCliente);
 }
