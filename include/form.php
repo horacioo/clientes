@@ -7,8 +7,9 @@ class htmlRender extends \DataBase
 
     public static $js_Plugin = WP_PLUGIN_URL . "/clientes/js/";
     public static $dadosCliente;
+    public static $entrada;
 
-    private static function Angular() {
+    public static function Angular() {
         wp_register_script("angularJs", self::$js_Plugin . "angular.min.js");
         wp_register_script("app", self::$js_Plugin . "app.js");
         wp_register_script("controllerxxx", self::$js_Plugin . "controller.js");
@@ -49,8 +50,6 @@ class htmlRender extends \DataBase
         } else{
             $dc .= "<input type='hidden' name='funcao' value='criar'>";
              }
-
-       
         $dc .= "<div class='form-group'>{{update}}";
         $dc .= "<label for='nome'>nome</label><input type='text'  required='required' id='nome' ng-model='nome' name=cliente[nome] placeholder='digite seu nome' class='form-control' >";
         $dc .= "</div>";
@@ -140,7 +139,7 @@ class htmlRender extends \DataBase
         if (isset($_POST['cliente'])){
             /*             * ************************* */
             self::SalvaClientes();
-            self::SalvaEmail();
+            self::SalvaEmail("cliente");
             self::SalvaTelefone();
             self::clientesemail();
             self::clientestelefone();
@@ -154,25 +153,36 @@ class htmlRender extends \DataBase
 
 
 
-    private static function SalvaClientes() {
-        self::$campos = ['nome', 'cpf', 'rg', 'dataExpedicao', 'dataNascimento'];
+    /*     * *
+      informar a entrada de dados do formulario na variável $entrada da classe
+     *  */
+
+    public static function SalvaClientes() {
+        self::$campos = ['nome', 'cpf', 'rg', 'dataExpedicao', 'dataNascimento', 'ip'];
         self::$tabela = 'clientes';
-        self::Salva($_POST['cliente']);
+        $dados        = $_POST[self::$entrada];
+        $dados['ip']  = md5($_SERVER["REMOTE_ADDR"]);
+        self::Salva($dados);
+        print_r($_POST[$entrada]);
     }
 
 
 
 
 
-    private static function SalvaEmail() {
+    /*     * *
+      informar a entrada de dados do formulario na variável $entrada da classe
+     *  */
+
+    public static function SalvaEmail() {
         self::$campos = ['email'];
         self::$tabela = 'email';
 
-        if (!is_array($_POST['cliente']['email'])){
-            self::Salva($_POST['cliente']);
+        if (!is_array($_POST[self::$entrada]['email'])){
+            self::Salva($_POST[$entrada]);
         } else
             {
-            foreach ($_POST['cliente']['email'] as $x):
+            foreach ($_POST[self::$entrada]['email'] as $x):
                 $z['email'] = $x;
                 self::Salva($z);
             endforeach;
@@ -183,14 +193,18 @@ class htmlRender extends \DataBase
 
 
 
-    private static function SalvaTelefone() {
+    /*     * *
+      informar a entrada de dados do formulario na variável $entrada da classe
+     *  */
+
+    public static function SalvaTelefone($entrada = '') {
         self::$campos = ['telefone'];
         self::$tabela = 'telefone';
-        if (!is_array($_POST['cliente']['telefone'])){
+        if (!is_array($_POST[self::$entrada]['telefone'])){
             self::Salva($_POST['cliente']);
         } else
             {
-            foreach ($_POST['cliente']['telefone'] as $x):
+            foreach ($_POST[self::$entrada]['telefone'] as $x):
                 $z['telefone'] = $x;
                 self::Salva($z);
             endforeach;
@@ -201,7 +215,11 @@ class htmlRender extends \DataBase
 
 
 
-    private static function clientesemail() {
+    /*     * *
+      informar a entrada de dados do formulario na variável $entrada da classe
+     *  */
+
+    public static function clientesemail($entrada = '') {
         self::$campos = ['clientes', 'email'];
         self::$tabela = 'clientesemail';
         $cliente      = self::$array['clientes'][0];
@@ -210,22 +228,27 @@ class htmlRender extends \DataBase
             $z['clientes'] = $cliente;
             self::Salva($z);
         endforeach;
+        //echo "associação " . self::$consulta;
     }
 
 
 
 
 
-    private static function clientestelefone() {
+    /*     * *
+      informar a entrada de dados do formulario na variável $entrada da classe
+     *  */
+
+    public static function clientestelefone() {
         self::$campos = ['clientes', 'telefone'];
         self::$tabela = 'clientestelefone';
         $cliente      = self::$array['clientes'][0];
+        //print_r(self::$array);
         foreach (self::$array['telefone'] as $tel):
             $z['telefone'] = $tel;
             $z['clientes'] = $cliente;
             self::Salva($z);
-            echo"<hr>";
-            echo self::$consulta;
+
         endforeach;
     }
 
