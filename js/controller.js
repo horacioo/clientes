@@ -10,8 +10,9 @@ function fnctControler($scope, $http) {
     $scope.id;
     vm.info = function () {
 
-        console.log("nome " + $scope.nome);
-        vm.httpDados = "http://localhost/corretorawp/wp-content/plugins/clientes/api/api_lista.php?param=" + $scope.nome;
+        console.log("nome = " + $scope.nome);
+        //vm.httpDados = "http://localhost/corretorawp/wp-content/plugins/clientes/api/api_lista.php?param=" + $scope.nome;
+        vm.httpDados = "http://regisepennaseguros.com.br/wp-content/plugins/clientes/api/api_lista.php?param=" + $scope.nome;
         $http.get(vm.httpDados)
                 .then(function (response) {
                     console.log(response.data);
@@ -20,21 +21,12 @@ function fnctControler($scope, $http) {
 
     }
 
-    /*
-     * var formData = {
-     username: $scope.username,
-     full_name: $scope.full_name,
-     email: $scope.email,
-     password: $scope.password,
-     confirm_password: $scope.confirm_password
-     }
-     */
-
-
+ 
     vm.dataInfo = function (info) {
         $scope.reload = "recarregando, aguarde";
         $scope.id = info;
-        vm.httpDados = "http://localhost/corretorawp/wp-content/plugins/clientes/api/api_lista.php?param=" + $scope.id;
+        //vm.httpDados = "http://localhost/corretorawp/wp-content/plugins/clientes/api/api_lista.php?param=" + $scope.id;
+        vm.httpDados="http://regisepennaseguros.com.br/wp-content/plugins/clientes/api/api_lista.php?param=" + $scope.id;
         $http.get(vm.httpDados)
                 .then(function (response) {
                     vm.dados = response.data;
@@ -45,7 +37,7 @@ function fnctControler($scope, $http) {
                     $scope.dataExp = vm.dados.dataExpedicao;
                     $scope.telefone = vm.dados.telefone;
                     $scope.email = vm.dados.email;
-                    console.log("email " + vm.httpDados);
+                    console.log(""+$scope.info+"Dados carregados a distância " + vm.httpDados);
                 })
         $scope.reload = "recarregar";
     }

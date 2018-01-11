@@ -8,10 +8,11 @@ class htmlRender extends \DataBase
     public static $js_Plugin = WP_PLUGIN_URL . "/clientes/js/";
     public static $dadosCliente;
     public static $entrada;
+    public static $DadosForm;
 
     public static function Angular() {
         wp_register_script("angularJs", self::$js_Plugin . "angular.min.js");
-        wp_register_script("app", self::$js_Plugin . "app.js");
+        wp_register_script("app", self::$js_Plugin . "App.js");
         wp_register_script("controllerxxx", self::$js_Plugin . "controller.js");
         wp_enqueue_script("angularJs");
         wp_enqueue_script("app");
@@ -23,6 +24,12 @@ class htmlRender extends \DataBase
 
 
     static function Editar() {
+
+/*
+BootStrap();
+Angular();
+ *  */        
+        
         self::Angular();
         if (isset($_POST['dados']))
             {
@@ -43,9 +50,9 @@ class htmlRender extends \DataBase
         $dc .= "<form name='cliente' action='' method='post'>";
 
         if (isset($dados['cliente'])){
-            $dc .= "<input type='hidden' name='funcao' value='update'>";
+            $dc .= "<input type='text' name='funcao' value='update'>";
             $dc .= "<div ng-controller=\"DadosControlador as dc\" ng-init='dc.dataInfo()' >{{dc.dataInfo.dataInfo}}";
-            $dc .= "<div ng-model='id' ng-init='dc.dataInfo(" . $dados['cliente'] . ")'> </div>";
+            $dc .= "<div ng-model='id' ng-init='dc.dataInfo(" . $dados['cliente'] . ")'>".$dados['cliente']." </div>";
             $dc .= "<div ng-model='reload' ng-click='dc.dataInfo(" . $dados['cliente'] . ")'>{{reload}}</div>";
         } else{
             $dc .= "<input type='hidden' name='funcao' value='criar'>";
@@ -223,11 +230,13 @@ class htmlRender extends \DataBase
         self::$campos = ['clientes', 'email'];
         self::$tabela = 'clientesemail';
         $cliente      = self::$array['clientes'][0];
-        foreach (self::$array['email'] as $email):
-            $z['email']    = $email;
-            $z['clientes'] = $cliente;
-            self::Salva($z);
-        endforeach;
+        if (isset(self::$array['email'])){
+            foreach (self::$array['email'] as $email):
+                $z['email']    = $email;
+                $z['clientes'] = $cliente;
+                self::Salva($z);
+            endforeach;
+        }
         //echo "associação " . self::$consulta;
     }
 
@@ -243,13 +252,13 @@ class htmlRender extends \DataBase
         self::$campos = ['clientes', 'telefone'];
         self::$tabela = 'clientestelefone';
         $cliente      = self::$array['clientes'][0];
-        //print_r(self::$array);
-        foreach (self::$array['telefone'] as $tel):
-            $z['telefone'] = $tel;
-            $z['clientes'] = $cliente;
-            self::Salva($z);
-
-        endforeach;
+        if (isset(self::$array['telefone'])){
+            foreach (self::$array['telefone'] as $tel):
+                $z['telefone'] = $tel;
+                $z['clientes'] = $cliente;
+                self::Salva($z);
+            endforeach;
+        }
     }
 
 

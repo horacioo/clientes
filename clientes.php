@@ -13,18 +13,18 @@ require_once 'include/DataBase.php';
 require_once 'include/form.php';
 require_once 'include/mecanicas.php';
 
-require_once 'include/RecebeForm.php';
-
-
+/*
 BootStrap();
 Angular();
+*/
 
+
+require_once 'include/RecebeForm.php';
 
 add_action('admin_menu', 'MenuClientes');
 
 
-add_shortcode("recebeForm", "entradaForm");
-
+add_shortcode("Recebe-Form", 'entradaForm');
 
 
 

@@ -6,34 +6,50 @@ require_once 'form.php';
 use FormulariosHTml\htmlRender as us;
 
 function entradaForm($atts) {
-    $entrada1 = $atts['dados'];
-    $entrada  = $_POST[$entrada1];
-    if (isset($entrada)){
-        us::$locate=['ip'];
-        us::$entrada      = $entrada1;
-        us::$dadosCliente = $entrada;
-        us::SalvaClientes();
-        us::SalvaEmail();
-        us::SalvaTelefone();
-        us::clientesemail();
-        us::clientestelefone();
-        $retorno = "";
-        $Chaves = array_keys($entrada);
-        foreach ($Chaves as $c):
-            $retorno .= "<p>";
-            if (is_array($entrada[$c])){
-                foreach ($entrada[$c] as $x): {
-                        $retorno .= $c . ":" . $x;
-                    }
-                endforeach;
+    
+    if (isset($atts)){
+
+        $entrada1 = $atts['dados'];
+        $entrada  = $_POST[$entrada1];
+        if (isset($entrada)){
+
+            us::$entrada      = $entrada1;
+            us::$dadosCliente = $entrada;
+
+            us::$locate = ['nome', 'ip'];
+            us::SalvaClientes();
+            us::SalvaEmail();
+            us::SalvaTelefone();
+            us::clientesemail();
+            us::clientestelefone();
+            $retorno    = "";
+            $Chaves     = array_keys($entrada);
+            foreach ($Chaves as $c):
+                $retorno .= "<p>";
+                if (is_array($entrada[$c])){
+                    foreach ($entrada[$c] as $x): {
+                            $retorno .= $c . ":" . $x;
+                        }
+                    endforeach;
             } else{
-                $retorno .= $c . ":" . $entrada[$c];
+                    $retorno .= $c . ":" . $entrada[$c];
             }
-            $retorno .= "</p>";
-        endforeach;
-        echo $retorno;
-        Resposta();
+                $retorno .= "</p>";
+            endforeach;
+            us::$DadosForm = $retorno;
+            
     }
+        
+}
+echo "<p> linha X";///Resposta();
+}
+
+
+
+
+
+function atendimento() {
+    
 }
 
 
@@ -41,7 +57,11 @@ function entradaForm($atts) {
 
 
 function Resposta() {
-    print_r(us::$dadosCliente);
+    $to      = "lanterna_@hotmail.com";
+    $subject = "teste";
+    $content = us::$DadosForm;
+    $status  = wp_mail($to, $subject, $content);
+    //var_dump($status);
 }
 
 
@@ -50,10 +70,18 @@ function Resposta() {
 
 function Limpeza($x) {
     $x = strip_tags($x);
-    $x=trim($x);
+    $x = trim($x);
     return $x;
 }
 
-function Contato(){}
+
+
+
+
+function Contato() {
+    
+}
+
+
 
 
