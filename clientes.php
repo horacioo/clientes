@@ -1,33 +1,35 @@
 <?php
 
 /*
-  Plugin Name: Plugin para administração de clientes
+  Plugin Name: Plugin para administração de clientes!!
   Description: módulo para administração de clientes.
   Author: Horácio
   Version: 1
   Author URI: http://planet1.com.br
  */
 
+
+
+add_action('init', 'myStartSession', 1);
+function myStartSession() { if(!session_id()) { session_start();} }
+
+
+
 require_once 'include/menu.php';
 require_once 'include/DataBase.php';
 require_once 'include/form.php';
 require_once 'include/mecanicas.php';
 
-/*
-BootStrap();
-Angular();
-*/
-
-
 require_once 'include/RecebeForm.php';
 
 add_action('admin_menu', 'MenuClientes');
-
-
 add_shortcode("Recebe-Form", 'entradaForm');
 
 
 
+
+
+$_SESSION['processoCliente']=NULL;
 
 
 register_activation_hook( __FILE__, CriaTabelas );
