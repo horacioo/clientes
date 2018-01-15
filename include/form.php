@@ -25,11 +25,11 @@ class htmlRender extends \DataBase
 
     static function Editar() {
 
-/*
-BootStrap();
-Angular();
- *  */        
-        
+        /*
+          BootStrap();
+          Angular();
+         *  */
+
         self::Angular();
         if (isset($_POST['dados']))
             {
@@ -52,7 +52,7 @@ Angular();
         if (isset($dados['cliente'])){
             $dc .= "<input type='text' name='funcao' value='update'>";
             $dc .= "<div ng-controller=\"DadosControlador as dc\" ng-init='dc.dataInfo()' >{{dc.dataInfo.dataInfo}}";
-            $dc .= "<div ng-model='id' ng-init='dc.dataInfo(" . $dados['cliente'] . ")'>".$dados['cliente']." </div>";
+            $dc .= "<div ng-model='id' ng-init='dc.dataInfo(" . $dados['cliente'] . ")'>" . $dados['cliente'] . " </div>";
             $dc .= "<div ng-model='reload' ng-click='dc.dataInfo(" . $dados['cliente'] . ")'>{{reload}}</div>";
         } else{
             $dc .= "<input type='hidden' name='funcao' value='criar'>";
@@ -259,6 +259,18 @@ Angular();
                 self::Salva($z);
             endforeach;
         }
+    }
+
+
+
+
+
+    public static function contato() {
+        self::$campos     = ['cliente', 'data'];
+        self::$tabela     = 'contato';
+        $dados['data']    = data;//$_SESSION["entrada"];
+        $dados['cliente'] = self::$array['clientes'][0];
+        self::Salva($dados);
     }
 
 
