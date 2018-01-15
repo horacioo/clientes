@@ -8,10 +8,10 @@
   Author URI: http://planet1.com.br
  */
 
+
+
 date_default_timezone_set('Brazil/East');
-
 add_action('init', 'myStartSession', 1);
-
 function myStartSession() {
     if (!session_id()) {
         session_start();
@@ -23,12 +23,10 @@ function myStartSession() {
 define("data",date("Y-m-d H:i:s"));
 
 
-
 require_once 'include/menu.php';
 require_once 'include/DataBase.php';
 require_once 'include/form.php';
 require_once 'include/mecanicas.php';
-
 require_once 'include/RecebeForm.php';
 
 add_action('admin_menu', 'MenuClientes');
@@ -36,13 +34,7 @@ add_shortcode("Recebe-Form", 'entradaForm');
 
 
 
-
-
-$_SESSION['processoCliente'] = NULL;
-
-
 register_activation_hook(__FILE__, CriaTabelas);
-
 function CriaTabelas() {
     /*     * ******************************************************************* */
 
