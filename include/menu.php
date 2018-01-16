@@ -22,7 +22,9 @@ function clienteFunct() {
 
 
 function NovoclienteFunct() {
-    echo form::dadosClienteInterno();
+    BootStrap();
+    require_once 'arquivos/novoCliente.php';
+    //echo form::dadosClienteInterno();
 }
 
 
