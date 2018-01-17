@@ -8,7 +8,7 @@
                 <p><label><span class="dashicons dashicons-admin-users"></span>Nome</label><input type="text" name=cliente[nome] class='form-control'></p>
                 <p><label><span class="dashicons dashicons-media-document"></span>cpf</label><input type="text" name=cliente[cpf] class='form-control' ></p>
                 <p><label><span class="dashicons dashicons-id"></span>rg</label><input type="text" name=cliente[rg] class='form-control' ></p>
-                <p><label><span class="dashicons dashicons-calendar-alt"></span>data de nascimento</label><input type="text" name=cliente[nascimento] class='form-control' ></p>
+                <p><label><span class="dashicons dashicons-calendar-alt"></span>data de nascimento</label><input type="date" name=cliente[nascimento] class='form-control' ></p>
             </div>
             <div class='col-md-6'>
                 <h2>Contato</h2>
