@@ -38,17 +38,7 @@ register_activation_hook(__FILE__, CriaTabelas);
 function CriaTabelas() {
     /*     * ******************************************************************* */
 
-    $sql = "CREATE TABLE if not exists `clientes` (
-                  `id` int(11) NOT NULL AUTO_INCREMENT,
-                  `nome` varchar(250) NOT NULL,
-                  `cpf` varchar(20) NOT NULL,
-                  `rg` varchar(20) NOT NULL,
-                  `dataExpedicao` date NOT NULL DEFAULT '0000-00-00',
-                  `dataNascimento` date NOT NULL DEFAULT '0000-00-00',
-                  `ip` varchar(100) NOT NULL,
-                  PRIMARY KEY (`id`),
-                  UNIQUE KEY `cpfNome` (`cpf`,`nome`) USING BTREE
-                ) ENGINE=InnoDB AUTO_INCREMENT=170 DEFAULT CHARSET=latin1;";
+    $sql = "CREATE TABLE if not exists  `clientes` ( `id` int(11) NOT NULL AUTO_INCREMENT, `nome` varchar(250) NOT NULL, `cpf` varchar(20) NOT NULL, `rg` varchar(20) NOT NULL, `dataExpedicao` date NOT NULL DEFAULT '0000-00-00', `dataNascimento` date NOT NULL DEFAULT '0000-00-00', `ip` varchar(100) NOT NULL, `entrada` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY (`id`), UNIQUE KEY `cpfNome` (`cpf`,`nome`) USING BTREE ) ENGINE=InnoDB AUTO_INCREMENT=288 DEFAULT CHARSET=latin1;";
     global $wpdb;
     $wpdb->query($sql);
 
