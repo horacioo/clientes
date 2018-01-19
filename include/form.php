@@ -195,7 +195,7 @@ class htmlRender extends \DataBase {
         $dados        = $_POST[self::$entrada];
         $dados['ip']  = md5($_SERVER["REMOTE_ADDR"]);
         self::Salva($dados);
-        print_r($_POST[$entrada]);
+        //print_r($_POST[$entrada]);
     }
 
 
@@ -272,6 +272,9 @@ class htmlRender extends \DataBase {
             foreach (self::$array['email'] as $email):
                 $z['email']    = $email;
                 $z['clientes'] = $cliente;
+                
+                 //print_r($z);echo "<br>";
+                
                 self::Salva($z);
             endforeach;
         }
@@ -299,6 +302,9 @@ class htmlRender extends \DataBase {
             foreach (self::$array['telefone'] as $tel):
                 $z['telefone'] = $tel;
                 $z['clientes'] = $cliente;
+                
+                 //print_r($z);echo "<br>";
+                
                 self::Salva($z);
             endforeach;
         }
@@ -331,11 +337,13 @@ class htmlRender extends \DataBase {
 
 
     public static function SalvaForm() {
-        self::SalvaClientes();
-        self::SalvaEmail();
-        self::SalvaTelefone();
+        
+        self::$locate       = ['nome','ip'];  self::SalvaClientes();
+        self::$locate       = ['email'];      self::SalvaEmail();
+        self::$locate       = ['telefone'];   self::SalvaTelefone();
         self::clientesemail();
         self::clientestelefone();
+       
     }
 
 

@@ -11,37 +11,73 @@ class DataBase {
     protected static $array;
     public static $locate;
 
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     protected static function localiza($dados = '') {
+        global $wpdb;        
         $tabela = self::$tabela;
         $campos = self::$campos;
         $osDados;
 
+      
         if (isset(self::$locate)) {
             $referencia = self::$locate;
         } else {
             $referencia = self::$campos;
         }
-        $chaves = array_keys($dados);
+        
+        $field   = "";
+        $chaves  = array_keys($dados);
+        $campos  = ""; 
         foreach ($chaves as $c):
             if (in_array($c, $referencia)) {
+                $campos    .= "and $c = '".$dados[$c]."'";
                 $field     .= "and $c = %s ";
-                $osDados[] = $dados[$c];
+                $osDados[]  = $dados[$c];
             }
         endforeach;
+        
+        
+        $sel    = "select id from $tabela where " . $campos;
+        $sel    = trim($sel);
+        $sel  = str_replace("where and ", "where ", $sel);
+        $dados  = $wpdb->get_row($sel, ARRAY_A);
+        
+        /*
         $sel = "select id from $tabela where " . $field;
         trim($sel);
         $sel = str_replace(array("where and"), "where ", $sel);
-
-        global $wpdb;
+        
         $prepare = $wpdb->prepare(self::$consulta, $osDados);
-
         $dados                        = $wpdb->get_row($prepare, ARRAY_A);
+        */
+        
         $id                           = $dados['id'];
         self::$array[self::$tabela][] = $id;
+        
+        //echo"<hr>informação -- ";var_dump($wpdb->last_query);
+        //echo"<hr><br>!!! dados retornados "; print_r(self::$array); echo " !!<br>";
+        
         self::$locate                 = NULL;
     }
 
 
+    
+    
 
 
 
@@ -69,9 +105,8 @@ class DataBase {
                 }
             endforeach;
 
-
-
             $insert .= "*";
+            
             $insert = str_replace(",*", "", $insert);
 
             $info = str_replace("*,", " ", $info); //"(,";
@@ -79,19 +114,10 @@ class DataBase {
             self::$consulta = "insert into `" . self::$tabela . "`(" . $insert . ")values(" . $info . ")";
 
             $prepare        = $wpdb->prepare(self::$consulta, $valuesx);
-            
+     
             self::$consulta = $wpdb->last_query; //$sel;
             
-            /*
-              echo"<hr>";
-              print_r(self::$consulta);
-              echo"<br>";
-              print_r($valuesx);
-              echo"<hr>";
-             */
-
-
-
+            
             $wpdb->query($prepare);
             $id = $wpdb->insert_id;
             if ($id === 0) {
