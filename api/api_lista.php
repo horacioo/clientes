@@ -81,8 +81,8 @@ function Lista($dados) {
     global $wpdb;
 
     $y             = $wpdb->get_results($query, ARRAY_A);
-    $y['email']    = Emails($dados['param']);
-    $y['telefone'] = telefone($dados['param']);
+    //$y['email']    = Emails($dados['param']);
+    //$y['telefone'] = telefone($dados['param']);
     echo json_encode($y);
 }
 
