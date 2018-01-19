@@ -5,7 +5,7 @@ header('Access-Control-Allow-Origin: *');
 require_once '../../../../wp-config.php';
 $dados = $_REQUEST;
 
-if (is_numeric($dados['param'])){
+if (is_numeric($dados['param'])) {
     retorno($dados);
 } elseif (is_string($dados['param'])) {
     Lista($dados);
@@ -26,6 +26,11 @@ function retorno($dados = '') {
 
 
 
+
+
+
+
+
 function Emails($cliente = '') {
     global $wpdb;
     $sql = "select ce.email ,em.email from clientesemail as ce left join email as em on em.id = ce.email where clientes = " . $cliente . " ";
@@ -33,6 +38,11 @@ function Emails($cliente = '') {
     $x[] = "";
     return $x;
 }
+
+
+
+
+
 
 
 
@@ -54,24 +64,32 @@ where clientes =$cliente";
 
 
 
+
+
+
+
+
 function Lista($dados) {
 
     $nome = $dados['param'];
 
-    if ($nome == "*" )
-      {
+    if ($nome == "*") {
         $query = "select * from clientes limit 30";
-
-    } else
-        {
+    } else {
         $query = "select * from clientes where nome like'%" . $nome . "%' limit 30";
     }
     global $wpdb;
 
-    $y = $wpdb->get_results($query, ARRAY_A);
-
+    $y             = $wpdb->get_results($query, ARRAY_A);
+    $y['email']    = Emails($dados['param']);
+    $y['telefone'] = telefone($dados['param']);
     echo json_encode($y);
 }
+
+
+
+
+
 
 
 
