@@ -9,7 +9,7 @@ echo apiLista;
     <div ng-init="d.start(a)" >
         <br><input type="text"  ng-keyup="d.info()"  ng-model="pesquisa" ><br>
         <ul class="list-group">
-            <li ng-repeat="item in d.dadosx">! {{item.nome}}</li>
+            <li ng-repeat="item in d.dadosx">! {{item.nome}} -- {{item.id}}</li>
         </ul>
     </div>
 </div>
