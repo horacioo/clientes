@@ -9,6 +9,8 @@
  */
 
 define("apiLista", plugin_dir_url('cliente.php')."clientes/api/api_lista.php");
+define("keyGoogleApi","AIzaSyCJZaknPwDWQ4HplUGPvTwpaLtMEASvbgI");
+
 
 date_default_timezone_set('Brazil/East');
 add_action('init', 'myStartSession', 1);
@@ -23,8 +25,12 @@ function myStartSession() {
 define("data",date("Y-m-d H:i:s"));
 
 
-require_once 'include/menu.php';
+
+
 require_once 'include/DataBase.php';
+
+require_once 'include/menu.php';
+
 require_once 'include/form.php';
 require_once 'include/mecanicas.php';
 require_once 'include/RecebeForm.php';

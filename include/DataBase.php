@@ -1,22 +1,33 @@
 <?php
 
 class DataBase {
-
-    protected static $obrigatorios;
-    protected static $insertArray;
-    protected static $mensagem;
-    protected static $consulta;
-    protected static $tabela;
-    protected static $campos;
-    protected static $array;
+    /***na entrada, vai o nome do formulário, uma string * */
+    public static $entrada;   
+    public static $obrigatorios;
+    public static $insertArray;
+    public static $mensagem;
+    public static $consulta;
+    public static $tabela;
+    public static $campos;
+    public static $array;
     public static $locate;
 
     
     
     
     
-    
-    
+    /*** enviar por parametro array("tabela"=>"nome da tabela,"limite"=>"10"), senfo que o limite é opcional*/
+    public static function ListaGeral($array=''){
+        if(is_array($array)):
+            $tabela = $array['tabela'];
+            if(isset($array['limite'])) {$limit=$array['limite'];} else {$limit  = 20;}
+            $sele = "select * from $tabela";
+            global $wpdb;
+            $dados = $wpdb->get_results($sele,ARRAY_A);
+            self::$consulta = $wpdb->last_query;
+            return $dados;
+        endif;
+    }
     
     
     
@@ -32,13 +43,11 @@ class DataBase {
         $tabela = self::$tabela;
         $campos = self::$campos;
         $osDados;
-
       
-        if (isset(self::$locate)) {
-            $referencia = self::$locate;
-        } else {
-            $referencia = self::$campos;
-        }
+        if (isset(self::$locate)) 
+            {$referencia = self::$locate;} 
+              else 
+            { $referencia = self::$campos; }
         
         $field   = "";
         $chaves  = array_keys($dados);
@@ -67,11 +76,7 @@ class DataBase {
         */
         
         $id                           = $dados['id'];
-        self::$array[self::$tabela][] = $id;
-        
-        //echo"<hr>informação -- ";var_dump($wpdb->last_query);
-        //echo"<hr><br>!!! dados retornados "; print_r(self::$array); echo " !!<br>";
-        
+        self::$array[self::$tabela][] = $id;        
         self::$locate                 = NULL;
     }
 
@@ -86,7 +91,7 @@ class DataBase {
 
 
 
-    protected static function Salva($array) {
+    public static function Salva($array) {
         global $wpdb;
         if (is_array($array)):
 

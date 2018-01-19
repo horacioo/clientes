@@ -5,8 +5,7 @@ namespace FormulariosHTml;
 class htmlRender extends \DataBase {
 
     
-    /***na entrada, vai o nome do formulário, uma string * */
-    public static $entrada;
+   
     public static $js_Plugin = WP_PLUGIN_URL . "/clientes/js/";
     public static $dadosCliente;
     public static $DadosForm;
@@ -190,7 +189,7 @@ class htmlRender extends \DataBase {
      *  */
 
     public static function SalvaClientes() {
-        self::$campos = ['nome', 'cpf', 'rg', 'dataExpedicao', 'dataNascimento', 'ip'];
+        self::$campos = ['nome', 'cpf', 'rg', 'dataExpedicao', 'endereco','dataNascimento', 'ip'];
         self::$tabela = 'clientes';
         $dados        = $_POST[self::$entrada];
         $dados['ip']  = md5($_SERVER["REMOTE_ADDR"]);

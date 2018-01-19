@@ -9,15 +9,10 @@ echo apiLista;
     <div ng-init="d.start(a)" >
         <br><input type="text"  ng-keyup="d.info()"  ng-model="pesquisa" ><br>
         <ul class="list-group">
-            <li ng-repeat="item in d.dadosx">! {{item.nome}} -- {{item.id}}</li>
+            <li ng-repeat="item in d.dadosx"> {{item.nome}}  <>{{item.id}}<a> </li>
         </ul>
     </div>
 </div>
-
-
-
-
-
 
 <script>
     angular.module("App", []);
@@ -26,8 +21,6 @@ echo apiLista;
     function functionDados($scope, $http) {
         var vm;
         vm = this;
-
-
         vm.start = function () {
             vm.httpDados = "<?php echo apiLista; ?>?param=*";
             $http.get(vm.httpDados)
