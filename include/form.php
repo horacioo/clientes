@@ -2,14 +2,12 @@
 
 namespace FormulariosHTml;
 
-class htmlRender extends \DataBase {
+class htmlRender extends \DataBase
+    {
 
-    
-   
     public static $js_Plugin = WP_PLUGIN_URL . "/clientes/js/";
     public static $dadosCliente;
     public static $DadosForm;
-    
 
     public static function Angular() {
         wp_register_script("angularJs", self::$js_Plugin . "angular.min.js");
@@ -19,11 +17,6 @@ class htmlRender extends \DataBase {
         wp_enqueue_script("app");
         wp_enqueue_script("controllerxxx");
     }
-
-
-
-
-
 
 
 
@@ -44,11 +37,6 @@ class htmlRender extends \DataBase {
             return self::Listagem();
         }
     }
-
-
-
-
-
 
 
 
@@ -117,11 +105,6 @@ class htmlRender extends \DataBase {
 
 
 
-
-
-
-
-
     static private function Listagem() {
         $tb = "";
         $tb .= "<div ng-app='app'>";
@@ -155,11 +138,6 @@ class htmlRender extends \DataBase {
 
 
 
-
-
-
-
-
     static function dadosClienteInterno() {
         self::Angular();
         if (isset($_POST['cliente'])) {
@@ -179,28 +157,18 @@ class htmlRender extends \DataBase {
 
 
 
-
-
-
-
-
     /*     * *
       informar a entrada de dados do formulario na variável $entrada da classe
      *  */
 
     public static function SalvaClientes() {
-        self::$campos = ['nome', 'cpf', 'rg', 'dataExpedicao', 'endereco','dataNascimento', 'ip'];
+        self::$campos = ['nome', 'cpf', 'rg', 'dataExpedicao', 'endereco', 'dataNascimento', 'ip'];
         self::$tabela = 'clientes';
         $dados        = $_POST[self::$entrada];
         $dados['ip']  = md5($_SERVER["REMOTE_ADDR"]);
         self::Salva($dados);
         //print_r($_POST[$entrada]);
     }
-
-
-
-
-
 
 
 
@@ -228,11 +196,6 @@ class htmlRender extends \DataBase {
 
 
 
-
-
-
-
-
     /*     * *
       informar a entrada de dados do formulario na variável $entrada da classe
      *  */
@@ -254,11 +217,6 @@ class htmlRender extends \DataBase {
 
 
 
-
-
-
-
-
     /*     * *
       informar a entrada de dados do formulario na variável $entrada da classe
      *  */
@@ -271,19 +229,14 @@ class htmlRender extends \DataBase {
             foreach (self::$array['email'] as $email):
                 $z['email']    = $email;
                 $z['clientes'] = $cliente;
-                
-                 //print_r($z);echo "<br>";
-                
+
+                //print_r($z);echo "<br>";
+
                 self::Salva($z);
             endforeach;
         }
         //echo "associação " . self::$consulta;
     }
-
-
-
-
-
 
 
 
@@ -301,9 +254,9 @@ class htmlRender extends \DataBase {
             foreach (self::$array['telefone'] as $tel):
                 $z['telefone'] = $tel;
                 $z['clientes'] = $cliente;
-                
-                 //print_r($z);echo "<br>";
-                
+
+                //print_r($z);echo "<br>";
+
                 self::Salva($z);
             endforeach;
         }
@@ -312,7 +265,20 @@ class htmlRender extends \DataBase {
 
 
 
+/*** informar apenas o nome do formulario***/
+    public static function clientesGrupos($entrada = '') {
+        self::$entrada = $entrada;
+        self::$campos  = ['clientes', 'grupos'];
+        self::$tabela  = "clientegrupos";
 
+        if (is_array($_POST[$entrada]['clientegrupos'])){
+            foreach ($_POST[$entrada]['clientegrupos'] as $x):
+                $rr['grupos']   = $x;
+                $rr['clientes'] = self::$array['clientes'][0];
+                self::Salva($rr);
+            endforeach;
+    }
+    }
 
 
 
@@ -330,28 +296,20 @@ class htmlRender extends \DataBase {
 
 
 
-
-
-
-
-
     public static function SalvaForm() {
-        
-        self::$locate       = ['nome','ip'];  self::SalvaClientes();
-        self::$locate       = ['email'];      self::SalvaEmail();
-        self::$locate       = ['telefone'];   self::SalvaTelefone();
+
+        self::$locate = ['nome', 'ip'];
+        self::SalvaClientes();
+        self::$locate = ['email'];
+        self::SalvaEmail();
+        self::$locate = ['telefone'];
+        self::SalvaTelefone();
         self::clientesemail();
         self::clientestelefone();
-       
     }
 
 
 
 
 
-
-
-
-
-
-}
+    }

@@ -8,12 +8,18 @@
   Author URI: http://planet1.com.br
  */
 
-define("apiLista", plugin_dir_url('cliente.php')."clientes/api/api_lista.php");
-define("keyGoogleApi","AIzaSyCJZaknPwDWQ4HplUGPvTwpaLtMEASvbgI");
+
+
+$url_atual = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+define("urlAdmin", $url_atual);
+
+define("apiLista", plugin_dir_url('cliente.php') . "clientes/api/api_lista.php");
+define("keyGoogleApi", "AIzaSyCJZaknPwDWQ4HplUGPvTwpaLtMEASvbgI");
 
 
 date_default_timezone_set('Brazil/East');
 add_action('init', 'myStartSession', 1);
+
 function myStartSession() {
     if (!session_id()) {
         session_start();
@@ -22,25 +28,27 @@ function myStartSession() {
 
 
 
-define("data",date("Y-m-d H:i:s"));
+
+
+define("data", date("Y-m-d H:i:s"));
 
 
 
 
 require_once 'include/DataBase.php';
-
 require_once 'include/menu.php';
-
 require_once 'include/form.php';
 require_once 'include/mecanicas.php';
 require_once 'include/RecebeForm.php';
-
+require_once 'CustomPosts/textosEmail.php';
+require_once 'CustomPosts/metaBoxeTextosEmail.php';
 add_action('admin_menu', 'MenuClientes');
 add_shortcode("Recebe-Form", 'entradaForm');
 
 
 
 register_activation_hook(__FILE__, CriaTabelas);
+
 function CriaTabelas() {
     /*     * ******************************************************************* */
 

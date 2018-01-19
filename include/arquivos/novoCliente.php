@@ -32,8 +32,8 @@ use FormulariosHTml\htmlRender as save; ?>
                     $dados = DataBase::ListaGeral(array("tabela" => "grupos"));
                     foreach ($dados as $x):
                         ?> 
-                        <li class="gruposCheck"><input type="checkbox" name=cliente[grupo][] value="<?php echo $x['id'] ?>"> <?php echo $x['nome']; ?></li>
-<?php endforeach; ?>
+                        <li class="gruposCheck"><input type="checkbox" name=cliente[clientegrupos][] value="<?php echo $x['id'] ?>"> <?php echo $x['nome']; ?></li>
+                    <?php endforeach; ?>
                 </ul>
             </div>
         </div>
@@ -159,8 +159,13 @@ async defer></script>
 <!------------------------------------------------------------>
 <?php
 if (isset($_POST['cliente'])):
-    print_r($_POST['cliente']);
     save::$entrada = 'cliente';
     save::SalvaForm();
+    save::clientesGrupos("cliente");//clientesGrupos("cliente");
 endif;
+
+
+
+
+/* * ********************** */
 ?>

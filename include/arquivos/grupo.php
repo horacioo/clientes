@@ -10,7 +10,6 @@
 DataBase::$entrada = "grupo";
 DataBase::$campos  =['nome'];
 DataBase::$tabela  ="grupos";
-
 DataBase::Salva($_POST['grupo']);
 
 if (isset($_POST['grupo'])):

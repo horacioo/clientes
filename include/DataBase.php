@@ -94,7 +94,7 @@ class DataBase {
     public static function Salva($array) {
         global $wpdb;
         if (is_array($array)):
-
+      
             $insert  = "";
             $values  = "";
             $info    = "*";

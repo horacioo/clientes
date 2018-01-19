@@ -1,4 +1,9 @@
 <?php
+if($_GET['clienteId']):
+    require_once 'clienteDadosEdit.php';
+return ;
+endif;
+
 BootStrap();
 echo apiLista;
 ?>
@@ -9,7 +14,7 @@ echo apiLista;
     <div ng-init="d.start(a)" >
         <br><input type="text"  ng-keyup="d.info()"  ng-model="pesquisa" ><br>
         <ul class="list-group">
-            <li ng-repeat="item in d.dadosx"> {{item.nome}}  <>{{item.id}}<a> </li>
+            <li ng-repeat="item in d.dadosx"> {{item.nome}}  <a href="<?php echo urlAdmin?>&clienteId={{item.id}}">editar<a> </li>
         </ul>
     </div>
 </div>
