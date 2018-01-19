@@ -32,7 +32,7 @@ function NovoclienteFunct() {
 
 
 function Editar_cliente() {
-    echo form::Editar();
+    require_once 'arquivos/listaClientes.php'; // echo form::Editar();
 }
 
 

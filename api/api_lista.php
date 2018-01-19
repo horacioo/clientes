@@ -58,13 +58,13 @@ function Lista($dados) {
 
     $nome = $dados['param'];
 
-    if ($nome == "*" || strlen($nome) < 2)
+    if ($nome == "*" )
       {
-        $query = "select * from clientes limit 10";
+        $query = "select * from clientes limit 30";
 
     } else
         {
-        $query = "select * from clientes where nome like'%" . $nome . "%' limit 5";
+        $query = "select * from clientes where nome like'%" . $nome . "%' limit 30";
     }
     global $wpdb;
 

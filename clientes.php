@@ -8,7 +8,7 @@
   Author URI: http://planet1.com.br
  */
 
-
+define("apiLista", plugin_dir_url('cliente.php')."clientes/api/api_lista.php");
 
 date_default_timezone_set('Brazil/East');
 add_action('init', 'myStartSession', 1);
