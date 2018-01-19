@@ -1,9 +1,6 @@
 <?php
 
-
-
-class DataBase
-    {
+class DataBase {
 
     protected static $obrigatorios;
     protected static $insertArray;
@@ -14,33 +11,40 @@ class DataBase
     protected static $array;
     public static $locate;
 
-    
     protected static function localiza($dados = '') {
         $tabela = self::$tabela;
         $campos = self::$campos;
         $osDados;
-        
-        if (isset(self::$locate)) { $referencia = self::$locate; } else{  $referencia = self::$campos;  }
+
+        if (isset(self::$locate)) {
+            $referencia = self::$locate;
+        } else {
+            $referencia = self::$campos;
+        }
         $chaves = array_keys($dados);
         foreach ($chaves as $c):
-            if (in_array($c, $referencia)){
-                $field .= "and $c = %s ";
-                $osDados[]=$dados[$c];
-           }
+            if (in_array($c, $referencia)) {
+                $field     .= "and $c = %s ";
+                $osDados[] = $dados[$c];
+            }
         endforeach;
-        $sel                          = "select id from $tabela where " . $field;
+        $sel = "select id from $tabela where " . $field;
         trim($sel);
-        $sel                          = str_replace(array("where and"), "where ", $sel);
-        self::$consulta               = $sel;
-        
+        $sel = str_replace(array("where and"), "where ", $sel);
+
         global $wpdb;
         $prepare = $wpdb->prepare(self::$consulta, $osDados);
-        
+
         $dados                        = $wpdb->get_row($prepare, ARRAY_A);
         $id                           = $dados['id'];
         self::$array[self::$tabela][] = $id;
         self::$locate                 = NULL;
     }
+
+
+
+
+
 
 
 
@@ -58,7 +62,7 @@ class DataBase
 
             $chaves = self::$campos; //array_keys(self::$campos);
             foreach ($chaves as $ch):
-                if (!is_null($array[$ch])){
+                if (!is_null($array[$ch])) {
                     $insert    .= "" . $ch . ",";
                     $valuesx[] = $array[$ch];
                     $info      .= ",%s";
@@ -69,13 +73,15 @@ class DataBase
 
             $insert .= "*";
             $insert = str_replace(",*", "", $insert);
-           
-            $info   = str_replace("*,", " ", $info); //"(,";
+
+            $info = str_replace("*,", " ", $info); //"(,";
 
             self::$consulta = "insert into `" . self::$tabela . "`(" . $insert . ")values(" . $info . ")";
 
-            $prepare = $wpdb->prepare(self::$consulta, $valuesx);
-
+            $prepare        = $wpdb->prepare(self::$consulta, $valuesx);
+            
+            self::$consulta = $wpdb->last_query; //$sel;
+            
             /*
               echo"<hr>";
               print_r(self::$consulta);
@@ -88,9 +94,9 @@ class DataBase
 
             $wpdb->query($prepare);
             $id = $wpdb->insert_id;
-            if ($id === 0){
+            if ($id === 0) {
                 self::localiza($array);
-            } else{
+            } else {
                 self::$array[self::$tabela][] = $id;
             }
         endif;
@@ -100,4 +106,9 @@ class DataBase
 
 
 
-    }
+
+
+
+
+
+}

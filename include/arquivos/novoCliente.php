@@ -1,3 +1,8 @@
+<?php
+
+use FormulariosHTml\htmlRender as save;
+?>
+
 <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.5/angular.min.js'></script>
 <h2>Cadastrar Cliente</h2>
 <form action="" method="post" name="cliente">
@@ -53,9 +58,9 @@
 </script>
 
 
-<?php 
-if(isset($_POST['cliente'])):
-    $dados=array();
-    print_r($_POST['cliente']);
+<?php
+if (isset($_POST['cliente'])):
+    save::$entrada = 'cliente';
+    save::SalvaForm();
 endif;
 ?>

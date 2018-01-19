@@ -2,13 +2,15 @@
 
 namespace FormulariosHTml;
 
-class htmlRender extends \DataBase
-    {
+class htmlRender extends \DataBase {
 
+    
+    /***na entrada, vai o nome do formulário, uma string * */
+    public static $entrada;
     public static $js_Plugin = WP_PLUGIN_URL . "/clientes/js/";
     public static $dadosCliente;
-    public static $entrada;
     public static $DadosForm;
+    
 
     public static function Angular() {
         wp_register_script("angularJs", self::$js_Plugin . "angular.min.js");
@@ -23,6 +25,11 @@ class htmlRender extends \DataBase
 
 
 
+
+
+
+
+
     static function Editar() {
 
         /*
@@ -31,15 +38,18 @@ class htmlRender extends \DataBase
          *  */
 
         self::Angular();
-        if (isset($_POST['dados']))
-            {
+        if (isset($_POST['dados'])) {
             $x = self::FormularioCadEdit($_POST['dados']);
             return $x;
-        } else
-            {
+        } else {
             return self::Listagem();
         }
     }
+
+
+
+
+
 
 
 
@@ -49,14 +59,14 @@ class htmlRender extends \DataBase
         $dc = "<div ng-app='app'>";
         $dc .= "<form name='cliente' action='' method='post'>";
 
-        if (isset($dados['cliente'])){
+        if (isset($dados['cliente'])) {
             $dc .= "<input type='text' name='funcao' value='update'>";
             $dc .= "<div ng-controller=\"DadosControlador as dc\" ng-init='dc.dataInfo()' >{{dc.dataInfo.dataInfo}}";
             $dc .= "<div ng-model='id' ng-init='dc.dataInfo(" . $dados['cliente'] . ")'>" . $dados['cliente'] . " </div>";
             $dc .= "<div ng-model='reload' ng-click='dc.dataInfo(" . $dados['cliente'] . ")'>{{reload}}</div>";
-        } else{
+        } else {
             $dc .= "<input type='hidden' name='funcao' value='criar'>";
-             }
+        }
         $dc .= "<div class='form-group'>{{update}}";
         $dc .= "<label for='nome'>nome</label><input type='text'  required='required' id='nome' ng-model='nome' name=cliente[nome] placeholder='digite seu nome' class='form-control' >";
         $dc .= "</div>";
@@ -97,12 +107,17 @@ class htmlRender extends \DataBase
         $dc .= "</div>";
 
         $dc .= "<br><br></form>";
-        if (isset($dados['cliente'])){
+        if (isset($dados['cliente'])) {
             $dc .= "</div>";
         }
         $dc .= "</div>";
         return $dc;
     }
+
+
+
+
+
 
 
 
@@ -141,9 +156,14 @@ class htmlRender extends \DataBase
 
 
 
+
+
+
+
+
     static function dadosClienteInterno() {
         self::Angular();
-        if (isset($_POST['cliente'])){
+        if (isset($_POST['cliente'])) {
             /*             * ************************* */
             self::SalvaClientes();
             self::SalvaEmail("cliente");
@@ -151,10 +171,15 @@ class htmlRender extends \DataBase
             self::clientesemail();
             self::clientestelefone();
             /*             * ************************* */
-        } else{
+        } else {
             return self::FormularioCadEdit();
         }
     }
+
+
+
+
+
 
 
 
@@ -177,6 +202,11 @@ class htmlRender extends \DataBase
 
 
 
+
+
+
+
+
     /*     * *
       informar a entrada de dados do formulario na variável $entrada da classe
      *  */
@@ -185,16 +215,20 @@ class htmlRender extends \DataBase
         self::$campos = ['email'];
         self::$tabela = 'email';
 
-        if (!is_array($_POST[self::$entrada]['email'])){
+        if (!is_array($_POST[self::$entrada]['email'])) {
             self::Salva($_POST[$entrada]);
-        } else
-            {
+        } else {
             foreach ($_POST[self::$entrada]['email'] as $x):
                 $z['email'] = $x;
                 self::Salva($z);
             endforeach;
-            }
+        }
     }
+
+
+
+
+
 
 
 
@@ -207,16 +241,20 @@ class htmlRender extends \DataBase
     public static function SalvaTelefone($entrada = '') {
         self::$campos = ['telefone'];
         self::$tabela = 'telefone';
-        if (!is_array($_POST[self::$entrada]['telefone'])){
+        if (!is_array($_POST[self::$entrada]['telefone'])) {
             self::Salva($_POST['cliente']);
-        } else
-            {
+        } else {
             foreach ($_POST[self::$entrada]['telefone'] as $x):
                 $z['telefone'] = $x;
                 self::Salva($z);
             endforeach;
-            }
+        }
     }
+
+
+
+
+
 
 
 
@@ -230,7 +268,7 @@ class htmlRender extends \DataBase
         self::$campos = ['clientes', 'email'];
         self::$tabela = 'clientesemail';
         $cliente      = self::$array['clientes'][0];
-        if (isset(self::$array['email'])){
+        if (isset(self::$array['email'])) {
             foreach (self::$array['email'] as $email):
                 $z['email']    = $email;
                 $z['clientes'] = $cliente;
@@ -244,6 +282,11 @@ class htmlRender extends \DataBase
 
 
 
+
+
+
+
+
     /*     * *
       informar a entrada de dados do formulario na variável $entrada da classe
      *  */
@@ -252,7 +295,7 @@ class htmlRender extends \DataBase
         self::$campos = ['clientes', 'telefone'];
         self::$tabela = 'clientestelefone';
         $cliente      = self::$array['clientes'][0];
-        if (isset(self::$array['telefone'])){
+        if (isset(self::$array['telefone'])) {
             foreach (self::$array['telefone'] as $tel):
                 $z['telefone'] = $tel;
                 $z['clientes'] = $cliente;
@@ -265,10 +308,15 @@ class htmlRender extends \DataBase
 
 
 
+
+
+
+
+
     public static function contato() {
         self::$campos     = ['cliente', 'data'];
         self::$tabela     = 'contato';
-        $dados['data']    = data;//$_SESSION["entrada"];
+        $dados['data']    = data; //$_SESSION["entrada"];
         $dados['cliente'] = self::$array['clientes'][0];
         self::Salva($dados);
     }
@@ -277,4 +325,26 @@ class htmlRender extends \DataBase
 
 
 
+
+
+
+
+
+    public static function SalvaForm() {
+        self::SalvaClientes();
+        self::SalvaEmail();
+        self::SalvaTelefone();
+        self::clientesemail();
+        self::clientestelefone();
     }
+
+
+
+
+
+
+
+
+
+
+}
