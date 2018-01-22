@@ -15,7 +15,7 @@ define("urlAdmin", $url_atual);
 define('clienteSemEmail', "15 dias");
 define("apiLista", plugin_dir_url('cliente.php') . "clientes/api/api_lista.php");
 define("keyGoogleApi", "AIzaSyCJZaknPwDWQ4HplUGPvTwpaLtMEASvbgI");
-define("meuIp",md5($_SERVER["REMOTE_ADDR"]));
+define("meuIp", md5($_SERVER["REMOTE_ADDR"]));
 
 date_default_timezone_set('Brazil/East');
 add_action('init', 'myStartSession', 1);
@@ -93,8 +93,12 @@ function CriaTabelas() {
     /*     * ******************************************************************* */
 
 
-    
-    /**tabela de configurações**/
+    $sql = "CREATE TABLE `grupos` ( `id` int(11) NOT NULL AUTO_INCREMENT, `nome` varchar(250) NOT NULL, `criacao` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY (`id`), UNIQUE KEY `grupo` (`nome`) ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1; ";
+    global $wpdb;
+    $wpdb->query($sql);
+
+
+    /*     * tabela de configurações* */
     $sql = " CREATE TABLE  if not exists  `config` ( `id` int(11) NOT NULL AUTO_INCREMENT, `ip` varchar(100) NOT NULL, `clienteNaoRecebeEmailpor` int(11) NOT NULL, PRIMARY KEY (`id`) ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;";
     global $wpdb;
     $wpdb->query($sql);
