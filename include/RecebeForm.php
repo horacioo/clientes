@@ -49,6 +49,8 @@ function entradaForm($atts) {
 
 
 function Resposta() {
+    ///echo"list data";
+    ///print_r(us::$emailLista);
     global $wpdb;
     $sel   = "SELECT ct.id as idContato ,cl.nome,e.email 
 FROM `contato` as ct
@@ -75,12 +77,16 @@ function Email($email, $nome) {
     $endereco = plugin_dir_url('cliente.php') . "clientes/api/envioEmails.php?EmailsAposCadastro=1";
     $textos   = file_get_contents($endereco);
     $x        = json_decode($textos);
-    foreach ($x as $y):
-        $to      = $email; //"lanterna_@hotmail.com";
-        $subject = "teste";
-        $content = $y;
-        $status  = wp_mail($to, $subject, $content);
-    endforeach;
+
+    if (is_array($x)){
+        foreach ($x as $y):
+            $to      = $email; //"lanterna_@hotmail.com";
+            $subject = "teste";
+            $content = $y;
+            $headers = array('Content-Type: text/html; charset=UTF-8');
+            $status  = wp_mail($to, $subject, $content, $headers);
+        endforeach;
+    }
     /*     * ********************************************** */
     /*
       $to      = $email; //"lanterna_@hotmail.com";

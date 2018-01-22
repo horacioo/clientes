@@ -5,7 +5,7 @@ function TextosEmail() {
     add_meta_box(
             'link', //ID
             'como será enviado?', //Título
-            'RedesSociais', //callback
+            'ConfiguracoesEmailEnvioCliente', //callback
             array('TextosEmail'), //Post Type
             'side', //Posição
             'high' //Prioridade
@@ -16,7 +16,7 @@ function TextosEmail() {
 
 
 
-function RedesSociais() {
+function ConfiguracoesEmailEnvioCliente() {
     global $post;
     //$Rede = get_post_meta($post->ID, "Rede_Social")
     ?>

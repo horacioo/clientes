@@ -8,12 +8,13 @@ require_once '../../../../wp-config.php';
 class EnvioEmail
     {
 
-    public static $extension = "wp_";
+    public static $extension = "";
     public static $texto;
     public static $usuarios;
 
     static public function EnvioAposCadastro() {
         global $wpdb;
+        self::$extension = $wpdb->prefix;
         $query = "select post_id from " . self::$extension . "postmeta where meta_key = 'opcaoDeEmail' and meta_value='2'";
         $dados = $wpdb->get_results($query, ARRAY_A);
         foreach ($dados as $d):
@@ -27,6 +28,7 @@ class EnvioEmail
 
     static private function pegaTexto($id) {
         global $wpdb;
+        self::$extension = $wpdb->prefix;
         $query         = "select * from  " . self::$extension . "posts where id=$id";
         $dados         = $wpdb->get_results($query, ARRAY_A);
         self::$texto[] = $dados[0]['post_content'];

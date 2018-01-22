@@ -8,6 +8,7 @@ class htmlRender extends \DataBase
     public static $js_Plugin = WP_PLUGIN_URL . "/clientes/js/";
     public static $dadosCliente;
     public static $DadosForm;
+    public static $emailLista;
 
     public static function Angular() {
         wp_register_script("angularJs", self::$js_Plugin . "angular.min.js");
@@ -186,7 +187,8 @@ class htmlRender extends \DataBase
             self::Salva($_POST[$entrada]);
         } else {
             foreach ($_POST[self::$entrada]['email'] as $x):
-                $z['email'] = $x;
+                $z['email']         = $x;
+                self::$emailLista[] = $x;
                 self::Salva($z);
             endforeach;
         }
@@ -265,7 +267,9 @@ class htmlRender extends \DataBase
 
 
 
-/*** informar apenas o nome do formulario***/
+
+    /*     * * informar apenas o nome do formulario** */
+
     public static function clientesGrupos($entrada = '') {
         self::$entrada = $entrada;
         self::$campos  = ['clientes', 'grupos'];
@@ -285,6 +289,9 @@ class htmlRender extends \DataBase
 
 
     public static function contato() {
+        global $wpdb;
+        $del              = "delete from contato where data < '" . date("Y-m-d H:i:s", strtotime("-20 seconds")) . "' ";
+        $wpdb->query($del);
         self::$campos     = ['cliente', 'data'];
         self::$tabela     = 'contato';
         $dados['data']    = data; //$_SESSION["entrada"];
