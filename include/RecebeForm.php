@@ -48,12 +48,6 @@ function entradaForm($atts) {
 
 
 
-
-
-
-
-
-
 function Resposta() {
     global $wpdb;
     $sel   = "SELECT ct.id as idContato ,cl.nome,e.email 
@@ -63,7 +57,7 @@ inner join clientesemail as ce on ce.clientes = ct.cliente
 inner join email as e on e.id = ce.email
 WHERE ct.primeiroContato=0";
     $dados = $wpdb->get_results($sel, ARRAY_A);
-    
+
     foreach ($dados as $d):
         Email($d['email'], $d['nome']);
         $wpdb->query("update contato set primeiroContato=1 where id='" . $d['idContato'] . "'");
@@ -75,10 +69,25 @@ WHERE ct.primeiroContato=0";
 
 
 function Email($email, $nome) {
-    $to      = $email; //"lanterna_@hotmail.com";
-    $subject = "teste";
-    $content = "olá senhor $nome, $email, tudo bem? recebemos seu contato e entraremos em contato em breve!!";
-    $status  = wp_mail($to, $subject, $content);
+
+
+    /*     * *********************************************** */
+    $endereco = plugin_dir_url('cliente.php') . "clientes/api/envioEmails.php?EmailsAposCadastro=1";
+    $textos   = file_get_contents($endereco);
+    $x        = json_decode($textos);
+    foreach ($x as $y):
+        $to      = $email; //"lanterna_@hotmail.com";
+        $subject = "teste";
+        $content = $y;
+        $status  = wp_mail($to, $subject, $content);
+    endforeach;
+    /*     * ********************************************** */
+    /*
+      $to      = $email; //"lanterna_@hotmail.com";
+      $subject = "teste";
+      $content = "olá senhor $nome, $email, tudo bem? recebemos seu contato e entraremos em contato em breve!!";
+      $status  = wp_mail($to, $subject, $content);
+     */
 }
 
 
@@ -90,8 +99,6 @@ function Limpeza($x) {
     $x = trim($x);
     return $x;
 }
-
-
 
 
 

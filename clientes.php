@@ -12,10 +12,10 @@
 
 $url_atual = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
 define("urlAdmin", $url_atual);
-
+define('clienteSemEmail', "15 dias");
 define("apiLista", plugin_dir_url('cliente.php') . "clientes/api/api_lista.php");
 define("keyGoogleApi", "AIzaSyCJZaknPwDWQ4HplUGPvTwpaLtMEASvbgI");
-
+define("meuIp",md5($_SERVER["REMOTE_ADDR"]));
 
 date_default_timezone_set('Brazil/East');
 add_action('init', 'myStartSession', 1);
@@ -52,7 +52,7 @@ register_activation_hook(__FILE__, CriaTabelas);
 function CriaTabelas() {
     /*     * ******************************************************************* */
 
-    $sql = "CREATE TABLE if not exists  `clientes` ( `id` int(11) NOT NULL AUTO_INCREMENT, `nome` varchar(250) NOT NULL, `cpf` varchar(20) NOT NULL, `rg` varchar(20) NOT NULL, `dataExpedicao` date NOT NULL DEFAULT '0000-00-00', `dataNascimento` date NOT NULL DEFAULT '0000-00-00', `ip` varchar(100) NOT NULL, `entrada` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY (`id`), UNIQUE KEY `cpfNome` (`cpf`,`nome`) USING BTREE ) ENGINE=InnoDB AUTO_INCREMENT=288 DEFAULT CHARSET=latin1;";
+    $sql = "CREATE TABLE `clientes` ( `id` int(11) NOT NULL AUTO_INCREMENT, `nome` varchar(250) NOT NULL, `cpf` varchar(20) NOT NULL, `rg` varchar(20) NOT NULL, `dataExpedicao` date NOT NULL DEFAULT '0000-00-00', `dataNascimento` date NOT NULL DEFAULT '0000-00-00', `endereco` varchar(250) NOT NULL, `ip` varchar(100) NOT NULL, `entrada` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY (`id`), UNIQUE KEY `cpfNome` (`cpf`,`nome`) USING BTREE ) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=latin1;";
     global $wpdb;
     $wpdb->query($sql);
 
@@ -91,6 +91,22 @@ function CriaTabelas() {
     global $wpdb;
     $wpdb->query($sql);
     /*     * ******************************************************************* */
+
+
+    
+    /**tabela de configurações**/
+    $sql = " CREATE TABLE  if not exists  `config` ( `id` int(11) NOT NULL AUTO_INCREMENT, `ip` varchar(100) NOT NULL, `clienteNaoRecebeEmailpor` int(11) NOT NULL, PRIMARY KEY (`id`) ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;";
+    global $wpdb;
+    $wpdb->query($sql);
+    /*     * ******************************************************************* */
+    $sql = "TRUNCATE config";
+    global $wpdb;
+    $wpdb->query($sql);
+    /*     * *************************************************************************** */
+    $sql = "INSERT INTO `config` (`id`, `ip`, `clienteNaoRecebeEmailpor`) VALUES (1, '" . md5($_SERVER["REMOTE_ADDR"]) . "', 10);";
+    global $wpdb;
+    $wpdb->query($sql);
+    /*     * *************************************************************************** */
 }
 
 
