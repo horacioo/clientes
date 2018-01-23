@@ -49,28 +49,25 @@ function entradaForm($atts) {
 
 
 
-
-
-
-
-
 function Resposta() {
-    ///echo"list data";
-    ///print_r(us::$emailLista);
+
     global $wpdb;
-    $sel   = "SELECT ct.id as idContato ,cl.nome,e.email 
+    $sel = "SELECT ct.id as idContato ,cl.nome,e.email 
 FROM `contato` as ct
 inner join clientes as cl on cl.id = ct.cliente
 inner join clientesemail as ce on ce.clientes = ct.cliente
 inner join email as e on e.id = ce.email
 WHERE ct.primeiroContato=0";
-    
+
+    /*     * ****************************************** */
     ///echo "<hr>$sel<hr>";
-    
     $dados = $wpdb->get_results($sel, ARRAY_A);
+   /// print_r($dados);
+    /*     * ***************************************** */
 
     foreach ($dados as $d):
         Email($d['email'], $d['nome']);
+        //exit();
         $wpdb->query("update contato set primeiroContato=1 where id='" . $d['idContato'] . "'");
     endforeach;
 }
@@ -79,19 +76,10 @@ WHERE ct.primeiroContato=0";
 
 
 
-
-
-
-
-
 function Email($email, $nome) {
     em::EnvioAposCadastro();
     $x = em::$texto;
-    /*     * *********************************************** */
-    /* $endereco = plugin_dir_url('cliente.php') . "clientes/api/envioEmails.php?EmailsAposCadastro=1";
-      $textos   = file_get_contents($endereco);
-      $x        = json_decode($textos); */
-    /*     * *********************************************** */
+
     if (is_array($x)) {
         foreach ($x as $y):
             $to      = $email; //"lanterna_@hotmail.com";
@@ -101,19 +89,7 @@ function Email($email, $nome) {
             $status  = wp_mail($to, $subject, $content, $headers);
         endforeach;
     }
-    /*     * ********************************************** */
-    /*
-      $to      = $email; //"lanterna_@hotmail.com";
-      $subject = "teste";
-      $content = "olá senhor $nome, $email, tudo bem? recebemos seu contato e entraremos em contato em breve!!";
-      $status  = wp_mail($to, $subject, $content);
-     */
 }
-
-
-
-
-
 
 
 
@@ -124,11 +100,6 @@ function Limpeza($x) {
     $x = trim($x);
     return $x;
 }
-
-
-
-
-
 
 
 
