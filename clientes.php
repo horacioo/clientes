@@ -34,7 +34,7 @@ define("data", date("Y-m-d H:i:s"));
 
 
 
-
+require_once 'include/Emails.php';
 require_once 'include/DataBase.php';
 require_once 'include/menu.php';
 require_once 'include/form.php';
@@ -42,6 +42,8 @@ require_once 'include/mecanicas.php';
 require_once 'include/RecebeForm.php';
 require_once 'CustomPosts/textosEmail.php';
 require_once 'CustomPosts/metaBoxeTextosEmail.php';
+
+
 add_action('admin_menu', 'MenuClientes');
 add_shortcode("Recebe-Form", 'entradaForm');
 

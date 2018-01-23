@@ -290,13 +290,15 @@ class htmlRender extends \DataBase
 
     public static function contato() {
         global $wpdb;
-        $del              = "delete from contato where data < '" . date("Y-m-d H:i:s", strtotime("-20 seconds")) . "' ";
+        $del              = "delete from contato where data < '" . date("Y-m-d H:i:s", strtotime("-3600 seconds")) . "' ";
+        ///$up = "updade contato set "
         $wpdb->query($del);
         self::$campos     = ['cliente', 'data'];
         self::$tabela     = 'contato';
         $dados['data']    = data; //$_SESSION["entrada"];
         $dados['cliente'] = self::$array['clientes'][0];
         self::Salva($dados);
+        $_SESSION["acesso"]["tempo"]=time();
     }
 
 
