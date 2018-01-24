@@ -97,8 +97,6 @@ function CriaTabelas() {
     $sql = "CREATE TABLE `grupos` ( `id` int(11) NOT NULL AUTO_INCREMENT, `nome` varchar(250) NOT NULL, `criacao` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY (`id`), UNIQUE KEY `grupo` (`nome`) ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1; ";
     global $wpdb;
     $wpdb->query($sql);
-
-
     /*     * tabela de configurações* */
     $sql = " CREATE TABLE  if not exists  `config` ( `id` int(11) NOT NULL AUTO_INCREMENT, `ip` varchar(100) NOT NULL, `clienteNaoRecebeEmailpor` int(11) NOT NULL, PRIMARY KEY (`id`) ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;";
     global $wpdb;
@@ -112,6 +110,10 @@ function CriaTabelas() {
     global $wpdb;
     $wpdb->query($sql);
     /*     * *************************************************************************** */
+    
+    $sql="CREATE TABLE `logemail` ( `id` int(11) NOT NULL AUTO_INCREMENT, `cliente` int(11) NOT NULL, `email` int(11) NOT NULL, `tipoEmail` int(11) NOT NULL, `texto` int(11) NOT NULL, `data` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY (`id`), KEY `cliente` (`cliente`), KEY `email` (`email`), KEY `texto` (`texto`), CONSTRAINT `le_cliente` FOREIGN KEY (`cliente`) REFERENCES `clientes` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION, CONSTRAINT `le_email` FOREIGN KEY (`email`) REFERENCES `email` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION ) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=latin1;";
+    global $wpdb;
+    $wpdb->query($sql);    
 }
 
 

@@ -28,6 +28,7 @@ class Emails {
 
 
     static public function EnvioAniversario() {
+        self::$texto =NULL;
         global $wpdb;
         self::$extension = $wpdb->prefix;
         $query           = "select post_id from " . self::$extension . "postmeta where meta_key = 'opcaoDeEmail' and meta_value='1'";
@@ -46,12 +47,35 @@ class Emails {
 
 
 
+    static public function EnvioAgendado() {
+        self::$texto =NULL;
+        global $wpdb;
+        self::$extension = $wpdb->prefix;
+        $query           = "select post_id from " . self::$extension . "postmeta where meta_key = 'opcaoDeEmail' and meta_value='3'";
+        $dados           = $wpdb->get_results($query, ARRAY_A);
+        foreach ($dados as $d):
+            self::pegaTexto($d['post_id']);
+        endforeach;
+        
+        return self::$texto;//print_r(self::$texto);
+    }
+
+
+
+
+
+
+
+
+
+
     static private function pegaTexto($id) {
         global $wpdb;
         self::$extension = $wpdb->prefix;
         $query           = "select * from  " . self::$extension . "posts where id=$id";
-        $dados           = $wpdb->get_results($query, ARRAY_A);
-        self::$texto[]   = array("id"=>$dados[0]['ID'],"conteudo" => $dados[0]['post_content'], "titulo" => $dados[0]['post_title']);
+        $dados         = $wpdb->get_results($query, ARRAY_A);
+        
+        self::$texto[] = array("id" => $dados[0]['ID'], "conteudo" => $dados[0]['post_content'], "titulo" => $dados[0]['post_title']);
     }
 
 
@@ -78,9 +102,9 @@ class Emails {
 
     static public function EmailCliente($id = '') {
         if (!is_null($id)) {
-            $sel = "SELECT e.email, e.id FROM `clientesemail` as ce inner join email as e on e.id = ce.email WHERE ce.clientes = '" . $id . "'";
+            $sel    = "SELECT e.email, e.id FROM `clientesemail` as ce inner join email as e on e.id = ce.email WHERE ce.clientes = '" . $id . "'";
             global $wpdb;
-            $emails = $wpdb->get_results($sel,ARRAY_A);
+            $emails = $wpdb->get_results($sel, ARRAY_A);
             return $emails;
         }
     }

@@ -2,8 +2,7 @@
 
 namespace FormulariosHTml;
 
-class htmlRender extends \DataBase
-    {
+class htmlRender extends \DataBase {
 
     public static $js_Plugin = WP_PLUGIN_URL . "/clientes/js/";
     public static $dadosCliente;
@@ -18,6 +17,11 @@ class htmlRender extends \DataBase
         wp_enqueue_script("app");
         wp_enqueue_script("controllerxxx");
     }
+
+
+
+
+
 
 
 
@@ -38,6 +42,11 @@ class htmlRender extends \DataBase
             return self::Listagem();
         }
     }
+
+
+
+
+
 
 
 
@@ -106,6 +115,11 @@ class htmlRender extends \DataBase
 
 
 
+
+
+
+
+
     static private function Listagem() {
         $tb = "";
         $tb .= "<div ng-app='app'>";
@@ -139,6 +153,11 @@ class htmlRender extends \DataBase
 
 
 
+
+
+
+
+
     static function dadosClienteInterno() {
         self::Angular();
         if (isset($_POST['cliente'])) {
@@ -158,6 +177,11 @@ class htmlRender extends \DataBase
 
 
 
+
+
+
+
+
     /*     * *
       informar a entrada de dados do formulario na variável $entrada da classe
      *  */
@@ -167,9 +191,23 @@ class htmlRender extends \DataBase
         self::$tabela = 'clientes';
         $dados        = $_POST[self::$entrada];
         $dados['ip']  = md5($_SERVER["REMOTE_ADDR"]);
+
+        if (!isset($dados['cpf'])) {
+            if (isset($_SESSION['dados']['cpf'])){
+                $dados['cpf'] = $_SESSION['dados']['cpf'];
+            } else {
+                $dados['cpf']             = time();
+                $_SESSION['dados']['cpf'] = time();
+            }
+        }
+
         self::Salva($dados);
-        //print_r($_POST[$entrada]);
     }
+
+
+
+
+
 
 
 
@@ -198,6 +236,11 @@ class htmlRender extends \DataBase
 
 
 
+
+
+
+
+
     /*     * *
       informar a entrada de dados do formulario na variável $entrada da classe
      *  */
@@ -214,6 +257,11 @@ class htmlRender extends \DataBase
             endforeach;
         }
     }
+
+
+
+
+
 
 
 
@@ -244,6 +292,11 @@ class htmlRender extends \DataBase
 
 
 
+
+
+
+
+
     /*     * *
       informar a entrada de dados do formulario na variável $entrada da classe
      *  */
@@ -268,6 +321,11 @@ class htmlRender extends \DataBase
 
 
 
+
+
+
+
+
     /*     * * informar apenas o nome do formulario** */
 
     public static function clientesGrupos($entrada = '') {
@@ -275,14 +333,19 @@ class htmlRender extends \DataBase
         self::$campos  = ['clientes', 'grupos'];
         self::$tabela  = "clientegrupos";
 
-        if (is_array($_POST[$entrada]['clientegrupos'])){
+        if (is_array($_POST[$entrada]['clientegrupos'])) {
             foreach ($_POST[$entrada]['clientegrupos'] as $x):
                 $rr['grupos']   = $x;
                 $rr['clientes'] = self::$array['clientes'][0];
                 self::Salva($rr);
             endforeach;
+        }
     }
-    }
+
+
+
+
+
 
 
 
@@ -296,6 +359,11 @@ class htmlRender extends \DataBase
         $dados['cliente'] = self::$array['clientes'][0];
         self::Salva($dados);
     }
+
+
+
+
+
 
 
 
@@ -317,4 +385,9 @@ class htmlRender extends \DataBase
 
 
 
-    }
+
+
+
+
+
+}

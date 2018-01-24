@@ -64,7 +64,7 @@ WHERE ct.primeiroContato=0";
     $dados = $wpdb->get_results($sel, ARRAY_A);
    /// print_r($dados);
     /*     * ***************************************** */
-
+    ///echo "<br>informação -- "; print_r($dados); echo"<br>";
     foreach ($dados as $d):
         Email($d['email'], $d['nome']);
         //exit();
