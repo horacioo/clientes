@@ -28,12 +28,11 @@ function myStartSession() {
 
 
 
-
-
 define("data", date("Y-m-d H:i:s"));
 
 
 
+require_once 'include/clientes.php';
 require_once 'include/Emails.php';
 require_once 'include/DataBase.php';
 require_once 'include/menu.php';

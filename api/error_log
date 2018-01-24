@@ -1,1 +1,5 @@
 [11-Jan-2018 13:47:06 UTC] PHP Fatal error:  Class 'DataBase' not found in /home/regisepennasegur/public_html/wp-content/plugins/clientes/include/form.php on line 6
+[23-Jan-2018 11:42:08 America/Sao_Paulo] PHP Fatal error:  Call to a member function get_results() on null in /home/regisepennasegur/public_html/wp-content/plugins/clientes/include/Emails.php on line 49
+[23-Jan-2018 11:42:40 America/Sao_Paulo] PHP Fatal error:  Call to a member function get_results() on null in /home/regisepennasegur/public_html/wp-content/plugins/clientes/include/Emails.php on line 49
+[23-Jan-2018 11:42:49 America/Sao_Paulo] PHP Fatal error:  Call to a member function query() on null in /home/regisepennasegur/public_html/wp-content/plugins/clientes/include/Emails.php on line 49
+[23-Jan-2018 16:36:40 America/Sao_Paulo] PHP Fatal error:  Call to undefined function wp_mail() in /home/regisepennasegur/public_html/wp-content/plugins/clientes/api/disparoEmail.php on line 17
