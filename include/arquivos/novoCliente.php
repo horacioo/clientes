@@ -10,7 +10,7 @@ use FormulariosHTml\htmlRender as save; ?>
                 <p><label><span class="dashicons dashicons-admin-users"></span>Nome</label><input type="text" required="required" name=cliente[nome] class='form-control'></p>
                 <p><label><span class="dashicons dashicons-media-document"></span>cpf</label><input type="text" required="required"  name=cliente[cpf] class='form-control' ></p>
                 <p><label><span class="dashicons dashicons-id"></span>rg</label><input type="text" name=cliente[rg] class='form-control' ></p>
-                <p><label><span class="dashicons dashicons-calendar-alt"></span>data de nascimento</label><input  ng-model="DataNascimento"  type="date" name=cliente[nascimento] class='form-control' >{{ DataNascimento}}</p>
+                <p><label><span class="dashicons dashicons-calendar-alt"></span>data de nascimento</label><input  ng-model="DataNascimento"  type="date" name=cliente[nascimento] class='form-control' > </p>
             </div>
             <div class='col-md-6'>
                 <h2>Contato</h2>
@@ -159,6 +159,9 @@ async defer></script>
 <!------------------------------------------------------------>
 <?php
 if (isset($_POST['cliente'])):
+    
+    $_POST['cliente']['dataNascimento']  = $_POST['cliente']['nascimento'];
+      
     save::$entrada = 'cliente';
     save::SalvaForm();
     save::clientesGrupos("cliente");//clientesGrupos("cliente");
