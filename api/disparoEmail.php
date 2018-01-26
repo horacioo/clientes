@@ -8,8 +8,10 @@ use emailsProcessosEDados\Emails as em;
 use Clientes\clientes as cliente;
 
 /* * *****start dos processos******* */
-//EnviaAniversario();
+EnviaAniversario();
+sleep(10);
 EnvioAgendado();
+sleep(10);
 /* * ******************************* */
 
 function EnviaAniversario() {
@@ -72,21 +74,23 @@ function EnvioAgendado() {
 
 
 function enviaEmail($titulo = '', $conteudo = '', $email = '', $nome = '') {
-    $to         = $email;
-    $subject    = $titulo;
-    $content    = Reconstroi($conteudo, $nome);
+    $to      = $email;
+    $subject = $titulo;
+    $content = Reconstroi($conteudo, $nome);
+
+    //$headers[] = 'Content-Type: text/html; charset=UTF-8';
+    $headers[] = 'Content-Type: text; charset=UTF-8';
+    $headers[] = 'From: Regisepenna corretora de seguros <contato@regisepennaseguros.com.br>';
+    $headers[] = 'Reply-To: Regis e Penna corretora de seguros <contato@regisepennaseguros.com.br>';
     /*
-      $headers[] ='Content-Type: text/html; charset=UTF-8';
-      $headers[] = 'From: Regisepenna corretora de seguros <contato@regisepennaseguros.com.br>';
-      $headers[] = 'Reply-To: Regis e Penna corretora de seguros <contato@regisepennaseguros.com.br>';
+      $headers [] = "From: Regisepenna corretora de seguros <contato@regisepennaseguros.com.br>\r\n";
+      $headers [] = "Reply-To: Regis e Penna corretora de seguros <contato@regisepennaseguros.com.br>\r\n";
+      $headers [] = "Return-Path: contato@regisepennaseguros.com.br\r\n";
+      $headers [] = "MIME-Version: 1.0\r\n";
+      $headers [] = "Content-Type: text/html; charset=UTF-8\r\n";
+      $headers [] = "X-Priority: 3\r\n";
+      $headers [] = "X-Mailer: PHP" . phpversion() . "\r\n";
      */
-    $headers [] = "From: Regisepenna corretora de seguros <contato@regisepennaseguros.com.br>\r\n";
-    $headers [] = "Reply-To: Regis e Penna corretora de seguros <contato@regisepennaseguros.com.br>\r\n";
-    $headers [] = "Return-Path: contato@regisepennaseguros.com.br\r\n";
-    $headers [] = "MIME-Version: 1.0\r\n";
-    $headers [] = "Content-Type: text/html; charset=ISO-8859-1\r\n";
-    $headers [] = "X-Priority: 3\r\n";
-    $headers [] = "X-Mailer: PHP" . phpversion() . "\r\n";
 
     $status = wp_mail($to, $subject, $content, $headers);
     if ($status == TRUE){
