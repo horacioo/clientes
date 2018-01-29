@@ -2,6 +2,9 @@
 
 namespace Clientes;
 
+use emailsProcessosEDados\Emails as em;
+use Grupos\grupos as gr;
+
 class clientes
     {
 
@@ -36,6 +39,24 @@ class clientes
         endforeach;
 
         return $cliente;
+    }
+
+
+
+
+
+    public static function EditCliente($id = "") {
+        if (!is_null($id)){
+            global $wpdb;
+            $emails = em::EmailCliente($id);
+            $grupos = gr::clienteGrupo($id);
+            $sel    = "select cl.id, cl.nome, cl.cpf, cl.rg, cl.dataExpedicao, cl.dataNascimento,cl.endereco  from clientes as cl where id='$id'";
+            $x = $wpdb->get_results($sel,ARRAY_A);
+            $dados['cliente']=$x[0];
+            $dados['emails']=$emails;
+            $dados['grupos']=$grupos;
+            return $dados;
+        }
     }
 
 

@@ -47,6 +47,8 @@ function ConfiguracoesEmailEnvioCliente() {
     } else{
         $agendada = time();
     }
+    
+   
     ?>
     <div class="metaboxes">
         <p><input type="radio" name=email[email_setting] value='1' <?php if ($opcaoEmail == "1"){ ?>checked='checked'<?php } ?> >aniversário do cliente</p>

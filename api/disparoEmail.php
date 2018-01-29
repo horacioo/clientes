@@ -56,7 +56,7 @@ function EnvioAgendado() {
             $email = em::EmailCliente($c['id']);
             if (is_array($email)):
                 foreach ($email as $e):
-                    print_r($e);
+                    ///print_r($e);
                     if (is_array($texto)){
                         foreach ($texto as $t):
                             if (em::$envia == 1):
@@ -80,8 +80,8 @@ function enviaEmail($titulo = '', $conteudo = '', $email = '', $nome = '') {
     $subject = $titulo;
     $content = Reconstroi($conteudo, $nome);
 
-    //$headers[] = 'Content-Type: text/html; charset=UTF-8';
-    $headers[] = 'Content-Type: text; charset=UTF-8';
+    $headers[] = 'Content-Type: text/html; charset=UTF-8';
+    //$headers[] = 'Content-Type: text; charset=UTF-8';
     $headers[] = 'From: Regisepenna corretora de seguros <contato@regisepennaseguros.com.br>';
     $headers[] = 'Reply-To: Regis e Penna corretora de seguros <contato@regisepennaseguros.com.br>';
     /*
@@ -99,7 +99,7 @@ function enviaEmail($titulo = '', $conteudo = '', $email = '', $nome = '') {
     } else{
         return 0;
         echo"deu erro no envio do email " . $status;
-    }//return var_dump($status);
+    }
 }
 
 

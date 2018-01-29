@@ -28,10 +28,12 @@ function myStartSession() {
 
 
 
+
+
 define("data", date("Y-m-d H:i:s"));
 
 
-
+require_once 'include/grupos.php';
 require_once 'include/clientes.php';
 require_once 'include/Emails.php';
 require_once 'include/DataBase.php';
@@ -92,8 +94,6 @@ function CriaTabelas() {
     global $wpdb;
     $wpdb->query($sql);
     /*     * ******************************************************************* */
-
-
     $sql = "CREATE TABLE `grupos` ( `id` int(11) NOT NULL AUTO_INCREMENT, `nome` varchar(250) NOT NULL, `criacao` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY (`id`), UNIQUE KEY `grupo` (`nome`) ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1; ";
     global $wpdb;
     $wpdb->query($sql);
@@ -110,10 +110,15 @@ function CriaTabelas() {
     global $wpdb;
     $wpdb->query($sql);
     /*     * *************************************************************************** */
-    
-    $sql="CREATE TABLE `logemail` ( `id` int(11) NOT NULL AUTO_INCREMENT, `cliente` int(11) NOT NULL, `email` int(11) NOT NULL, `tipoEmail` int(11) NOT NULL, `texto` int(11) NOT NULL, `data` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY (`id`), KEY `cliente` (`cliente`), KEY `email` (`email`), KEY `texto` (`texto`), CONSTRAINT `le_cliente` FOREIGN KEY (`cliente`) REFERENCES `clientes` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION, CONSTRAINT `le_email` FOREIGN KEY (`email`) REFERENCES `email` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION ) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=latin1;";
+
+    $sql = "CREATE TABLE `logemail` ( `id` int(11) NOT NULL AUTO_INCREMENT, `cliente` int(11) NOT NULL, `email` int(11) NOT NULL, `tipoEmail` int(11) NOT NULL, `texto` int(11) NOT NULL, `data` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY (`id`), KEY `cliente` (`cliente`), KEY `email` (`email`), KEY `texto` (`texto`), CONSTRAINT `le_cliente` FOREIGN KEY (`cliente`) REFERENCES `clientes` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION, CONSTRAINT `le_email` FOREIGN KEY (`email`) REFERENCES `email` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION ) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=latin1;";
     global $wpdb;
-    $wpdb->query($sql);    
+    $wpdb->query($sql);
+
+    /*     * *********************************************************************************** */
+    $sql = "CREATE TABLE if not exists `clientesgrupos` ( `id` int(11) NOT NULL AUTO_INCREMENT, `grupo` int(11) NOT NULL, `cliente` int(11) NOT NULL, PRIMARY KEY (`id`), UNIQUE KEY `clienteGRupo` (`grupo`,`cliente`), KEY `cliente` (`cliente`), KEY `grupo` (`grupo`), CONSTRAINT `cliente` FOREIGN KEY (`cliente`) REFERENCES `clientes` (`id`) ON DELETE CASCADE, CONSTRAINT `grupo` FOREIGN KEY (`grupo`) REFERENCES `grupos` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";
+    global $wpdb;
+    $wpdb->query($sql);
 }
 
 
