@@ -45,6 +45,7 @@ function NovoclienteFunct() {
 
 
 function Editar_cliente() {
+     BootStrap();
     require_once 'arquivos/listaClientes.php'; // echo form::Editar();
 }
 
