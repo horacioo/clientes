@@ -124,6 +124,8 @@ function Agendamento($x) {
     if (isset($x['email_setting'])):
         global $post;
         $data = strtotime($x['DataEnvio']);
+        //print_r($x['DataEnvio']); //
+        //exit();
         update_post_meta($post->ID, 'opcaoDeEmail', sanitize_text_field($x['email_setting']));
         update_post_meta($post->ID, 'opcaoDeEmailData', sanitize_text_field($data));
     endif;

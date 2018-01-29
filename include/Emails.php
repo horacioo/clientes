@@ -2,11 +2,13 @@
 
 namespace emailsProcessosEDados;
 
-class Emails {
+class Emails
+    {
 
     public static $extension = "";
     public static $texto;
     public static $usuarios;
+    public static $envia     = 1;
 
     static public function EnvioAposCadastro() {
         global $wpdb;
@@ -22,13 +24,8 @@ class Emails {
 
 
 
-
-
-
-
-
     static public function EnvioAniversario() {
-        self::$texto =NULL;
+        self::$texto     = NULL;
         global $wpdb;
         self::$extension = $wpdb->prefix;
         $query           = "select post_id from " . self::$extension . "postmeta where meta_key = 'opcaoDeEmail' and meta_value='1'";
@@ -42,28 +39,37 @@ class Emails {
 
 
 
-
-
-
-
-
     static public function EnvioAgendado() {
-        self::$texto =NULL;
+        self::$texto     = NULL;
         global $wpdb;
         self::$extension = $wpdb->prefix;
-        $query           = "select post_id from " . self::$extension . "postmeta where meta_key = 'opcaoDeEmail' and meta_value='3'";
-        $dados           = $wpdb->get_results($query, ARRAY_A);
+
+        $query = "select post_id from " . self::$extension . "postmeta where meta_key = 'opcaoDeEmail' and meta_value='3'";
+
+        $dados = $wpdb->get_results($query, ARRAY_A);
         foreach ($dados as $d):
-            self::pegaTexto($d['post_id']);
+
+            $queryOptions = "select * from wptb_postmeta where post_id = '" . $d['post_id'] . "' and meta_key = 'opcaoDeEmailData'";
+            $xx           = $wpdb->get_results($queryOptions, ARRAY_A);
+            $data_        = $xx[0]['meta_value'];
+            $ano          = date("Y", $data_);
+            $mes          = date("m", $data_);
+            $dia          = date("d", $data_);
+            $ddata        = "$ano-$mes-$dia";
+            $hoje         = date("Y-m-d");
+
+            if ($ddata === $hoje){
+                //echo "mensagem de hoje";
+            } else{
+                //echo "sem mensagem hoje";
+                self::$envia = 0;
+                return;
+            }
+
+            $data = self::pegaTexto($d['post_id']);
         endforeach;
-        
-        return self::$texto;//print_r(self::$texto);
+        return self::$texto; //print_r(self::$texto);
     }
-
-
-
-
-
 
 
 
@@ -73,15 +79,10 @@ class Emails {
         global $wpdb;
         self::$extension = $wpdb->prefix;
         $query           = "select * from  " . self::$extension . "posts where id=$id";
-        $dados         = $wpdb->get_results($query, ARRAY_A);
-        
+        $dados           = $wpdb->get_results($query, ARRAY_A);
+
         self::$texto[] = array("id" => $dados[0]['ID'], "conteudo" => $dados[0]['post_content'], "titulo" => $dados[0]['post_title']);
     }
-
-
-
-
-
 
 
 
@@ -90,11 +91,6 @@ class Emails {
     static public function EnvioDeEmails() {
         return self::Aniversario();
     }
-
-
-
-
-
 
 
 
@@ -113,9 +109,4 @@ class Emails {
 
 
 
-
-
-
-
-
-}
+    }

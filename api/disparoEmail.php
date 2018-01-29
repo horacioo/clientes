@@ -9,9 +9,9 @@ use Clientes\clientes as cliente;
 
 /* * *****start dos processos******* */
 EnviaAniversario();
-sleep(10);
+sleep(3);
 EnvioAgendado();
-sleep(10);
+sleep(3);
 /* * ******************************* */
 
 function EnviaAniversario() {
@@ -59,8 +59,10 @@ function EnvioAgendado() {
                     print_r($e);
                     if (is_array($texto)){
                         foreach ($texto as $t):
-                            $res = enviaEmail($t['titulo'], $t['conteudo'], $e['email'], $c['nome']);
-                            salvaDados($c['id'], $e['id'], $t['id'], 3, $res);
+                            if (em::$envia == 1):
+                                $res = enviaEmail($t['titulo'], $t['conteudo'], $e['email'], $c['nome']);
+                                salvaDados($c['id'], $e['id'], $t['id'], 3, $res);
+                            endif;
                         endforeach;
                      }
                 endforeach;
@@ -83,11 +85,10 @@ function enviaEmail($titulo = '', $conteudo = '', $email = '', $nome = '') {
     $headers[] = 'From: Regisepenna corretora de seguros <contato@regisepennaseguros.com.br>';
     $headers[] = 'Reply-To: Regis e Penna corretora de seguros <contato@regisepennaseguros.com.br>';
     /*
-      $headers [] = "From: Regisepenna corretora de seguros <contato@regisepennaseguros.com.br>\r\n";
+
       $headers [] = "Reply-To: Regis e Penna corretora de seguros <contato@regisepennaseguros.com.br>\r\n";
       $headers [] = "Return-Path: contato@regisepennaseguros.com.br\r\n";
       $headers [] = "MIME-Version: 1.0\r\n";
-      $headers [] = "Content-Type: text/html; charset=UTF-8\r\n";
       $headers [] = "X-Priority: 3\r\n";
       $headers [] = "X-Mailer: PHP" . phpversion() . "\r\n";
      */
