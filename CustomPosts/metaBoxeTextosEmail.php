@@ -47,15 +47,17 @@ function ConfiguracoesEmailEnvioCliente() {
     } else{
         $agendada = time();
     }
-    
-   
     ?>
     <div class="metaboxes">
         <p><input type="radio" name=email[email_setting] value='1' <?php if ($opcaoEmail == "1"){ ?>checked='checked'<?php } ?> >aniversário do cliente</p>
         <p><input type="radio" name=email[email_setting] value='2' <?php if ($opcaoEmail == "2"){ ?>checked='checked'<?php } ?> >enviar este email quando o cliente se cadastrar</p>
         <p><input type="radio" name=email[email_setting] value='3' <?php if ($opcaoEmail == "3"){ ?>checked='checked'<?php } ?> >enviar no dia <input type='date' value="<?php echo date("Y-m-d", $agendada); ?>" name=email[DataEnvio] style='width: 138px;' ></p>
         <p><input type="radio" name=email[email_setting] value='4' <?php if ($opcaoEmail == "4"){ ?>checked='checked'<?php } ?> >desativar este email</p>
-           <p><!--<input type="radio" name=email[email_setting] value='5-->enviar para o grupo:</p>
+
+
+
+
+                            <p><!--<input type="radio" name=email[email_setting] value='5'>--> enviar para o grupo:</p>
         <ul>
             <?php
             $dados = DataBase::ListaGeral(array("tabela" => "grupos"));
@@ -80,6 +82,10 @@ function salva_dados_email() {
     global $post;
     $dados = $_POST['email'];
 
+    $grupos = serialize($dados['clientegrupos']);
+
+    update_post_meta($post->ID, "grupo", $grupos);
+
     switch ($dados['email_setting']):
         case 1: Aniversario($dados);
             break;
@@ -89,10 +95,14 @@ function salva_dados_email() {
             break;
         case 4:Desativar($dados);
             break;
-        case 5:DiasApos($dados);
+        case 5:grupo($dados);
             break;
-        case 6:EnviarAgora($dados);
-            break;
+    /*
+      case 5:DiasApos($dados);
+      break;
+      case 6:EnviarAgora($dados);
+      break;
+     */
     endswitch;
 }
 
@@ -166,6 +176,22 @@ function EnviarAgora($x) {
     if (isset($x['email_setting'])):
         global $post;
         update_post_meta($post->ID, 'opcaoDeEmail', sanitize_text_field($x['email_setting']));
+    endif;
+}
+
+
+
+
+
+function grupo($x) {
+    if (isset($x['email_setting'])):
+
+        /* global $post;      
+          $grupos = json_encode($x['clientegrupos']);
+          update_post_meta($post->ID, 'opcaoDeEmail', sanitize_text_field($x['email_setting']));
+          update_post_meta($post->ID, 'opcaoDeEmail', sanitize_text_field($x['email_setting']));
+         */
+        exit();
     endif;
 }
 

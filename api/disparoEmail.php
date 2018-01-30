@@ -3,15 +3,17 @@
 require_once '../../../../wp-config.php';
 require_once '../include/clientes.php';
 require_once '../include/Emails.php';
+require_once '../include/grupos.php';
 
 use emailsProcessosEDados\Emails as em;
 use Clientes\clientes as cliente;
+use Grupos\grupos as gr;
 
 /* * *****start dos processos******* */
 EnviaAniversario();
-sleep(3);
+sleep(1);
 EnvioAgendado();
-sleep(3);
+sleep(1);
 /* * ******************************* */
 
 function EnviaAniversario() {
@@ -33,15 +35,39 @@ function EnviaAniversario() {
                 foreach ($email as $e):
                     if (is_array($textos)):
                         foreach ($textos as $t):
-                            $res = enviaEmail($t['titulo'], $t['conteudo'], $e['email'], $c['nome']);
-                            //echo "resuultado = $res";
-                            salvaDados($c['id'], $e['id'], $t['id'], $tipo, $res);
+                            /******************************************************** */
+                            $passa = VerificaGrupos($c['id'], $t['id']);
+                            if ($passa === TRUE) {
+                                exit("<hr>beleza, passa e envia email<hr>");
+                                $res = enviaEmail($t['titulo'], $t['conteudo'], $e['email'], $c['nome']);
+                                salvaDados($c['id'], $e['id'], $t['id'], $tipo, $res);
+                            }
+                            else
+                            {echo "cliente não pertence ao grupo";}
+                            /****************************************************** */
                         endforeach;
                     endif;
                 endforeach;
             endif;
         }
     endif;
+}
+
+
+
+
+
+function VerificaGrupos($cliente, $idTexto) {
+    $pessoasGRupos = gr::gruposClientes($idTexto);
+    if (is_array($pessoasGRupos)) {
+        if (in_array($cliente, $pessoasGRupos)) {
+            return TRUE;
+        } else {
+            return FALSE;
+        }
+    } else {
+        return TRUE;
+    }
 }
 
 
@@ -56,15 +82,22 @@ function EnvioAgendado() {
             $email = em::EmailCliente($c['id']);
             if (is_array($email)):
                 foreach ($email as $e):
-                    ///print_r($e);
-                    if (is_array($texto)){
+                    if (is_array($texto)) {
                         foreach ($texto as $t):
                             if (em::$envia == 1):
+                                 /******************************************************** */
+                            $passa = VerificaGrupos($c['id'], $t['id']);
+                            if ($passa === TRUE) {
+                                exit("<hr>beleza, passa e envia email<hr>");
                                 $res = enviaEmail($t['titulo'], $t['conteudo'], $e['email'], $c['nome']);
-                                salvaDados($c['id'], $e['id'], $t['id'], 3, $res);
+                                salvaDados($c['id'], $e['id'], $t['id'], $tipo, $res);
+                            }
+                            else
+                            {echo "cliente não pertence ao grupo";}
+                            /****************************************************** */
                             endif;
                         endforeach;
-                     }
+                    }
                 endforeach;
             endif;
         endforeach;
@@ -94,9 +127,9 @@ function enviaEmail($titulo = '', $conteudo = '', $email = '', $nome = '') {
      */
 
     $status = wp_mail($to, $subject, $content, $headers);
-    if ($status == TRUE){
+    if ($status == TRUE) {
         return 1;
-    } else{
+    } else {
         return 0;
         echo"deu erro no envio do email " . $status;
     }
