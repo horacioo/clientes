@@ -38,7 +38,7 @@ function EnviaAniversario() {
                             /******************************************************** */
                             $passa = VerificaGrupos($c['id'], $t['id']);
                             if ($passa === TRUE) {
-                                exit("<hr>beleza, passa e envia email<hr>");
+                                ///exit("<hr>beleza, passa e envia email<hr>");
                                 $res = enviaEmail($t['titulo'], $t['conteudo'], $e['email'], $c['nome']);
                                 salvaDados($c['id'], $e['id'], $t['id'], $tipo, $res);
                             }
@@ -88,7 +88,7 @@ function EnvioAgendado() {
                                  /******************************************************** */
                             $passa = VerificaGrupos($c['id'], $t['id']);
                             if ($passa === TRUE) {
-                                exit("<hr>beleza, passa e envia email<hr>");
+                                ///exit("<hr>beleza, passa e envia email<hr>");
                                 $res = enviaEmail($t['titulo'], $t['conteudo'], $e['email'], $c['nome']);
                                 salvaDados($c['id'], $e['id'], $t['id'], $tipo, $res);
                             }
