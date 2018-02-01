@@ -10,6 +10,7 @@ class Emails
     public static $usuarios;
     public static $envia     = 1;
 
+    
     static public function EnvioAposCadastro() {
         global $wpdb;
         self::$extension = $wpdb->prefix;
@@ -58,9 +59,9 @@ class Emails
             $ddata        = "$ano-$mes-$dia";
             $hoje         = date("Y-m-d");
 
-            if ($ddata === $hoje){
+            if ($ddata === $hoje) {
                 //echo "mensagem de hoje";
-            } else{
+            } else {
                 //echo "sem mensagem hoje";
                 self::$envia = 0;
                 return;
@@ -106,6 +107,29 @@ class Emails
     }
 
 
+
+
+
+    public static function TextosParaSeremEnviadosAposDias($id) {
+        if(!is_null($id)):
+            global $wpdb;
+            $sel = "select * from ".$wpdb->prefix."posts where ID = '$id'";
+            $dados = $wpdb->get_row($sel,ARRAY_A); 
+            
+            $dados['metas']= self::Metas($dados['ID']); //$metas;
+            
+            if(!empty($dados)):
+                 return $dados;
+            endif;
+        endif;
+    }
+
+
+    
+    private static function Metas($id){
+         $metas= get_post_meta($id); 
+         return $metas;
+    }
 
 
 

@@ -42,22 +42,22 @@ function ConfiguracoesEmailEnvioCliente() {
     $DadosEmail = get_post_meta($post->ID, "opcaoDeEmail");
     $opcaoEmail = $DadosEmail[0];
     $DataEmail  = get_post_meta($post->ID, "opcaoDeEmailData");
-    if (isset($DataEmail[0])){
+    if (isset($DataEmail[0])) {
         $agendada = $DataEmail[0];
-    } else{
+    } else {
         $agendada = time();
     }
     ?>
     <div class="metaboxes">
-        <p><input type="radio" name=email[email_setting] value='1' <?php if ($opcaoEmail == "1"){ ?>checked='checked'<?php } ?> >aniversário do cliente</p>
-        <p><input type="radio" name=email[email_setting] value='2' <?php if ($opcaoEmail == "2"){ ?>checked='checked'<?php } ?> >enviar este email quando o cliente se cadastrar</p>
-        <p><input type="radio" name=email[email_setting] value='3' <?php if ($opcaoEmail == "3"){ ?>checked='checked'<?php } ?> >enviar no dia <input type='date' value="<?php echo date("Y-m-d", $agendada); ?>" name=email[DataEnvio] style='width: 138px;' ></p>
-        <p><input type="radio" name=email[email_setting] value='4' <?php if ($opcaoEmail == "4"){ ?>checked='checked'<?php } ?> >desativar este email</p>
+        <p><input type="radio" name=email[email_setting] value='1' <?php if ($opcaoEmail == "1") { ?>checked='checked'<?php } ?> >aniversário do cliente</p>
+        <p><input type="radio" name=email[email_setting] value='2' <?php if ($opcaoEmail == "2") { ?>checked='checked'<?php } ?> >enviar este email quando o cliente se cadastrar</p>
+        <p><input type="radio" name=email[email_setting] value='3' <?php if ($opcaoEmail == "3") { ?>checked='checked'<?php } ?> >enviar no dia <input type='date' value="<?php echo date("Y-m-d", $agendada); ?>" name=email[DataEnvio] style='width: 138px;' ></p>
+        <p><input type="radio" name=email[email_setting] value='4' <?php if ($opcaoEmail == "4") { ?>checked='checked'<?php } ?> >desativar este email</p>
 
 
 
 
-                            <p><!--<input type="radio" name=email[email_setting] value='5'>--> enviar para o grupo:</p>
+                                    <p><!--<input type="radio" name=email[email_setting] value='5'>--> enviar para o grupo:</p>
         <ul>
             <?php
             $dados = DataBase::ListaGeral(array("tabela" => "grupos"));
@@ -66,7 +66,7 @@ function ConfiguracoesEmailEnvioCliente() {
                 <li class="gruposCheck"><input type="checkbox" name=email[clientegrupos][] value="<?php echo $x['id'] ?>"> <?php echo $x['nome']; ?></li>
             <?php endforeach; ?>
         </ul>
-        <p><input type="radio" name=email[email_setting] value='5' <?php if ($opcaoEmail == "5"){ ?>checked='checked'<?php } ?> >enviar após <input name=email[diasApos] value="<?php echo $diasApos[0]; ?>" type='number' max="365" style='width: 59px;' > dias após o cadastro</p>
+        <p><input type="radio" name=email[email_setting] value='5' <?php if ($opcaoEmail == "5") { ?>checked='checked'<?php } ?> >enviar <input name=email[diasApos] value="<?php echo $diasApos[0]; ?>" type='number' max="365" style='width: 59px;' > dias após o cadastro</p>
 
     </div>
     <?php
@@ -80,6 +80,9 @@ add_action('save_post', 'salva_dados_email');
 
 function salva_dados_email() {
     global $post;
+    
+    //print_r($_POST['email']);
+    
     $dados = $_POST['email'];
 
     $grupos = serialize($dados['clientegrupos']);
@@ -95,15 +98,10 @@ function salva_dados_email() {
             break;
         case 4:Desativar($dados);
             break;
-        case 5:grupo($dados);
+        case 5:envioApos($dados);
             break;
-    /*
-      case 5:DiasApos($dados);
-      break;
-      case 6:EnviarAgora($dados);
-      break;
-     */
     endswitch;
+    
 }
 
 
@@ -182,16 +180,12 @@ function EnviarAgora($x) {
 
 
 
-
-function grupo($x) {
+/****aqui eu vou enviar aos clientes que entraram no sistema após x dias**/
+function envioApos($x) {
     if (isset($x['email_setting'])):
-
-        /* global $post;      
-          $grupos = json_encode($x['clientegrupos']);
-          update_post_meta($post->ID, 'opcaoDeEmail', sanitize_text_field($x['email_setting']));
-          update_post_meta($post->ID, 'opcaoDeEmail', sanitize_text_field($x['email_setting']));
-         */
-        exit();
+        global $post;
+        update_post_meta($post->ID, 'diasApos' , sanitize_text_field($x['diasApos']) );
+        update_post_meta($post->ID, 'opcaoDeEmail', sanitize_text_field($x['email_setting']));
     endif;
 }
 

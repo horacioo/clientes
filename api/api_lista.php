@@ -13,6 +13,9 @@ if (is_numeric($dados['param'])) {
     Lista($dados);
 }
 
+
+
+
 function retorno($dados = '') {
     global $wpdb;
     $query         = "select * from clientes where id='" . $dados['param'] . "'";
