@@ -11,10 +11,17 @@ use Clientes\clientes as cliente;
 use Grupos\grupos as gr;
 
 
-/* * *****start dos processos******* */
-exit("teste");
+
+em::$Email_Return_Path  = "contato@regisepennaseguros.com.br";
+em::$Email_from         = "contato@regisepennaseguros.com.br";
+em::$Email_from_name    = "Regisepenna corretora de seguros";
+em::$Email_reply_to     = "contato@regisepennaseguros.com.br";
+em::$Email_replyto_name = "Regis e Penna corretora de seguros";
+
+
 EnviaAniversario();
-/* * ******************************* */
+
+
 function EnviaAniversario() {
     $clientes = cliente::Aniversario();
     $textos   = em::EnvioAniversario();
@@ -28,8 +35,22 @@ function EnviaAniversario() {
                     if (is_array($textos)):
                         foreach ($textos as $t):
                             /*                             * ****************************************************** */
-                            $res = enviaEmail($c['nome'] . ", " . $t['titulo'], $t['conteudo'], $e['email'], $c['nome']);
-                            salvaDados($c['id'], $e['id'], $t['id'], $tipo, $res);
+                            gr::$grupo_id_cliente = $c['id'];
+                            gr::$grupo_id_texto   = $t['id'];
+                            gr::VerificaGrupos();
+                            if (gr::$grupo_pertence_ao_grupo == 1):
+                                /*                                 * ************ */
+                                em::$email          = $e['email'];
+                                em::$titulo         = $t['titulo'];
+                                em::$conteudo_email = $t['conteudo'];
+                                em::$nome_cliente   = $c['nome'];
+                                em::$id_cliente     = $c['id'];
+                                em::$id_email       = $e['id'];
+                                em::$id_texto       = $t['id'];
+                                em::$tipo_do_email  = $tipo;
+                                em::DisparaEmail();
+                            /*                             * ******* */
+                            endif;
                             /*                             * ****************************************************** */
                         endforeach;
                     endif;
@@ -38,51 +59,3 @@ function EnviaAniversario() {
         }
     endif;
 }
-
-
-function enviaEmail($titulo = '', $conteudo = '', $email = '', $nome = '') {
-    $to      = $email;
-    $subject = $titulo;
-    $content = Reconstroi($conteudo, $nome);
-    $headers = "MIME-Version: 1.1\r\n";
-    $headers .= "Content-Type: text/html; charset=UTF-8 \r\n";
-    $headers .= "From: Regisepenna corretora de seguros <contato@regisepennaseguros.com.br>  \r\n"; // remetente
-    $headers .= 'Reply-To: Regis e Penna corretora de seguros <contato@regisepennaseguros.com.br>';
-    $headers .= "Return-Path: contato@regisepennaseguros.com.br  \r\n"; // return-path
-    $headers .= "MIME-Version: 1.0\r\n";
-    $headers .= "X-Priority: 3\r\n";
-    $headers .= "X-Mailer: PHP" . phpversion() . "\r\n";
-    $status  = mail($to, $subject, $content, $headers);
-    print_r($status);
-    if ($status == TRUE) {
-        return 1;
-    } else {
-        return 0;
-        echo"deu erro no envio do email " . $status;
-    }
-}
-
-
-
-
-
-function Reconstroi($conteudo = '', $nome = '') {
-    $nomeArray = explode(" ", $nome);
-    $conteudo  = str_replace("%nome%", $nomeArray[0], $conteudo);
-    return $conteudo;
-}
-
-
-
-
-
-function salvaDados($cliente = '', $email = '', $texto = '', $tipoEmail = '', $res = '') {
-    global $wpdb;
-    global $espera;
-    $insert = "insert into `logemail`(cliente,email,texto,tipoEmail,resultado)values(" . $cliente . "," . $email . "," . $texto . "," . $tipoEmail . "," . $res . ")";
-    $wpdb->query($insert);
-}
-
-
-
-

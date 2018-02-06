@@ -2,6 +2,8 @@
 
 namespace emailsProcessosEDados;
 
+use Grupos\grupos as grupos;
+
 class Emails
     {
 
@@ -10,7 +12,6 @@ class Emails
     public static $usuarios;
     public static $envia     = 1;
 
-    
     static public function EnvioAposCadastro() {
         global $wpdb;
         self::$extension = $wpdb->prefix;
@@ -20,6 +21,11 @@ class Emails
             self::pegaTexto($d['post_id']);
         endforeach;
     }
+
+
+
+
+
 
 
 
@@ -35,6 +41,11 @@ class Emails
             self::pegaTexto($d['post_id']);
         endforeach;
     }
+
+
+
+
+
 
 
 
@@ -76,6 +87,11 @@ class Emails
 
 
 
+
+
+
+
+
     static private function pegaTexto($id) {
         global $wpdb;
         self::$extension = $wpdb->prefix;
@@ -89,9 +105,19 @@ class Emails
 
 
 
+
+
+
+
+
     static public function EnvioDeEmails() {
         return self::Aniversario();
     }
+
+
+
+
+
 
 
 
@@ -110,26 +136,190 @@ class Emails
 
 
 
+
+
+
+
+
     public static function TextosParaSeremEnviadosAposDias($id) {
-        if(!is_null($id)):
+        if (!is_null($id)):
             global $wpdb;
-            $sel = "select * from ".$wpdb->prefix."posts where ID = '$id'";
-            $dados = $wpdb->get_row($sel,ARRAY_A); 
-            
-            $dados['metas']= self::Metas($dados['ID']); //$metas;
-            
-            if(!empty($dados)):
-                 return $dados;
+            $sel   = "select * from " . $wpdb->prefix . "posts where ID = '$id'";
+            $dados = $wpdb->get_row($sel, ARRAY_A);
+
+            $dados['metas'] = self::Metas($dados['ID']); //$metas;
+
+            if (!empty($dados)):
+                return $dados;
             endif;
         endif;
     }
 
 
-    
-    private static function Metas($id){
-         $metas= get_post_meta($id); 
-         return $metas;
+
+
+
+
+
+
+
+
+    private static function Metas($id) {
+        $metas = get_post_meta($id);
+        return $metas;
     }
+
+
+
+
+
+
+
+
+
+
+    public static $Email_reply_to;
+    public static $Email_replyto_name;
+    public static $Email_from_name;
+    public static $Email_from;
+    public static $Email_Return_Path;
+    public static $nome_cliente;
+    public static $email;
+    public static $conteudo_email;
+    public static $titulo;
+    public static $status;
+
+    public static function DisparaEmail() {
+        self::Reconstroi();
+        $headers = "MIME-Version: 1.1\r\n";
+        $headers .= "Content-Type: text/html; charset=UTF-8 \r\n";
+        $headers .= "From: " . self::$Email_from_name . " <" . self::$Email_from . ">  \r\n"; // remetente
+        $headers .= 'Reply-To: ' . self::$Email_replyto_name . ' <' . self::$Email_reply_to . '>';
+        $headers .= "Return-Path: " . self::$Email_Return_Path . "  \r\n"; // return-path
+        $headers .= "MIME-Version: 1.0\r\n";
+        $headers .= "X-Priority: 3\r\n";
+        $headers .= "X-Mailer: PHP" . phpversion() . "\r\n";
+        $status  = mail(self::$email, self::$titulo, self::$conteudo_email, $headers);
+        if ($status == TRUE) {
+            echo "\r\n e-mail enviado para " . self::$email;
+            self::$retorno_email = $status;
+            self::$status        = 1;
+            self::salva_dados();
+            return 1;
+        } else {
+            self::$status = 0;
+            self::salva_dados();
+            return 0;
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+    public static $id_cliente;
+    public static $id_email;
+    public static $id_texto;
+    public static $tipo_do_email;
+    public static $retorno_email;
+
+    private static function salva_dados() {
+        global $wpdb;
+        $insert = "insert into `logemail`(cliente,email,texto,tipoEmail,resultado)values(" . self::$id_cliente . "," . self::$id_email . "," . self::$id_texto . "," . self::$tipo_do_email . "," . self::$retorno_email . ")";
+        //echo "\r\n \r\n \r\n $insert \r\n";
+        $wpdb->query($insert);
+    }
+
+
+
+
+
+
+
+
+
+
+    /*     * *  
+      eu mando o conteúdo e um array, nesse array, pode ter nome, data, e outros valores...
+      mandar o array da seguinte forma array("nome"=>"x","idade"=>"y", "informação"=>"z")
+      e por aí vai...
+     * */
+
+    private static function Reconstroi($conteudo = '') {
+        $nome                 = self::$nome_cliente;
+        $conteudo             = self::$conteudo_email;
+        self::greetings();
+        /*         * ******************************************** */
+        $nomeArray            = explode(" ", ucfirst($nome));
+        /*         * ******************************************** */
+        self::$conteudo_email = str_replace("%nome%", $nomeArray[0], self::$conteudo_email);
+        /*         * ******************************************** */
+        self::$conteudo_email = str_replace("%saudacao%", self::$saudacao, self::$conteudo_email);
+        /*         * ******************************************** */
+        self::$conteudo_email = ucfirst(self::$conteudo_email);
+        /*         * ******************************************** */
+        
+        self::$titulo         = self::$nome_cliente . " - " . self::$titulo . "";
+    }
+
+
+
+
+
+
+
+
+
+
+    private static $saudacao;
+
+    private static function greetings() {
+        $hora           = date("H");
+        self::$saudacao = "olá";
+        switch ($hora):
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+            case 6:
+            case 7:
+            case 8:
+            case 9:
+            case 10:
+            case 11:
+            case 12: self::$saudacao = "bom dia";
+                break;
+            case 13:
+            case 14:
+            case 15:
+            case 16:
+            case 17:self::$saudacao = "boa tarde";
+                break;
+            case 18: self::$saudacao = "boa noite";
+                break;
+            case 19:
+            case 20:
+            case 21:
+            case 22:
+            case 23:
+            case 24: self::$saudacao = "bom dia";
+                break;
+            default: self::$saudacao = "olá  ";
+        endswitch;
+    }
+
+
+
+
+
+
+
 
 
 

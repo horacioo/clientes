@@ -1,5 +1,5 @@
 <?php
-
+namespace MeuBancoDeDados;
 class DataBase {
     /***na entrada, vai o nome do formulário, uma string * */
     public static $entrada;   
@@ -121,7 +121,6 @@ class DataBase {
             $prepare        = $wpdb->prepare(self::$consulta, $valuesx);
      
             self::$consulta = $wpdb->last_query; //$sel;
-            
             
             $wpdb->query($prepare);
             $id = $wpdb->insert_id;

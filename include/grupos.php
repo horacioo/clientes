@@ -24,6 +24,11 @@ class grupos
 
 
 
+
+
+
+
+
     /*     * * 
       aqui eu vou, com base no id do grupo, vou retornar todos os clientes pertecentes ao mesmo
      * */
@@ -53,6 +58,11 @@ class grupos
 
 
 
+
+
+
+
+
     /*     * aqui eu retornno uma lista dos grupos existentes */
 
     static public function listadeGrupos() {
@@ -61,6 +71,40 @@ class grupos
         $lista  = $wpdb->get_results($select, ARRAY_A);
         return $lista;
     }
+
+
+
+
+
+
+
+
+
+
+    static $grupo_id_cliente;
+    static $grupo_id_texto;
+    static $grupo_pertence_ao_grupo;
+
+    static function VerificaGrupos() {
+        $pessoasGRupos = self::gruposClientes(self::$grupo_id_texto); // gr::gruposClientes($idTexto);
+        if (is_array($pessoasGRupos)) {
+            if (in_array($cliente, $pessoasGRupos)) {
+                self::$grupo_pertence_ao_grupo = 1;
+                return TRUE;
+            } else {
+                self::$grupo_pertence_ao_grupo = 0;
+                return FALSE;
+            }
+        } else {
+            self::$grupo_pertence_ao_grupo = 1;
+            return TRUE;
+        }
+    }
+
+
+
+
+
 
 
 

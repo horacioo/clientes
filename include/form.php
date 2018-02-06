@@ -2,7 +2,9 @@
 
 namespace FormulariosHTml;
 
-class htmlRender extends \DataBase {
+use MeuBancoDeDados\DataBase as banco;
+
+class htmlRender {
 
     public static $js_Plugin = WP_PLUGIN_URL . "/clientes/js/";
     public static $dadosCliente;
@@ -187,7 +189,7 @@ class htmlRender extends \DataBase {
      *  */
 
     public static function SalvaClientes() {
-        self::$campos = ['nome', 'cpf', 'rg', 'dataExpedicao', 'endereco', 'dataNascimento', 'ip'];
+        self::$campos = ['nome', 'cpf', 'rg', 'dataExpedicao', 'dataNascimento', 'ip'];
         self::$tabela = 'clientes';
         $dados        = $_POST[self::$entrada];
         $dados['ip']  = md5($_SERVER["REMOTE_ADDR"]);
@@ -201,7 +203,7 @@ class htmlRender extends \DataBase {
             }
         }
 
-        self::Salva($dados);
+        banco::Salva($dados); //banco::Salva($dados);
     }
 
 
@@ -222,12 +224,12 @@ class htmlRender extends \DataBase {
         self::$tabela = 'email';
 
         if (!is_array($_POST[self::$entrada]['email'])) {
-            self::Salva($_POST[$entrada]);
+            banco::Salva($_POST[$entrada]);
         } else {
             foreach ($_POST[self::$entrada]['email'] as $x):
                 $z['email']         = $x;
                 self::$emailLista[] = $x;
-                self::Salva($z);
+                banco::Salva($z);
             endforeach;
         }
     }
@@ -249,11 +251,11 @@ class htmlRender extends \DataBase {
         self::$campos = ['telefone'];
         self::$tabela = 'telefone';
         if (!is_array($_POST[self::$entrada]['telefone'])) {
-            self::Salva($_POST['cliente']);
+            banco::Salva($_POST['cliente']);
         } else {
             foreach ($_POST[self::$entrada]['telefone'] as $x):
                 $z['telefone'] = $x;
-                self::Salva($z);
+                banco::Salva($z);
             endforeach;
         }
     }
@@ -282,7 +284,7 @@ class htmlRender extends \DataBase {
 
                 //print_r($z);echo "<br>";
 
-                self::Salva($z);
+                banco::Salva($z);
             endforeach;
         }
         //echo "associação " . self::$consulta;
@@ -312,7 +314,7 @@ class htmlRender extends \DataBase {
 
                 //print_r($z);echo "<br>";
 
-                self::Salva($z);
+                banco::Salva($z);
             endforeach;
         }
     }
@@ -337,7 +339,7 @@ class htmlRender extends \DataBase {
             foreach ($_POST[$entrada]['clientegrupos'] as $x):
                 $rr['grupos']   = $x;
                 $rr['clientes'] = self::$array['clientes'][0];
-                self::Salva($rr);
+                banco::Salva($rr);
             endforeach;
         }
     }
@@ -357,7 +359,7 @@ class htmlRender extends \DataBase {
         self::$tabela     = 'contato';
         $dados['data']    = data; //$_SESSION["entrada"];
         $dados['cliente'] = self::$array['clientes'][0];
-        self::Salva($dados);
+        banco::Salva($dados);
     }
 
 

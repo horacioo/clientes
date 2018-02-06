@@ -13,12 +13,39 @@ use Grupos\grupos as gr;
 $espera = 0;
 $pro    = 01;
 /* * *****start dos processos******* */
-EnviaAniversario();
-sleep(10);
-EnvioAgendado();
-sleep(10);
-EnvioClientesNovos();
-sleep(10);
+
+em::$Email_Return_Path  = "contato@regisepennaseguros.com.br";
+em::$Email_from         = "contato@regisepennaseguros.com.br";
+em::$Email_from_name    = "Regisepenna corretora de seguros";
+em::$Email_reply_to     = "contato@regisepennaseguros.com.br";
+em::$Email_replyto_name = "Regis e Penna corretora de seguros";
+
+
+$x     = 0;
+$total = 30;
+
+echo"<br>". date("H:i:s");
+
+while ($x < $total):
+
+    EnviaAniversario();
+    sleep(5);
+    EnvioAgendado();
+    sleep(5);
+    EnvioClientesNovos();
+    sleep(5);
+
+    $x++;
+    sleep(30);
+
+    echo"<br>processo $x realizado";
+endwhile;
+
+echo"<br>". date("H:i:s");
+
+
+
+
 /* * ******************************* */
 
 function EnviaAniversario() {
@@ -34,13 +61,22 @@ function EnviaAniversario() {
                     if (is_array($textos)):
                         foreach ($textos as $t):
                             /*                             * ****************************************************** */
-                            $passa = VerificaGrupos($c['id'], $t['id']);
-                            if ($passa === TRUE) {
-                                $res = enviaEmail($c['nome'] . ", " . $t['titulo'], $t['conteudo'], $e['email'], $c['nome']);
-                                salvaDados($c['id'], $e['id'], $t['id'], $tipo, $res);
-                            } else {
-                                
-                            }
+                            gr::$grupo_id_cliente = $c['id'];
+                            gr::$grupo_id_texto   = $t['id'];
+                            gr::VerificaGrupos();
+                            if (gr::$grupo_pertence_ao_grupo == 1):
+                                /*                                 * ************ */
+                                em::$email          = $e['email'];
+                                em::$titulo         = $t['titulo'];
+                                em::$conteudo_email = $t['conteudo'];
+                                em::$nome_cliente   = $c['nome'];
+                                em::$id_cliente     = $c['id'];
+                                em::$id_email       = $e['id'];
+                                em::$id_texto       = $t['id'];
+                                em::$tipo_do_email  = $tipo;
+                                em::DisparaEmail();
+                            /*                             * ******* */
+                            endif;
                             /*                             * ****************************************************** */
                         endforeach;
                     endif;
@@ -49,6 +85,11 @@ function EnviaAniversario() {
         }
     endif;
 }
+
+
+
+
+
 
 
 
@@ -65,15 +106,25 @@ function EnvioAgendado() {
                     if (is_array($texto)) {
                         foreach ($texto as $t):
                             if (em::$envia == 1):
-                                /*                                 * ****************************************************** */
-                                $passa = VerificaGrupos($c['id'], $t['id']);
-                                if ($passa === TRUE) {
-                                    $res = enviaEmail($t['titulo'], $t['conteudo'], $e['email'], $c['nome']);
-                                    salvaDados($c['id'], $e['id'], $t['id'], $tipo, $res);
-                                } else {
-                                    ////echo "cliente não pertence ao grupo";
-                                }
-                            /*                             * ********************************************************* */
+
+                                gr::$grupo_id_cliente = $c['id'];
+                                gr::$grupo_id_texto   = $t['id'];
+                                gr::VerificaGrupos();
+
+                                if (gr::$grupo_pertence_ao_grupo == 1):
+                                    /*                                     * ************ */
+                                    em::$email          = $e['email'];
+                                    em::$titulo         = $t['titulo'];
+                                    em::$conteudo_email = $t['conteudo'];
+                                    em::$nome_cliente   = $c['nome'];
+                                    em::$id_cliente     = $c['id'];
+                                    em::$id_email       = $e['id'];
+                                    em::$id_texto       = $t['id'];
+                                    em::$tipo_do_email  = 3;
+                                    em::DisparaEmail();
+                                /*                                 * ******* */
+                                endif;
+
                             endif;
                         endforeach;
                     }
@@ -87,13 +138,17 @@ function EnvioAgendado() {
 
 
 
+
+
+
+
+
+/* * quando na administração for informado que o e-mail será enviado após X dias, é esse método que será responsável pelo envio do e-mail */
+
 function EnvioClientesNovos() {
     global $wpdb;
     $sel2  = "SELECT * FROM " . $wpdb->prefix . "postmeta WHERE meta_key = 'diasApos'";
     $dados = $wpdb->get_results($sel2, ARRAY_A);
-
-
-
     foreach ($dados as $d)://estou criando um laço de textos, e dentro dele, chamando os clientes que entraram nessas respectivas datas
         $dias   = $d['meta_value'];
         $textos = em::TextosParaSeremEnviadosAposDias($d['post_id']);
@@ -110,16 +165,25 @@ function EnvioClientesNovos() {
                     $id_do_cliente   = $cl['id'];
                     if (is_array($cl['email'])):
                         foreach ($cl['email'] as $mail):
-                            $email_cliente = $mail['email'];
-                            $id_email      = $mail['id'];
+                            $email_cliente        = $mail['email'];
+                            $id_email             = $mail['id'];
                             /*                             * ****************************************************** */
-                            $passa         = VerificaGrupos($id_do_cliente, $id_do_texto);
-                            if ($passa === TRUE) {
-                                $res = enviaEmail($nome_do_cliente . ", " . $titulo, $conteudo, $email_cliente, $nome_do_cliente);
-                                salvaDados($id_do_cliente, $id_email, $id_do_texto, 5, $res);
-                            } else {
-                                
-                            }
+                            gr::$grupo_id_cliente = $id_do_cliente;
+                            gr::$grupo_id_texto   = $id_do_texto;
+                            gr::VerificaGrupos();
+                            if (gr::$grupo_pertence_ao_grupo == 1):
+                                /*                                 * ************ */
+                                em::$email          = $email_cliente;
+                                em::$titulo         = $titulo;
+                                em::$conteudo_email = $conteudo;
+                                em::$nome_cliente   = $nome_do_cliente;
+                                em::$id_cliente     = $id_do_cliente;
+                                em::$id_email       = $id_email;
+                                em::$id_texto       = $id_do_texto;
+                                em::$tipo_do_email  = 5;
+                                em::DisparaEmail();
+                            /*                             * ******* */
+                            endif;
                         endforeach;
                     endif;
                 endforeach;
@@ -134,88 +198,6 @@ function EnvioClientesNovos() {
 }
 
 
-
-
-
-function VerificaGrupos($cliente, $idTexto) {
-    $pessoasGRupos = gr::gruposClientes($idTexto);
-    if (is_array($pessoasGRupos)) {
-        if (in_array($cliente, $pessoasGRupos)) {
-            return TRUE;
-        } else {
-            return FALSE;
-        }
-    } else {
-        return TRUE;
-    }
-}
-
-
-
-
-
-function enviaEmail($titulo = '', $conteudo = '', $email = '', $nome = '') {
-
-
-    $to      = $email;
-    $subject = $titulo;
-    $content = Reconstroi($conteudo, $nome);
-    /*
-      $headers[]  = 'Content-Type: text/html; charset=UTF-8';
-      $headers[]  = 'From: Regisepenna corretora de seguros <contato@regisepennaseguros.com.br>';
-      $headers[]  = 'Reply-To: Regis e Penna corretora de seguros <contato@regisepennaseguros.com.br>';
-      $headers [] = "Return-Path: contato@regisepennaseguros.com.br\r\n";
-      $headers [] = "MIME-Version: 1.0\r\n";
-      $headers [] = "X-Priority: 3\r\n";
-      $headers [] = "X-Mailer: PHP" . phpversion() . "\r\n";
-      $status     = wp_mail($to, $subject, $content, $headers);
-      print_r($status);
-      if ($status == TRUE) {
-      return 1;
-      } else {
-      return 0;
-      echo"deu erro no envio do email " . $status;
-      }
-     */
-    $headers = "MIME-Version: 1.1\r\n";
-    $headers .= "Content-Type: text/html; charset=UTF-8 \r\n";
-    $headers .= "From: Regisepenna corretora de seguros <contato@regisepennaseguros.com.br>  \r\n"; // remetente
-    $headers .= 'Reply-To: Regis e Penna corretora de seguros <contato@regisepennaseguros.com.br>';
-    $headers .= "Return-Path: contato@regisepennaseguros.com.br  \r\n"; // return-path
-    $headers .= "MIME-Version: 1.0\r\n";
-    $headers .= "X-Priority: 3\r\n";
-    $headers .= "X-Mailer: PHP" . phpversion() . "\r\n";
-    $status  = mail($to, $subject, $content, $headers);
-    //print_r($status);
-    if ($status == TRUE) {
-        return 1;
-    } else {
-        return 0;
-        echo"deu erro no envio do email " . $status;
-    }
-}
-
-
-
-
-
-function Reconstroi($conteudo = '', $nome = '') {
-    $nomeArray = explode(" ", $nome);
-    $conteudo  = str_replace("%nome%", $nomeArray[0], $conteudo);
-    return $conteudo;
-}
-
-
-
-
-
-function salvaDados($cliente = '', $email = '', $texto = '', $tipoEmail = '', $res = '') {
-    global $wpdb;
-    global $espera;
-    $insert = "insert into `logemail`(cliente,email,texto,tipoEmail,resultado)values(" . $cliente . "," . $email . "," . $texto . "," . $tipoEmail . "," . $res . ")";
-    $wpdb->query($insert);
-    sleep($espera);
-}
 
 
 
