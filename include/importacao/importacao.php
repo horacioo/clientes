@@ -12,6 +12,7 @@ class importacao
     /*     * *aqui vc vai informar um array com o endereço do arquivo e os campos que deve acessar, também dentro de um array*** */
 
     public static $dados;
+    public static $registro;
 
     public static function abre_arquivo() {
         $arquivo       = self::$dados['endereco'];
@@ -31,106 +32,47 @@ class importacao
                     continue;
                 }
 
-                $registro = array_combine($cabecalho, $linha);
-                $chaves   = array_keys($registro);
+                $registro       = array_combine($cabecalho, $linha);
+                self::$registro = $registro;
 
-
-                $telefone['residencial'] = $registro['DDD'] . " - " . $registro['TelefoneResidencial'];
-                $telefone['comercial'] = $registro['DDD'] . " - " . $registro['TelefoneComercial'];
-                $telefone['celular'] = $registro['DDD'] . " - " . $registro['TelefoneCelular'];
-               
-
-                /*                 * ********cliente********* */
-
-                /*                 * ************************************************ */
-                /*                 * ************************************************ */
-                /*                 * ************************************************ */
-                //////processos de cadastros principais e periféricos
-                foreach ($chaves as $c):
-                    if (in_array($c, $camposCliente)):
-                        $cliente;
-                        if ($c == "dataNascimento") {
-                            $cliente[$c] = date("Y-m-d", strtotime($registro[$c])); //dataNascimento
-                        } else {
-                            $cliente[$c] = strtolower($registro[$c]);
-                        }
-                    endif;
+                $chaves = array_keys($registro);
 
 
 
-
-                endforeach;
-
-                db::$array               = NULL;
-                ////////////////////////
-                db::$tabela              = "estado_civil";
-                db::$campos              = ['estado_civil'];
-                db::Salva(array('estado_civil' => $registro['estado_civil']));
-                ////////////////////////
-                db::$tabela              = 'clientes';
-                db::$campos              = cl::$campos;
-                $cliente['estado_civil'] = db::$array['estado_civil'][0];
-                db::Salva($cliente); //($cliente);
-
-                $cliente_id = db::$array['clientes'][0];
+                db::$array = NULL;
 
 
-
-                /*                 * ********************************************** */
-                /*                 * ********************************************** */
-                //telefone
-                //print_r($registro); echo"<hr><br>";// [DDD] => 13 [TelefoneResidencial]
-                echo "<br>";
-                print_r($telefone);
-                echo "<br>";
-
-                /*                 * ********************************************** */
-                /*                 * ********************************************** */
-                //email
+                /*                 * ************************************** */
+                self::salvaEstadoCivil();
+                /*                 * ************************************** */
+                self::salvaDocumento();
+                /*                 * ************************************** */
+                self::salvaClientes();
+                /*                 * *********************************************** */
+                self::SalvaEstado();
+                /*                 * *********************************************** */
+                self::SalvaCidade();
+                /*                 * *********************************************** */
                 db::$tabela = "email";
                 db::$campos = ['email'];
-                $email      = array();
-                $emails     = explode(";", $registro['E-mail']);
-                if (!empty($emails)):
-                    foreach ($emails as $e):
-                        if (!empty($e)):
-                            //echo $e;
-                            db::Salva(array("email" => $e));
-                        endif;
-                    endforeach;
-                endif;
-                /*                 * ********************************************** */
-                /*                 * ********************************************** */
+                $x          = explode(";", $registro['E-mail']);
+                foreach ($x as $x):
+                    if (!empty($x)):
+                        db::Salva(array('email' => $x));
+                        $cliente    = db::$array['clientes'][0];
+                        $email      = db::$array['email'][0];
+                        db::$tabela = "clientesemail";
+                        db::$campos = ['clientes', 'email'];
+                        db::Salva(array('email' => $email, 'clientes' => $cliente));
+                    endif;
+                endforeach;
 
-
-
-                $meusEmails = db::$array['email'];
-                $novaArray  = array();
-                if (!empty($meusEmails)):
-                    db::$tabela = "clientesemail";
-                    db::$campos = ['clientes', 'email'];
-                    foreach ($meusEmails as $Ee):
-                        $novaArray['email']    = $Ee;
-                        $novaArray['clientes'] = $cliente_id;
-                        db::Salva($novaArray);
-                    endforeach;
-                endif;
-
-
+                /*                 * ************************************** */
                 /*                 * *********************************************** */
-                /*                 * *********************************************** */
-                /*                 * **************** */
-
-
-                /*                 * *********************************************** */
-                /*                 * *********************************************** */
-                /*                 * **************** */
-
-
 
                 $contagem++;
                 $_SESSION['contagem'] = $contagem;
-                if ($contagem >= 3) {
+                if ($contagem >= 4) {
                     exit("<br>");
                 }
 
@@ -150,7 +92,111 @@ class importacao
 
 
 
-    private function sanitizeString($str) {
+    public static function SalvaCidade() {
+        db::$tabela = "cidade";
+        db::$campos = ['cidade', 'estado'];
+        $estado     = db::$array['estado'][0];
+        echo"<hr>";
+        $cidade     = array("cidade" => self::$registro['Cidade'], "estado" => $estado);
+        print_r($cidade);
+        db::Salva($cidade);
+    }
+
+
+
+
+
+
+
+
+
+
+    public static function SalvaEstado() {
+        db::$tabela = "estado";
+        db::$campos = ['estado'];
+        $estados    = array("estado" => self::$registro['UF']);
+        db::Salva($estados);
+    }
+
+
+
+
+
+
+
+
+
+
+    private static function salvaClientes() {
+        db::$tabela                      = clientes;
+        db::$campos                      = ['nome', 'cpf', 'tipo_de_pessoa', 'sexo', 'rg', 'estado_civil', 'documento', 'dataNascimento', 'endereco', 'ip'];
+        $array_cliente['nome']           = strtolower(self::$registro['NomeSegurado']);
+        $array_cliente['tipo_de_pessoa'] = self::$registro['TipoPessoa'];
+        $array_cliente['sexo']           = self::$registro['Sexo'];
+        $array_cliente['cpf']            = self::$registro['CPF/CNPJ'];
+        ///$array_cliente['rg'] = $registro['NomeSegurado'];
+        $array_cliente['dataNascimento'] = date("Y-m-d", strtotime(self::DataAniversario(self::$registro['Data Nascimento'])));
+        $array_cliente['documento']      = db::$array['documento'][0];
+        $array_cliente['estado_civil']   = db::$array['estado_civil'][0];
+        $array_cliente['ip']             = $_SERVER['REMOTE_ADDR'];
+        db::Salva($array_cliente);
+    }
+
+
+
+
+
+
+
+
+
+
+    private static function salvaDocumento() {
+        db::$tabela        = "documento";
+        db::$campos        = ["documento"];
+        $docs['documento'] = self::sanitizeString(self::$registro['Susep']);
+        db::Salva($docs);
+    }
+
+
+
+
+
+
+
+
+
+
+    private static function salvaEstadoCivil() {
+        db::$tabela            = "estado_civil";
+        db::$campos            = ["estado_civil"];
+        $dados['estado_civil'] = self::sanitizeString(self::$registro['Estado Civil']);
+        db::Salva($dados);
+    }
+
+
+
+
+
+
+
+
+
+
+    private static function DataAniversario($data = '') {
+        return str_replace("/", "-", $data);
+    }
+
+
+
+
+
+
+
+
+
+
+    private static function sanitizeString($str) {
         $str = preg_replace('/[áàãâä]/ui', 'a', $str);
         $str = preg_replace('/[éèêë]/ui', 'e', $str);
         $str = preg_replace('/[íìîï]/ui', 'i', $str);

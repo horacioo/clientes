@@ -34,7 +34,9 @@ function myStartSession() {
 
 
 function my_myme_types($mime_types){
+    $mime_types['xml'] = 'text/xml'; //Adding svg extension
     $mime_types['json'] = 'text/json'; //Adding svg extension
+    //$mime_types['json'] = 'text/json'; //Adding svg extension
     return $mime_types;
 }
 add_filter('upload_mimes', 'my_myme_types', 1, 1);
