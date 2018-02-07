@@ -36,13 +36,8 @@ class importacao
                 self::$registro = $registro;
                 $chaves         = array_keys($registro);
 
-
-
-
-                print_r($registro);
-                echo"<hr>";
-
-
+                //print_r($registro);
+                //echo"<hr>";
 
                 /*                 * ************************************** */
                 db::$array            = NULL;
@@ -60,6 +55,10 @@ class importacao
                 self::SalvaEmail();
                 /*                 * *********************************************** */
                 self::salvaTelefone();
+                /*                 * *********************************************** */
+                self::salvaEndereco();
+                /*                 * *********************************************** */
+                self::salvaProduto();
                 /*                 * *********************************************** */
                 $contagem++;
                 $_SESSION['contagem'] = $contagem;
@@ -83,9 +82,77 @@ class importacao
 
 
 
+    private static function salvaProduto($array = "") {
+
+        $dados      = self::$dados['componente']['produto'];
+        db::$tabela = "produtos";
+        db::$campos = ['apelido', 'produto'];
+
+        if (is_array($dados)) {
+            foreach ($dados as $d):
+                if (is_array($d)) {
+                    echo"é array, novo foreach - - ";
+                    print_r($d);
+                } else {
+
+                    $x = strpos(self::$registro[$d], "/");
+                    if ($x > 0) {
+                        $x = explode("/", self::$registro[$d]);
+                        foreach ($x as $x):
+                            $x = strtolower($x);
+                            db::Salva(array("produto" => self::LimpezaDB($x), "apelido" => self::LimpezaDB($x)));
+                        endforeach;
+                    } else {
+                        db::Salva(array("produto" => self::LimpezaDB(self::$registro[$d]), "apelido" => self::LimpezaDB(self::$registro[$d])));
+                    }
+                }
+            endforeach;
+        }
+
+
+        $cliente  = db::$array['clientes'][0];
+        $produtos = db::$array['produtos'];
+
+        foreach ($produtos as $p):
+            db::$tabela = "clientesprodutos";
+            db::$campos = ['clientes', 'produtos'];
+            $array      = array("produtos" => $p, "clientes" => $cliente);
+            print_r($array);
+            db::Salva($array);
+            echo"<hr><hr>";
+        endforeach;
+    }
+
+
+
+
+
+
+
+
+
+
     private static function salvaEndereco() {
+        $dados      = self::$dados['componente']['endereco'];
         db::$tabela = "endereco";
-         $dados      = self::$dados['componente']['telefone'];
+        db::$campos = ['cliente', 'endereco', 'numero', 'complemento', 'bairro', 'cidade', 'estado'];
+        foreach ($dados as $d):
+            if (is_array($d)) {
+                $laco                = 1;
+                $endereco['cliente'] = db::$array['clientes'][0];
+                foreach ($d as $d):
+                    $endereco[db::$campos[$laco]] = self::$registro[$d];
+                    $laco++;
+                endforeach;
+                $endereco['cidade'] = db::$array['cidade'][0];
+                $endereco['estado'] = db::$array['estado'][0];
+                if (!empty($endereco['endereco'])) {
+                    db::Salva($endereco);
+                }
+            } else {
+                echo $d;
+            }
+        endforeach;
     }
 
 
@@ -293,6 +360,21 @@ class importacao
         $str = preg_replace('/[^a-z0-9]/i', '_', $str);
         $str = preg_replace('/_+/', '_', $str); // ideia do Bacco :)
         return $str;
+    }
+
+
+
+
+
+
+
+
+
+
+    public static function LimpezaDB($info) {
+        $x = trim($info);
+        $x = strtolower($x);
+        return $x;
     }
 
 
