@@ -34,14 +34,18 @@ class importacao
 
                 $registro       = array_combine($cabecalho, $linha);
                 self::$registro = $registro;
-
-                $chaves = array_keys($registro);
-
+                $chaves         = array_keys($registro);
 
 
-                db::$array = NULL;
 
 
+                print_r($registro);
+                echo"<hr>";
+
+
+
+                /*                 * ************************************** */
+                db::$array            = NULL;
                 /*                 * ************************************** */
                 self::salvaEstadoCivil();
                 /*                 * ************************************** */
@@ -53,23 +57,10 @@ class importacao
                 /*                 * *********************************************** */
                 self::SalvaCidade();
                 /*                 * *********************************************** */
-                db::$tabela = "email";
-                db::$campos = ['email'];
-                $x          = explode(";", $registro['E-mail']);
-                foreach ($x as $x):
-                    if (!empty($x)):
-                        db::Salva(array('email' => $x));
-                        $cliente    = db::$array['clientes'][0];
-                        $email      = db::$array['email'][0];
-                        db::$tabela = "clientesemail";
-                        db::$campos = ['clientes', 'email'];
-                        db::Salva(array('email' => $email, 'clientes' => $cliente));
-                    endif;
-                endforeach;
-
-                /*                 * ************************************** */
+                self::SalvaEmail();
                 /*                 * *********************************************** */
-
+                self::salvaTelefone();
+                /*                 * *********************************************** */
                 $contagem++;
                 $_SESSION['contagem'] = $contagem;
                 if ($contagem >= 4) {
@@ -92,13 +83,63 @@ class importacao
 
 
 
-    public static function SalvaCidade() {
+    private static function salvaEndereco() {
+        db::$tabela = "endereco";
+         $dados      = self::$dados['componente']['telefone'];
+    }
+
+
+
+
+
+
+
+
+
+
+    private static function salvaTelefone() {
+        $dados      = self::$dados['componente']['telefone'];
+        db::$tabela = "telefone";
+        db::$campos = ['ddd', 'telefone'];
+        foreach ($dados as $x):
+            if (is_array($x)) {
+                $ddd      = self::$registro[$x[0]];
+                $telefone = str_replace(array("-"), "", self::$registro[$x[1]]);
+                if (!empty($telefone)) {
+                    db::Salva(array("ddd" => $ddd, "telefone" => $telefone));
+                }
+            } else {
+                db::Salva(array("telefone" => self::$registro[$x]));
+            }
+        endforeach;
+
+        $cliente  = db::$array;
+        $cliente  = $cliente['clientes'][0];
+        $telefone = db::$array['telefone'];
+
+        /*         * *************************************************************** */
+        db::$tabela = "clientestelefone";
+        db::$campos = ['clientes', 'telefone'];
+        foreach ($telefone as $t):
+            db::Salva(array("clientes" => $cliente, "telefone" => $t));
+        endforeach;
+        /*         * *************************************************************** */
+    }
+
+
+
+
+
+
+
+
+
+
+    private static function SalvaCidade() {
         db::$tabela = "cidade";
         db::$campos = ['cidade', 'estado'];
         $estado     = db::$array['estado'][0];
-        echo"<hr>";
         $cidade     = array("cidade" => self::$registro['Cidade'], "estado" => $estado);
-        print_r($cidade);
         db::Salva($cidade);
     }
 
@@ -127,6 +168,51 @@ class importacao
 
 
 
+    public static function SalvaEmail() {
+        db::$tabela = "email";
+        db::$campos = ['email'];
+        $x          = explode(";", self::$registro['E-mail']);
+        $laco       = 0;
+        foreach ($x as $x):
+            if (!empty($x)):
+                db::Salva(array('email' => $x));
+                $cliente = db::$array['clientes'][0];
+                $email   = db::$array['email'][$laco];
+                $dados[] = array("email" => $email, "clientes" => $cliente);
+                $laco++;
+            endif;
+        endforeach;
+        self::AssociaEmail($dados);
+    }
+
+
+
+
+
+
+
+
+
+
+    private static function AssociaEmail($array = '') {
+        db::$tabela = "clientesemail";
+        db::$campos = ['clientes', 'email'];
+        if (is_array($array)):
+            foreach ($array as $x):
+                db::Salva($x);
+            endforeach;
+        endif;
+    }
+
+
+
+
+
+
+
+
+
+
     private static function salvaClientes() {
         db::$tabela                      = clientes;
         db::$campos                      = ['nome', 'cpf', 'tipo_de_pessoa', 'sexo', 'rg', 'estado_civil', 'documento', 'dataNascimento', 'endereco', 'ip'];
@@ -134,7 +220,7 @@ class importacao
         $array_cliente['tipo_de_pessoa'] = self::$registro['TipoPessoa'];
         $array_cliente['sexo']           = self::$registro['Sexo'];
         $array_cliente['cpf']            = self::$registro['CPF/CNPJ'];
-        ///$array_cliente['rg'] = $registro['NomeSegurado'];
+///$array_cliente['rg'] = $registro['NomeSegurado'];
         $array_cliente['dataNascimento'] = date("Y-m-d", strtotime(self::DataAniversario(self::$registro['Data Nascimento'])));
         $array_cliente['documento']      = db::$array['documento'][0];
         $array_cliente['estado_civil']   = db::$array['estado_civil'][0];
@@ -203,7 +289,7 @@ class importacao
         $str = preg_replace('/[óòõôö]/ui', 'o', $str);
         $str = preg_replace('/[úùûü]/ui', 'u', $str);
         $str = preg_replace('/[ç]/ui', 'c', $str);
-        // $str = preg_replace('/[,(),;:|!"#$%&/=?~^><ªº-]/', '_', $str);
+// $str = preg_replace('/[,(),;:|!"#$%&/=?~^><ªº-]/', '_', $str);
         $str = preg_replace('/[^a-z0-9]/i', '_', $str);
         $str = preg_replace('/_+/', '_', $str); // ideia do Bacco :)
         return $str;
