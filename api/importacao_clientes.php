@@ -10,7 +10,8 @@ $x = require "../include/importacao/importacao.php";
 
 use importacao\importacao as importa;
 
-$dadosxx        = importa::$dados = array('endereco' => 'http://localhost/corretorawp/wp-content/uploads/2018/02/mini-relatorio-mini-relatorio-1.csv');
+
+$dadosxx        = importa::$dados = array('endereco' => 'http://localhost/corretorawp/wp-content/uploads/2018/02/c-to-c.csv');
 
 importa::$dados['componente']['email']    = "E-mail";
 importa::$dados['componente']['telefone'] = array(array('DDD', 'TelefoneResidencial'), array('DDD', 'TelefoneComercial'), array('DDD', 'TelefoneCelular'));

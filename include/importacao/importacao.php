@@ -34,39 +34,40 @@ class importacao
 
                 $registro       = array_combine($cabecalho, $linha);
                 self::$registro = $registro;
-                $chaves         = array_keys($registro);
+                ///$chaves         = array_keys($registro);
 
-                //print_r($registro);
-                //echo"<hr>";
 
-                /*                 * ************************************** */
-                db::$array            = NULL;
-                /*                 * ************************************** */
-                self::salvaEstadoCivil();
-                /*                 * ************************************** */
-                self::salvaDocumento();
-                /*                 * ************************************** */
-                self::salvaClientes();
-                /*                 * *********************************************** */
-                self::SalvaEstado();
-                /*                 * *********************************************** */
-                self::SalvaCidade();
-                /*                 * *********************************************** */
-                self::SalvaEmail();
-                /*                 * *********************************************** */
-                self::salvaTelefone();
-                /*                 * *********************************************** */
-                self::salvaEndereco();
-                /*                 * *********************************************** */
-                self::salvaProduto();
-                /*                 * *********************************************** */
-                $contagem++;
-                $_SESSION['contagem'] = $contagem;
-                if ($contagem >= 4) {
-                    exit("<br>");
+
+                if (!empty($registro['NomeSegurado'])) {
+                    /*                     * ************************************** */
+                    db::$array            = NULL;
+                    /*                     * ************************************** */
+                    self::salvaEstadoCivil();
+                    /*                     * ************************************** */
+                    self::salvaDocumento();
+                    /*                     * ************************************** */
+                    self::salvaClientes();
+                    /*                     * *********************************************** */
+                    self::SalvaEstado();
+                    /*                     * *********************************************** */
+                    self::SalvaCidade();
+                    /*                     * *********************************************** */
+                    self::SalvaEmail();
+                    /*                     * *********************************************** */
+                    self::salvaTelefone();
+                    /*                     * *********************************************** */
+                    self::salvaEndereco();
+                    /*                     * *********************************************** */
+                    self::salvaProduto();
+                    /*                     * *********************************************** */
+                    $contagem++;
+                    $_SESSION['contagem'] = $contagem;
+
+                    echo "<br>$contagem";
+                    //if ($contagem >= 100) {   exit("<br>"); }
+
+                    /*                     * ********cliente********* */
                 }
-
-                /*                 * ********cliente********* */
             }
             fclose($f);
         }
@@ -87,6 +88,7 @@ class importacao
         $dados      = self::$dados['componente']['produto'];
         db::$tabela = "produtos";
         db::$campos = ['apelido', 'produto'];
+
 
         if (is_array($dados)) {
             foreach ($dados as $d):
@@ -117,9 +119,7 @@ class importacao
             db::$tabela = "clientesprodutos";
             db::$campos = ['clientes', 'produtos'];
             $array      = array("produtos" => $p, "clientes" => $cliente);
-            print_r($array);
             db::Salva($array);
-            echo"<hr><hr>";
         endforeach;
     }
 
@@ -141,15 +141,18 @@ class importacao
                 $laco                = 1;
                 $endereco['cliente'] = db::$array['clientes'][0];
                 foreach ($d as $d):
+                    //echo "<p>++++++  $d ".self::$registro[$d]."</p>";
                     $endereco[db::$campos[$laco]] = self::$registro[$d];
                     $laco++;
                 endforeach;
                 $endereco['cidade'] = db::$array['cidade'][0];
                 $endereco['estado'] = db::$array['estado'][0];
                 if (!empty($endereco['endereco'])) {
+                    echo "<p>dados salvos</p>";
                     db::Salva($endereco);
                 }
             } else {
+                echo "<br>não salvo";
                 echo $d;
             }
         endforeach;
@@ -187,9 +190,12 @@ class importacao
         /*         * *************************************************************** */
         db::$tabela = "clientestelefone";
         db::$campos = ['clientes', 'telefone'];
-        foreach ($telefone as $t):
-            db::Salva(array("clientes" => $cliente, "telefone" => $t));
-        endforeach;
+        if (is_array($telefone)) {
+            foreach ($telefone as $t):
+                db::Salva(array("clientes" => $cliente, "telefone" => $t));
+            endforeach;
+        }
+        //print_r($telefone);
         /*         * *************************************************************** */
     }
 
@@ -245,7 +251,7 @@ class importacao
                 db::Salva(array('email' => $x));
                 $cliente = db::$array['clientes'][0];
                 $email   = db::$array['email'][$laco];
-                $dados[] = array("email" => $email, "clientes" => $cliente);
+                $dados[] = array("email" => self::LimpezaDB($email), "clientes" => $cliente);
                 $laco++;
             endif;
         endforeach;
@@ -323,7 +329,7 @@ class importacao
     private static function salvaEstadoCivil() {
         db::$tabela            = "estado_civil";
         db::$campos            = ["estado_civil"];
-        $dados['estado_civil'] = self::sanitizeString(self::$registro['Estado Civil']);
+        $dados['estado_civil'] = self::sanitizeString(self::LimpezaDB(self::$registro['Estado Civil']));
         db::Salva($dados);
     }
 
