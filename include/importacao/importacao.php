@@ -34,6 +34,7 @@ class importacao
 
                 $registro       = array_combine($cabecalho, $linha);
                 self::$registro = $registro;
+                self::CorrigeArray();
                 ///$chaves         = array_keys($registro);
 
 
@@ -63,8 +64,8 @@ class importacao
                     $contagem++;
                     $_SESSION['contagem'] = $contagem;
 
-                    echo "<br>$contagem";
-                    //if ($contagem >= 100) {   exit("<br>"); }
+                    ///echo "<br>$contagem";
+                    ////if ($contagem >= 2) {    exit("<br>");  }
 
                     /*                     * ********cliente********* */
                 }
@@ -133,22 +134,22 @@ class importacao
 
 
     private static function salvaEndereco() {
+
         $dados      = self::$dados['componente']['endereco'];
         db::$tabela = "endereco";
-        db::$campos = ['cliente', 'endereco', 'numero', 'complemento', 'bairro', 'cidade', 'estado'];
+        db::$campos = ['cliente', 'endereco', 'numero', 'complemento', 'cep', 'bairro', 'cidade', 'estado'];
         foreach ($dados as $d):
             if (is_array($d)) {
                 $laco                = 1;
                 $endereco['cliente'] = db::$array['clientes'][0];
                 foreach ($d as $d):
-                    //echo "<p>++++++  $d ".self::$registro[$d]."</p>";
                     $endereco[db::$campos[$laco]] = self::$registro[$d];
                     $laco++;
                 endforeach;
                 $endereco['cidade'] = db::$array['cidade'][0];
                 $endereco['estado'] = db::$array['estado'][0];
+
                 if (!empty($endereco['endereco'])) {
-                    echo "<p>dados salvos</p>";
                     db::Salva($endereco);
                 }
             } else {
@@ -381,6 +382,28 @@ class importacao
         $x = trim($info);
         $x = strtolower($x);
         return $x;
+    }
+
+
+
+
+
+
+
+
+
+
+    public static function CorrigeArray() {
+        $x        = self::$registro;
+        $chaves   = array_keys($x);
+        $ponteiro = -1;
+        foreach ($chaves as $c):
+            $ponteiro++;
+            $newChave             = utf8_encode($c);
+            //echo "<li>$newChave ----  ".self::$registro[$c]."</li>";
+            $newArray [$newChave] = self::LimpezaDB(self::$registro[$c]);
+        endforeach;
+        self::$registro = $newArray;
     }
 
 

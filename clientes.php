@@ -33,12 +33,24 @@ function myStartSession() {
 
 
 
-function my_myme_types($mime_types){
-    $mime_types['xml'] = 'text/xml'; //Adding svg extension
+
+
+function my_myme_types($mime_types) {
+    $mime_types['xml']  = 'text/xml'; //Adding svg extension
     $mime_types['json'] = 'text/json'; //Adding svg extension
     //$mime_types['json'] = 'text/json'; //Adding svg extension
     return $mime_types;
 }
+
+
+
+
+
+
+
+
+
+
 add_filter('upload_mimes', 'my_myme_types', 1, 1);
 
 
@@ -76,15 +88,38 @@ function CriaTabelas() {
     /*     * ******************************************************************* */
     global $wpdb;
 
-    $sql = "CREATE TABLE if not exists  `estado_civil` ( `id` int(11) NOT NULL AUTO_INCREMENT, `estado_civil` varchar(200) NOT NULL, PRIMARY KEY (`id`) ) ENGINE=InnoDB DEFAULT CHARSET=latin1; ";
+
+
+
+    $sql = " CREATE TABLE  if not exists  `estado_civil` ( `id` int(11) NOT NULL AUTO_INCREMENT, `estado_civil` varchar(200) NOT NULL, PRIMARY KEY (`id`), UNIQUE KEY `estado_civil` (`estado_civil`) ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1; ";
     $wpdb->query($sql);
-    
 
-    $sql = "CREATE TABLE if not exists  `documento` ( `id` int(11) NOT NULL AUTO_INCREMENT, `documento` varchar(100) NOT NULL, PRIMARY KEY (`id`) ) ENGINE=InnoDB DEFAULT CHARSET=latin1;";
+
+    $sql = "CREATE TABLE  if not exists `documento` ( `id` int(11) NOT NULL AUTO_INCREMENT, `documento` varchar(100) NOT NULL, PRIMARY KEY (`id`), UNIQUE KEY `documento` (`documento`) ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1; ";
     $wpdb->query($sql);
 
 
-    $sql = "CREATE TABLE  if not exists `clientes` ( `id` int(11) NOT NULL AUTO_INCREMENT, `nome` varchar(250) NOT NULL, `tipo_de_pessoa` varchar(1) NOT NULL DEFAULT 'f', `sexo` varchar(1) NOT NULL DEFAULT 'm', `cpf` varchar(20) NOT NULL, `rg` varchar(20) NOT NULL, `dataExpedicao` date NOT NULL DEFAULT '0000-00-00', `dataNascimento` date NOT NULL DEFAULT '0000-00-00', `endereco` varchar(250) NOT NULL, `ip` varchar(100) NOT NULL, `entrada` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY (`id`), UNIQUE KEY `cpfNome` (`cpf`,`nome`) USING BTREE ) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=latin1;";
+    $sql = "CREATE TABLE  if not exists  `estado` ( `id` int(11) NOT NULL AUTO_INCREMENT, `estado` varchar(200) NOT NULL, PRIMARY KEY (`id`), UNIQUE KEY `estado` (`estado`) ) ENGINE=InnoDB AUTO_INCREMENT=4273 DEFAULT CHARSET=latin1; ";
+    $wpdb->query($sql);
+
+
+    $sql = "CREATE TABLE  if not exists `cidade` ( `id` int(11) NOT NULL AUTO_INCREMENT, `cidade` varchar(200) NOT NULL, `estado` int(11) NOT NULL, PRIMARY KEY (`id`), UNIQUE KEY `cidadeEstado` (`cidade`,`estado`), KEY `estado` (`estado`), CONSTRAINT `estado` FOREIGN KEY (`estado`) REFERENCES `estado` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION ) ENGINE=InnoDB AUTO_INCREMENT=6909 DEFAULT CHARSET=latin1; ";
+    $wpdb->query($sql);
+
+
+    $sql = " CREATE TABLE if not exists `clientes` ( `id` int(11) NOT NULL AUTO_INCREMENT, `nome` varchar(250) NOT NULL, `tipo_de_pessoa` varchar(1) NOT NULL DEFAULT 'f', `sexo` varchar(1) NOT NULL DEFAULT 'm', `cpf` varchar(20) NOT NULL, `rg` varchar(20) NOT NULL, `dataExpedicao` date NOT NULL DEFAULT '0000-00-00', `dataNascimento` date NOT NULL DEFAULT '0000-00-00', `ip` varchar(100) NOT NULL, `entrada` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP, `documento` int(11) NOT NULL, `estado_civil` int(11) NOT NULL, PRIMARY KEY (`id`), UNIQUE KEY `cpfNome` (`cpf`,`nome`) USING BTREE, KEY `documento` (`documento`), KEY `estado civil` (`estado_civil`), CONSTRAINT `Cliente_estado_civil` FOREIGN KEY (`estado_civil`) REFERENCES `estado_civil` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION, CONSTRAINT `Clientes_documentos` FOREIGN KEY (`documento`) REFERENCES `documento` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION ) ENGINE=InnoDB AUTO_INCREMENT=6438 DEFAULT CHARSET=latin1 ROW_FORMAT=COMPACT;";
+    $wpdb->query($sql);
+
+
+    $sql = "CREATE TABLE if not exists `endereco` ( `id` int(11) NOT NULL AUTO_INCREMENT, `cliente` int(11) NOT NULL, `endereco` varchar(200) CHARACTER SET latin1 NOT NULL, `numero` int(11) NOT NULL, `complemento` varchar(200) CHARACTER SET latin1 NOT NULL, `cep` varchar(15) CHARACTER SET latin1 NOT NULL, `bairro` varchar(200) CHARACTER SET latin1 NOT NULL, `cidade` int(11) NOT NULL, `estado` int(11) NOT NULL, PRIMARY KEY (`id`), UNIQUE KEY `endereco_cliente` (`cliente`,`endereco`,`numero`,`complemento`), KEY `cliente` (`cliente`), KEY `cidade` (`id`), KEY `estado` (`estado`), KEY `endereco_cidade` (`cidade`), CONSTRAINT `endereco_cidade` FOREIGN KEY (`cidade`) REFERENCES `cidade` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION, CONSTRAINT `endereco_cliente` FOREIGN KEY (`cliente`) REFERENCES `clientes` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION, CONSTRAINT `endereco_estado` FOREIGN KEY (`estado`) REFERENCES `estado` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION ) ENGINE=InnoDB AUTO_INCREMENT=7773 DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci ROW_FORMAT=COMPACT;";
+    $wpdb->query($sql);
+
+
+    $sql = "CREATE TABLE if not exists `produtos` ( `id` int(11) NOT NULL AUTO_INCREMENT, `produto` varchar(200) CHARACTER SET latin1 NOT NULL, `apelido` varchar(200) CHARACTER SET latin1 NOT NULL, `descricao` text CHARACTER SET latin1 NOT NULL, PRIMARY KEY (`id`), UNIQUE KEY `produto_info` (`produto`), UNIQUE KEY `apelido` (`apelido`) ) ENGINE=InnoDB AUTO_INCREMENT=3129 DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci ROW_FORMAT=COMPACT;";
+    $wpdb->query($sql);
+
+
+    $sql = "CREATE TABLE  if not exists `clientesprodutos` ( `id` int(11) NOT NULL AUTO_INCREMENT, `clientes` int(11) NOT NULL, `produtos` int(11) NOT NULL, PRIMARY KEY (`id`), KEY `clienteProduto` (`clientes`,`produtos`), KEY `produto` (`produtos`), CONSTRAINT `produtos_cliente` FOREIGN KEY (`clientes`) REFERENCES `clientes` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION, CONSTRAINT `produtos_produtos` FOREIGN KEY (`produtos`) REFERENCES `produtos` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION ) ENGINE=InnoDB AUTO_INCREMENT=14320 DEFAULT CHARSET=latin1;";
     $wpdb->query($sql);
 
 
@@ -138,12 +173,3 @@ function CriaTabelas() {
     $sql = "CREATE TABLE if not exists `clientesgrupos` ( `id` int(11) NOT NULL AUTO_INCREMENT, `grupo` int(11) NOT NULL, `cliente` int(11) NOT NULL, PRIMARY KEY (`id`), UNIQUE KEY `clienteGRupo` (`grupo`,`cliente`), KEY `cliente` (`cliente`), KEY `grupo` (`grupo`), CONSTRAINT `cliente` FOREIGN KEY (`cliente`) REFERENCES `clientes` (`id`) ON DELETE CASCADE, CONSTRAINT `grupo` FOREIGN KEY (`grupo`) REFERENCES `grupos` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";
     $wpdb->query($sql);
 }
-
-
-
-
-
-
-
-
-
