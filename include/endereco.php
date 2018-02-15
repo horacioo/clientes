@@ -38,6 +38,9 @@ class endereco
     static function Create() {
         $dados = $_POST[self::$tabela];
         print_r($dados);
+        
+        
+        
         /*
           db::$campos = self::$campos;
           $dados      = $_POST['endereco'];
