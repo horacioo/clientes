@@ -1,8 +1,8 @@
 <?php
 
-namespace FormulariosHTml;
+namespace Planet1;
 
-use MeuBancoDeDados\DataBase as banco;
+use Planet1\DataBase as banco;
 
 class htmlRender {
 

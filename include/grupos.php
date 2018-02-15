@@ -1,12 +1,16 @@
 <?php
 
-namespace Grupos;
+namespace Planet1;
+
+use Planet1\DataBase as db;
 
 class grupos
     {
     /*     * * 
       aqui eu vou, com base no id do cliente, selecionar os grupos ao qual o cliente faz parte
      * */
+
+    private static $campos = ['nome'];
 
     static public function clienteGrupo($cliente = '') {
         if (!is_null($cliente)):
@@ -98,6 +102,26 @@ class grupos
         } else {
             self::$grupo_pertence_ao_grupo = 1;
             return TRUE;
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+    static function Criar() {
+        if (isset($_POST['grupos'])) {
+            $dados;
+            foreach (self::$campos as $c):
+                $dados[$c] = POST['grupos'][$c];
+            endforeach;
+
+            print_r($dados);
         }
     }
 

@@ -330,6 +330,7 @@ class importacao
     private static function salvaEstadoCivil() {
         db::$tabela            = "estado_civil";
         db::$campos            = ["estado_civil"];
+        self::$registro['Estado Civil'] = str_replace(array("(a)","(o)","_a_"), "", self::$registro['Estado Civil']);
         $dados['estado_civil'] = self::sanitizeString(self::LimpezaDB(self::$registro['Estado Civil']));
         db::Salva($dados);
     }
@@ -401,9 +402,23 @@ class importacao
             $ponteiro++;
             $newChave             = utf8_encode($c);
             //echo "<li>$newChave ----  ".self::$registro[$c]."</li>";
-            $newArray [$newChave] = self::LimpezaDB(self::$registro[$c]);
+            $newArray [$newChave] = self::LimpezaDB(self::tirarAcentos(self::$registro[$c]));
         endforeach;
         self::$registro = $newArray;
+    }
+
+
+
+
+
+
+
+
+
+
+    public static function tirarAcentos($string = '') {
+        $string = utf8_encode($string);
+        return preg_replace(array("/(á|à|ã|â|ä)/", "/(Á|À|Ã|Â|Ä)/", "/(é|è|ê|ë)/", "/(É|È|Ê|Ë)/", "/(í|ì|î|ï)/", "/(Í|Ì|Î|Ï)/", "/(ó|ò|õ|ô|ö)/", "/(Ó|Ò|Õ|Ô|Ö)/", "/(ú|ù|û|ü)/", "/(Ú|Ù|Û|Ü)/", "/(ñ)/", "/(Ñ)/"), explode(" ", "a A e E i I o O u U n N"), $string);
     }
 
 

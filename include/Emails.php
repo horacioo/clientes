@@ -1,8 +1,9 @@
 <?php
 
-namespace emailsProcessosEDados;
+namespace Planet1;
 
-use Grupos\grupos as grupos;
+use Planet1\grupos as grupos;
+use Planet1\DataBase as db;
 
 class Emails
     {
@@ -11,6 +12,10 @@ class Emails
     public static $texto;
     public static $usuarios;
     public static $envia     = 1;
+    private static $campos   = ["email"];
+    private static $tabela   = "email";
+
+
 
     static public function EnvioAposCadastro() {
         global $wpdb;
@@ -24,13 +29,6 @@ class Emails
 
 
 
-
-
-
-
-
-
-
     static public function EnvioAniversario() {
         self::$texto     = NULL;
         global $wpdb;
@@ -41,13 +39,6 @@ class Emails
             self::pegaTexto($d['post_id']);
         endforeach;
     }
-
-
-
-
-
-
-
 
 
 
@@ -85,13 +76,6 @@ class Emails
 
 
 
-
-
-
-
-
-
-
     static private function pegaTexto($id) {
         global $wpdb;
         self::$extension = $wpdb->prefix;
@@ -103,23 +87,9 @@ class Emails
 
 
 
-
-
-
-
-
-
-
     static public function EnvioDeEmails() {
         return self::Aniversario();
     }
-
-
-
-
-
-
-
 
 
 
@@ -131,13 +101,6 @@ class Emails
             return $emails;
         }
     }
-
-
-
-
-
-
-
 
 
 
@@ -157,24 +120,10 @@ class Emails
 
 
 
-
-
-
-
-
-
-
     private static function Metas($id) {
         $metas = get_post_meta($id);
         return $metas;
     }
-
-
-
-
-
-
-
 
 
 
@@ -188,6 +137,8 @@ class Emails
     public static $conteudo_email;
     public static $titulo;
     public static $status;
+
+
 
     public static function DisparaEmail() {
         self::Reconstroi();
@@ -215,18 +166,13 @@ class Emails
 
 
 
-
-
-
-
-
-
-
     public static $id_cliente;
     public static $id_email;
     public static $id_texto;
     public static $tipo_do_email;
     public static $retorno_email;
+
+
 
     private static function salva_dados() {
         global $wpdb;
@@ -237,18 +183,13 @@ class Emails
 
 
 
-
-
-
-
-
-
-
     /*     * *  
       eu mando o conteúdo e um array, nesse array, pode ter nome, data, e outros valores...
       mandar o array da seguinte forma array("nome"=>"x","idade"=>"y", "informação"=>"z")
       e por aí vai...
      * */
+
+
 
     private static function Reconstroi($conteudo = '') {
         $nome                 = self::$nome_cliente;
@@ -263,20 +204,15 @@ class Emails
         /*         * ******************************************** */
         self::$conteudo_email = ucfirst(self::$conteudo_email);
         /*         * ******************************************** */
-        
-        self::$titulo         = self::$nome_cliente . " - " . self::$titulo . "";
+
+        self::$titulo = self::$nome_cliente . " - " . self::$titulo . "";
     }
 
 
 
-
-
-
-
-
-
-
     private static $saudacao;
+
+
 
     private static function greetings() {
         $hora           = date("H");
@@ -316,10 +252,45 @@ class Emails
 
 
 
+    public static function Create() {
+        db::$tabela = self::$tabela;
+        db::$campos = self::$campos;
+        $dados      = $_POST['email'];
+        $chaves     = array_keys($dados);
+        foreach ($chaves as $c):
+            /*             * ************************** */
+            if ($c === 0) {
+                if (!empty($dados[$c])) {
+                    db::Salva(array("email" => $dados[$c]));
+                    db::$tabela = "clientesemail";
+                    db::$campos = ['clientes', 'email'];
+                    db::Salva(array("clientes" => self::$id_cliente, "email" => db::$array['email'][0]));
+                }
+            }
+            /*             * ************************** */
+        endforeach;
+    }
 
 
 
-
+    public static function Update() {
+        $dados  = $_POST[self::$tabela];
+        $chaves = array_keys($dados);
+        foreach ($chaves as $c):
+            /*             * ************************** */
+            if ($c > 0) {
+                if (!empty($dados[$c])) {
+                    $query = "update " . self::$tabela . " set ".self::$campos[0]."='" . $dados[$c] . "' where id='" . $c . "'";
+                } else {
+                    $query = "delete from " . self::$tabela . " where id = '" . $c . "'";
+                }
+                db::Query($query);
+            } else {
+                self::Create();
+            }
+            /*             * ************************** */
+        endforeach;
+    }
 
 
 

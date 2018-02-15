@@ -1,6 +1,6 @@
 <?php
 
-use FormulariosHTml\htmlRender as form;
+use Planet1\htmlRender as form;
 
 function MenuClientes() {
     MenuClienteLateral();

@@ -1,15 +1,28 @@
 <?php
 
-namespace Clientes;
+namespace Planet1;
 
-use MeuBancoDeDados\DataBase;
-use emailsProcessosEDados\Emails as em;
-use Grupos\grupos as gr;
+use Planet1\DataBase as db;
+use Planet1\Emails as em;
+use Planet1\grupos as gr;
 
-class clientes  {
+class clientes
+    {
 
-    static public $campos = ['nome', 'tipo_de_pessoa','estado_civil', 'sexo', 'cpf', 'rg', 'dataExpedicao', 'dataNascimento', 'ip', 'entrada'];
+    static public $campos = ['nome', 'tipo_de_pessoa', 'estado_civil', 'sexo', 'cpf', 'rg', 'dataExpedicao', 'dataNascimento', 'ip', 'entrada', 'documento'];
     static public $cliente;
+    static public $IdCliente;
+    static $nome;
+    static $tipo_de_pessoa;
+    static $estado_civil;
+    static $sexo;
+    static $cpf;
+    static $rg;
+    static $dataExpedicao;
+    static $dataNascimento;
+    static $ip;
+    static $entrada;
+    static $documento;
 
     public static function Aniversario() {
         global $wpdb;
@@ -54,17 +67,39 @@ class clientes  {
 
 
 
-    public static function EditCliente($id = "") {
+    public static function DadosCliente() {
+        $id = self::$IdCliente;
         if (!is_null($id)) {
+            /*
+              global $wpdb;
+              $emails           = em::EmailCliente($id);
+              $grupos           = gr::clienteGrupo($id);
+              $sel              = "select cl.id, cl.nome, cl.cpf, cl.rg, cl.dataExpedicao, cl.dataNascimento,cl.endereco  from clientes as cl where id='$id'";
+              $x                = $wpdb->get_results($sel, ARRAY_A);
+              $dados['cliente'] = $x[0];
+              $dados['emails']  = $emails;
+              $dados['grupos']  = $grupos;
+              return $dados;
+             */
             global $wpdb;
-            $emails           = em::EmailCliente($id);
-            $grupos           = gr::clienteGrupo($id);
-            $sel              = "select cl.id, cl.nome, cl.cpf, cl.rg, cl.dataExpedicao, cl.dataNascimento,cl.endereco  from clientes as cl where id='$id'";
-            $x                = $wpdb->get_results($sel, ARRAY_A);
-            $dados['cliente'] = $x[0];
-            $dados['emails']  = $emails;
-            $dados['grupos']  = $grupos;
-            return $dados;
+            $sel           = "select * from clientes where id = '$id'";
+            $x             = $wpdb->get_row($sel, ARRAY_A);
+            self::$cliente = $x;
+
+            self::$nome           = $x['nome'];
+            self::$tipo_de_pessoa = $x['tipo_pessoa'];
+            self::$sexo           = $x['sexo'];
+            self::$cpf            = $x['cpf'];
+            self::$rg             = $x['rg'];
+            self::$dataExpedicao  = $x['dataExpedicao'];
+            self::$dataNascimento = $x['dataNascimento'];
+            self::$ip             = $x['ip'];
+            self::$entrada        = $x['entrada'];
+            self::$documento      = $x['documento'];
+            self::$estado_civil   = $x['estado_civil'];
+
+
+            return new static();
         }
     }
 
@@ -130,6 +165,31 @@ class clientes  {
             return $cliente;
         }
     }
+
+
+
+
+
+
+
+
+
+
+    public static function Update($formulario = '') {
+        if (!empty($formulario)) {
+            db::$id_base = self::$IdCliente;
+            db::$tabela  = clientes;
+            db::$campos  = self::$campos;
+            db::$entrada = $formulario;
+            db::Update();
+        }
+    }
+
+
+
+
+
+
 
 
 

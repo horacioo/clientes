@@ -3,8 +3,8 @@
 require_once 'DataBase.php';
 require_once 'form.php';
 
-use FormulariosHTml\htmlRender as us;
-use emailsProcessosEDados\Emails as em;
+use Planet1\htmlRender as us;//use FormulariosHTml\htmlRender as us;
+use Planet1\Emails as em; //use emailsProcessosEDados\Emails as em;
 
 function entradaForm($atts) {
 

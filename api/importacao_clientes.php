@@ -1,20 +1,17 @@
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+</head>
 <?php
-
 header('Access-Control-Allow-Origin: *');
-
+echo"<br>inicio as ". date("H:i:s");
 require_once '../../../../wp-config.php';
-
 $x = require "../include/importacao/importacao.php";
-
 use importacao\importacao as importa;
-
 $pasta = "C:/xampp/htdocs/CorretoraWP/wp-content/uploads/2018/02/";
-
-
-
 $path      = $pasta;
 $diretorio = dir($path);
 $ponteiro = 0;
+
 while ($arquivo = $diretorio->read()) {
     if ($ponteiro >= 2) {
         echo "<li><a href='" . $path . $arquivo . "'>$ponteiro -- " . $path . $arquivo . "</a><br></li>";
@@ -25,7 +22,7 @@ while ($arquivo = $diretorio->read()) {
 }
 $diretorio->close();
 
-
+echo"<br>concluído as ". date("H:i:s");
 
 
 

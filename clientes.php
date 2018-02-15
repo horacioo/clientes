@@ -72,6 +72,10 @@ require_once 'include/DataBase.php';
 require_once 'include/menu.php';
 require_once 'include/form.php';
 require_once 'include/mecanicas.php';
+require_once 'include/EstadoCivil.php';
+require_once 'include/endereco.php';
+require_once 'include/telefone.php';
+
 require_once 'include/RecebeForm.php';
 require_once 'CustomPosts/textosEmail.php';
 require_once 'CustomPosts/metaBoxeTextosEmail.php';
@@ -173,3 +177,12 @@ function CriaTabelas() {
     $sql = "CREATE TABLE if not exists `clientesgrupos` ( `id` int(11) NOT NULL AUTO_INCREMENT, `grupo` int(11) NOT NULL, `cliente` int(11) NOT NULL, PRIMARY KEY (`id`), UNIQUE KEY `clienteGRupo` (`grupo`,`cliente`), KEY `cliente` (`cliente`), KEY `grupo` (`grupo`), CONSTRAINT `cliente` FOREIGN KEY (`cliente`) REFERENCES `clientes` (`id`) ON DELETE CASCADE, CONSTRAINT `grupo` FOREIGN KEY (`grupo`) REFERENCES `grupos` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";
     $wpdb->query($sql);
 }
+
+
+
+
+
+
+
+
+

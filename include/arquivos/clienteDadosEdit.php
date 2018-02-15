@@ -1,64 +1,173 @@
 <h2>Editando dados</h2>
 <?php
 
-use Clientes\clientes as cli;
+use Planet1\clientes as cli;
+use Planet1\DataBase as db;
+use Planet1\EstadoCivil as ec;
+use Planet1\Emails as em;
+use Planet1\endereco as end;
+use Planet1\telefone as tel;
+use Planet1\grupos as gru;
 
-$dados = cli::EditCliente($_GET['clienteId']);
-//print_r($dados);
+cli::$IdCliente  = $_GET['clienteId'];
+end::$id_cliente = $_GET['clienteId'];
+em::$id_cliente  = $_GET['clienteId'];
+tel::$id_cliente = $_GET['clienteId'];
+
+if (isset($_POST['cliente'])) {
+    cli::Update($_POST['cliente']);
+    end::Update($_POST['endereco']);
+    em::Update();
+    tel::Update();
+    end::Create();
+}
+
+$d = cli::DadosCliente();
 ?>
 
 
 <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.5/angular.min.js'></script>
-<h2>Cadastrar Cliente</h2>
+<h2>Editar dados do cliente</h2>
 <form action="" method="post" name="cliente">
     <div class='container' ng-app="NovoCliente" >
         <div class='row' ng-controller="dados as dd">
             <div class='col-md-6'>
-                <p><label><span class="dashicons dashicons-admin-users"></span>Nome</label><input  value="<?php echo $dados['cliente']['nome'] ?>" type="text" required="required" name=cliente[nome] class='form-control'></p>
-                <p><label><span class="dashicons dashicons-media-document"></span>cpf</label><input  value="<?php echo $dados['cliente']['cpf'] ?>" type="text" required="required"  name=cliente[cpf] class='form-control' ></p>
-                <p><label><span class="dashicons dashicons-id"></span>rg</label><input type="text" name=cliente[rg]  value="<?php echo $dados['cliente']['rg'] ?>" class='form-control' ></p>
-                <p><label><span class="dashicons dashicons-calendar-alt"></span>data de nascimento</label><input   value="<?php echo $dados['cliente']['dataNascimento'] ?>"  type="date" name=cliente[nascimento] class='form-control' > </p>
+                <p><label><span class="dashicons dashicons-admin-users"></span>Nome</label><input  value="<?php echo cli::$nome; ?>" type="text" required="required" name=cliente[nome] class='form-control'></p>
+                <p><label><span class="dashicons dashicons-media-document"></span>cpf</label><input  value="<?php echo cli::$cpf; ?>" type="text" required="required"  name=cliente[cpf] class='form-control' ></p>
+                <p><label><span class="dashicons dashicons-id"></span>rg</label><input type="text" name=cliente[rg]  value="<?php echo cli::$rg; ?>" class='form-control' ></p>
+                <p><label><span class="dashicons dashicons-calendar-alt"></span>data de nascimento</label><input   value="<?php echo cli::$dataNascimento; ?>"  type="date" name=cliente[dataNascimento] class='form-control' > </p>
+                <!---------------------------------------------------------------------->
+                <p>Sexo:</p>
+                <p><label>masculino</label><input type="radio" name=cliente[sexo] value="m" <?php
+                    if (cli::$sexo == "m") {
+                        echo "checked=\"checked\"";
+                    }
+                    ?> ></p>
+                <p>
+                    <label>feminino</label><input type="radio" name=cliente[sexo] value="f" <?php
+                    if (cli::$sexo == "f") {
+                        echo "checked=\"checked\"";
+                    }
+                    ?>>
+                </p>
+
+                <!---------------------------------------------------------------------->
+                <select name=cliente[estado_civil]>
+                    <?php
+                    ec::Lista_Estado_Civil();
+                    foreach (ec::$Lista_Estado_Civil as $lista):
+                        if ($lista['id'] === cli::$estado_civil) {
+                            echo "<option selected='selected' value='" . $lista['id'] . "'>" . $lista['estado_civil'] . "</option>";
+                        } else {
+                            echo "<option  value='" . $lista['id'] . "'>" . $lista['estado_civil'] . "</option>";
+                        }
+                    endforeach;
+                    ?>
+                </select>
+                <!---------------------------------------------------------------------->
+
+
+
+
             </div>
             <div class='col-md-6'>
-                <h2>Contato</h2>
-                <p><label><span class="dashicons dashicons-location-alt"></span>endereço</label><input   value="<?php echo $dados['cliente']['endereco'] ?>" type="text" id="autocomplete" onFocus="geolocate()"  name=cliente[endereco] class='form-control' ></p>
-                <!---------------------------------------------------------------------->
 
-                <?php foreach ($dados['emails'] as $e): ?>
-                    <p ><label><span class="dashicons dashicons-email"></span>email</label>
-                        <input type="text"  required="required"  name=cliente[email][] class='form-control' value='<?php echo $e['email']; ?>' ></p>
+
+
+                <!---------------------------------------------------------------------->
+                <h2>Endereço</h2>
+
+                <div class="endereco">
+                    <p><label><span class="dashicons dashicons-location-alt"></span>endereço</label>
+                    <p><label>digite o endereço</label><input   value="" type="text" id="autocomplete" onFocus="geolocate()" class='form-control' ></p>
+                    <p><label>numero</label><input class="form-control" id="street_number" name=endereco['numero'] disabled="true"></p>
+                    <p><label>rua</label><input class="form-control" id="route" name=endereco['rua']  disabled="true"></p>
+                    <p><label>cidade</label><input class="form-control" id="locality" name=endereco['cidade'] disabled="true"></p>
+                    <p><label>estado</label><input class="form-control" id="administrative_area_level_1" name=endereco['estado'] disabled="true"></p>
+                    <p><label>cep</label><input class="form-control" id="postal_code" name=endereco['cep'] disabled="true"></p>
+                    <p><label>pais</label><input class="form-control" id="country" name=endereco['pais'] disabled="true"></p>
+                </div>
+
+
+                <?php
+                foreach (end::endereco_cliente(cli::$IdCliente) as $end):
+                    ?>
+                    <!--<div class='enderecos'>
+                        <input type="checkbox" checked="checked" name=endereco[list][] value="<?php echo $end['id'] ?>">
+                        <input class="form-control camposTypeText" type='text'  value='<?php echo $end['endereco'] ?>,<?php echo $end['numero'] ?> , <?php echo $end['complemento'] ?> , <?php echo $end['bairro'] ?> , <?php echo $end['cidade'] ?> , <?php echo $end['estado'] ?> <?php echo $end['cep'] ?>'>
+                    </div>-->
+                    <br>
                 <?php endforeach; ?>
+                <!---------------------------------------------------------------------->
 
-                <span ng-click="dd.Email()" class="btn btn-sm btn-success">acescentar email </span>
-                <p ng-repeat="item in dd.email"><label><span class="dashicons dashicons-email"></span>email</label><input type="text"  required="required"  name=cliente[email][] class='form-control' ></p>
+
+
+
+
+
+
+
+
 
                 <!---------------------------------------------------------------------->
-                <p><span ng-click="dd.Telefone()"  class="btn btn-sm btn-success">acrescentar telefone</span></p>
-                <p  ng-repeat="item in dd.telefone"><label><span class="dashicons dashicons-phone"></span>telefone</label><input type="text" name=cliente[telefone][] class='form-control' ></p>
+                <h2>E-mail</h2>
+                <div class="divForeach">
+                    <span class="dashicons dashicons-email"></span>email:</label>
+                    <input type="text"   class="form-control" name=email[]  value="<?php echo $e['email']; ?>" >
+                </div>
+                <?php
+                $emails = em::EmailCliente(cli::$IdCliente);
+                foreach ($emails as $e):
+                    ?>
+                    <div class="divForeach">
+                        <input type="text"  class="form-control" name=email[<?php echo $e['id']; ?>]  value="<?php echo $e['email']; ?>" >
+                    </div>
+                <?php endforeach; ?>
+                <!---------------------------------------------------------------------->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                <!---------------------------------------------------------------------->
+                <h2>Telefone:</h2>
+                <div class="divForeach">
+                    <span class="dashicons dashicons-phone"></span> telefone
+                    <input type="text"  class="form-control" name=telefone[]  >
+                </div>
+                <?php
+                foreach (tel::Telefone_do_cliente(cli::$IdCliente) as $tel):
+                    ?>
+                    <div class="divForeach">
+                        <input type="text"  class="form-control" name=telefone[<?php echo $tel['id']; ?>]  value="<?php echo $tel['telefone']; ?>" >
+                    </div>
+                <?php endforeach; ?>
+                <!---------------------------------------------------------------------->
+
+
+
+
             </div>
         </div>
 
         <div class="row">
             <div class="col-md-12">
-                Grupos<br>
                 <?php
-                $selected = array();
-                foreach ($dados['grupos'] as $gr):
-                    $selected[] = $gr['grupo'];
+                foreach (gru::listadeGrupos() as $grupos):
+                    echo"<br>";
+                    print_r($grupos);
                 endforeach;
                 ?>
-                <ul>
-                    <?php
-                    $dados = DataBase::ListaGeral(array("tabela" => "grupos"));
-                    foreach ($dados as $x):
-                        ?> 
-                        <li class="gruposCheck"><input  <?php
-                            if (in_array($x['id'], $selected)){
-                                echo"checked='checked'";
-                    }
-                            ?> type="checkbox" name=cliente[clientegrupos][] value="<?php echo $x['id'] ?>"> <?php echo $x['nome']; ?></li>
-                        <?php endforeach; ?>
-                </ul>
             </div>
         </div>
 
@@ -74,6 +183,16 @@ $dados = cli::EditCliente($_GET['clienteId']);
         padding: 1rem;
         margin: 2px;
         border-radius: 3px;
+    }
+    .camposTypeText{
+        width: 96%!important; 
+        float: right;
+
+    }
+    .divForeach{
+        overflow: auto;
+        height: auto;
+        margin-bottom: 11px;
     }
 </style>
 <script>
