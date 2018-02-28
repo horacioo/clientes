@@ -22,7 +22,7 @@
              public static $Email_Return_Path;
              public static $nome_cliente;
              public static $email;
-             private static $entradaDados;
+             public static $entradaDados;
              public static $conteudo_email;
              public static $titulo;
              public static $status;
@@ -61,6 +61,9 @@
                          db::$tabela = self::$tabela_pivot;
                          db::$campos = ['clientes', 'email'];
                          db::Salva(array("clientes" => self::$id_cliente, "email" => db::$array['email'][0]));
+                         ///echo"<hr>". db::$consulta; echo"<hr>";
+                         //print_r(array("clientes" => self::$id_cliente, "email" => db::$array['email'][0]));
+                         ///echo"<hr>";
                      }
                  endforeach;
              }

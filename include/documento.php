@@ -32,4 +32,15 @@ class documento
 
 
 
+    public static function documento_salva() {
+        DataBase::$tabela = "documento";
+        DataBase::$campos = ['documento', 'nome'];
+        if (!empty(self::$documento)) {
+            $array = array("documento" => self::$documento);
+            DataBase::Salva($array);
+        }
+    }
+
+
+
     }

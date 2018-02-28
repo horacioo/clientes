@@ -8,8 +8,6 @@
   Author URI: http://planet1.com.br
  */
 
-
-
 $url_atual = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
 define("urlAdmin", $url_atual);
 define('clienteSemEmail', "15 dias");
@@ -17,21 +15,17 @@ define("apiLista", plugin_dir_url('cliente.php') . "clientes/api/api_lista.php")
 define("keyGoogleApi", "AIzaSyCJZaknPwDWQ4HplUGPvTwpaLtMEASvbgI");
 define("meuIp", md5($_SERVER["REMOTE_ADDR"]));
 
+
 date_default_timezone_set('Brazil/East');
 add_action('init', 'myStartSession', 1);
+
+
 
 function myStartSession() {
     if (!session_id()) {
         session_start();
     }
 }
-
-
-
-
-
-
-
 
 
 
@@ -44,27 +38,9 @@ function my_myme_types($mime_types) {
 
 
 
-
-
-
-
-
-
-
 add_filter('upload_mimes', 'my_myme_types', 1, 1);
-
-
-
-
-
-
-
-
-
 define("data", date("Y-m-d H:i:s"));
-
 require_once 'config.php';
-
 require_once 'include/grupos.php';
 require_once 'include/clientes.php';
 require_once 'include/Emails.php';
@@ -78,25 +54,32 @@ require_once 'include/telefone.php';
 require_once 'include/cidade.php';
 require_once 'include/estado.php';
 require_once 'include/documento.php';
-
 require_once 'include/RecebeForm.php';
 require_once 'CustomPosts/textosEmail.php';
 require_once 'CustomPosts/metaBoxeTextosEmail.php';
+require_once 'include/token.php';
 
+use Planet1\token;
 
 add_action('admin_menu', 'MenuClientes');
+
+
 add_shortcode("Recebe-Form", 'entradaForm');
 
+add_shortcode("token", function() {
+    $token = token::Token();
+    $x     = "<input type='hidden' name='token' value='" . $token['token'] . "'>";
+    return $x;
+});
 
 
 register_activation_hook(__FILE__, CriaTabelas);
 
+
+
 function CriaTabelas() {
     /*     * ******************************************************************* */
     global $wpdb;
-
-
-
 
     $sql = " CREATE TABLE  if not exists  `estado_civil` ( `id` int(11) NOT NULL AUTO_INCREMENT, `estado_civil` varchar(200) NOT NULL, PRIMARY KEY (`id`), UNIQUE KEY `estado_civil` (`estado_civil`) ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1; ";
     $wpdb->query($sql);
@@ -179,13 +162,13 @@ function CriaTabelas() {
     /*     * *********************************************************************************** */
     $sql = "CREATE TABLE if not exists `clientesgrupos` ( `id` int(11) NOT NULL AUTO_INCREMENT, `grupo` int(11) NOT NULL, `cliente` int(11) NOT NULL, PRIMARY KEY (`id`), UNIQUE KEY `clienteGRupo` (`grupo`,`cliente`), KEY `cliente` (`cliente`), KEY `grupo` (`grupo`), CONSTRAINT `cliente` FOREIGN KEY (`cliente`) REFERENCES `clientes` (`id`) ON DELETE CASCADE, CONSTRAINT `grupo` FOREIGN KEY (`grupo`) REFERENCES `grupos` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";
     $wpdb->query($sql);
+
+    /*     * *********************************************************************************** */
+    $sql = "CREATE TABLE if not exists `dados_de_processos` (`id` int(11) NOT NULL,`dados` int(11) NOT NULL,`data` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ) ENGINE=MEMORY DEFAULT CHARSET=latin1;";
+    $wpdb->query($sql);
+
+    /*     * *********************************************************************************** */
+    $sql = "CREATE TABLE if not exists  `token` (id` int(11) NOT NULL AUTO_INCREMENT,`token` varchar(200) NOT NULL,`data` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,`ip` varchar(200) NOT NULL, PRIMARY KEY (`id`), UNIQUE KEY `ip` (`ip`,`token`) USING BTREE ) ENGINE=InnoDB AUTO_INCREMENT=52 DEFAULT CHARSET=latin1;";
+    $wpdb->query($sql);
 }
-
-
-
-
-
-
-
-
 

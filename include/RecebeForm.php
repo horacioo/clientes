@@ -3,76 +3,68 @@
 require_once 'DataBase.php';
 require_once 'form.php';
 
-use Planet1\htmlRender as us;//use FormulariosHTml\htmlRender as us;
+use Planet1\htmlRender as us; //use FormulariosHTml\htmlRender as us;
 use Planet1\Emails as em; //use emailsProcessosEDados\Emails as em;
+use Planet1\clientes as cl;
+use Planet1\telefone as tel;
+use Planet1\token;
 
-function entradaForm($atts) {
 
 
-    if (isset($atts)) {
+function entradaForm() {
+    if (isset($_POST['dados'])):
 
-        $entrada1 = $atts['dados'];
-        $entrada  = $_POST[$entrada1];
-        if (isset($entrada)) {
+        if (isset($_POST['token'])) {
 
-            us::$entrada      = $entrada1;
-            us::$dadosCliente = $entrada;
-            us::$locate       = ['nome', 'ip'];
-            us::SalvaClientes();
-            us::SalvaEmail();
-            us::SalvaTelefone();
-            us::clientesemail();
-            us::clientestelefone();
-            us::contato();
-            $retorno          = "";
-            $Chaves           = array_keys($entrada);
-            foreach ($Chaves as $c):
-                $retorno .= "<p>";
-                if (is_array($entrada[$c])) {
-                    foreach ($entrada[$c] as $x): {
-                            $retorno .= $c . ":" . $x;
-                        }
-                    endforeach;
+            $token  = $_POST['token'];
+            $tokenx = token::VerificaToken();
+
+            if (!empty($tokenx)) {
+                //criar uma sessao para impedir novos cadastros repetidos
+                if (isset($_SESSION['form_entrada_dados'])) {
+                    ///echo"aguarde um momento!! cadastro já foi emmitido";
                 } else {
-                    $retorno .= $c . ":" . $entrada[$c];
+                    ///echo "vamos cadastrar seus dados agora!";
                 }
-                $retorno .= "</p>";
-            endforeach;
-            us::$DadosForm = $retorno;
+
+                $_SESSION['form_entrada_dados'] = time();
+                $dados                          = $_POST['dados'];
+                $chaves                         = array_keys($dados);
+                /*                 * ******************************* */
+                foreach ($chaves as $c):
+                    if ($c === "clientes") {
+                        cl::$dados_entrada = $dados;
+                        cl::create();
+                    }
+                    /*                     * ******************************* */
+                    if ($c === "email") {
+                        foreach ($dados['email']['email'] as $e):
+                            if (!empty($e)):
+                                em::$entradaDados = array("email" => $e);
+                                em::$id_cliente   = cl::$IdCliente;
+                                em::Create();
+                            endif;
+                        endforeach;
+                    }
+                    /*                     * ******************************* */
+                    if ($c === "telefone") {
+                        foreach ($dados['telefone']['telefone'] as $t):
+                            if (!empty($t)):
+                                tel::$dados_entrada = array("telefone" => $t);
+                                tel::$id_cliente    = cl::$IdCliente;
+                                tel::Create();
+                            endif;
+                        endforeach;
+                    }
+                endforeach;
+                /*                 * *************** */
+            }
+            else {
+                exit("token inválido ou inexistente");
+            }
         }
-    }
-
-    Resposta();
+    endif;
 }
-
-
-
-
-
-function Resposta() {
-
-    global $wpdb;
-    $sel = "SELECT ct.id as idContato ,cl.nome,e.email 
-FROM `contato` as ct
-inner join clientes as cl on cl.id = ct.cliente
-inner join clientesemail as ce on ce.clientes = ct.cliente
-inner join email as e on e.id = ce.email
-WHERE ct.primeiroContato=0";
-
-    /*     * ****************************************** */
-    ///echo "<hr>$sel<hr>";
-    $dados = $wpdb->get_results($sel, ARRAY_A);
-   /// print_r($dados);
-    /*     * ***************************************** */
-    ///echo "<br>informação -- "; print_r($dados); echo"<br>";
-    foreach ($dados as $d):
-        Email($d['email'], $d['nome']);
-        //exit();
-        $wpdb->query("update contato set primeiroContato=1 where id='" . $d['idContato'] . "'");
-    endforeach;
-}
-
-
 
 
 
@@ -93,14 +85,10 @@ function Email($email, $nome) {
 
 
 
-
-
 function Limpeza($x) {
     $x = strip_tags($x);
     $x = trim($x);
     return $x;
 }
-
-
 
 
