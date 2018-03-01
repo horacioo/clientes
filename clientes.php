@@ -46,7 +46,7 @@ require_once 'include/clientes.php';
 require_once 'include/Emails.php';
 require_once 'include/DataBase.php';
 require_once 'include/menu.php';
-require_once 'include/form.php';
+////require_once 'include/form.php';
 require_once 'include/mecanicas.php';
 require_once 'include/EstadoCivil.php';
 require_once 'include/endereco.php';
@@ -62,17 +62,12 @@ require_once 'include/token.php';
 use Planet1\token;
 
 add_action('admin_menu', 'MenuClientes');
-
-
 add_shortcode("Recebe-Form", 'entradaForm');
-
 add_shortcode("token", function() {
     $token = token::Token();
     $x     = "<input type='hidden' name='token' value='" . $token['token'] . "'>";
     return $x;
 });
-
-
 register_activation_hook(__FILE__, CriaTabelas);
 
 

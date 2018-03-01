@@ -1,4 +1,5 @@
 <?php
+use Planet1\DataBase;
 add_action('add_meta_boxes', 'TextosEmail');
 
 function TextosEmail() {
