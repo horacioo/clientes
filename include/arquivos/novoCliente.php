@@ -1,174 +1,151 @@
 <?php
 
-use FormulariosHTml\htmlRender as save; ?>
-<script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.5/angular.min.js'></script>
-<h2>Cadastrar Cliente</h2>
-<form action="" method="post" name="cliente">
-    <div class='container' ng-app="NovoCliente" >
-        <div class='row' ng-controller="dados as dd">
-            <div class='col-md-6'>
-                <p><label><span class="dashicons dashicons-admin-users"></span>Nome</label><input type="text" required="required" name=cliente[nome] class='form-control'></p>
-                <p><label><span class="dashicons dashicons-media-document"></span>cpf</label><input type="text" required="required"  name=cliente[cpf] class='form-control' ></p>
-                <p><label><span class="dashicons dashicons-id"></span>rg</label><input type="text" name=cliente[rg] class='form-control' ></p>
-                <p><label><span class="dashicons dashicons-calendar-alt"></span>data de nascimento</label><input  ng-model="DataNascimento"  type="date" name=cliente[nascimento] class='form-control' > </p>
-            </div>
-            <div class='col-md-6'>
-                <h2>Contato</h2>
-                <p><label><span class="dashicons dashicons-location-alt"></span>endereço</label><input type="text" id="autocomplete" onFocus="geolocate()"  name=cliente[endereco] class='form-control' ></p>
-                <!---------------------------------------------------------------------->
-                <span ng-click="dd.Email()" class="btn btn-sm btn-success">acescentar email </span>
-                <p ng-repeat="item in dd.email"><label><span class="dashicons dashicons-email"></span>email</label><input type="text"  required="required"  name=cliente[email][] class='form-control' ></p>
-                <!---------------------------------------------------------------------->
-                <p><span ng-click="dd.Telefone()"  class="btn btn-sm btn-success">acrescentar telefone</span></p>
-                <p  ng-repeat="item in dd.telefone"><label><span class="dashicons dashicons-phone"></span>telefone</label><input type="text" name=cliente[telefone][] class='form-control' ></p>
-            </div>
-        </div>
+use Planet1\clientes as cl;
+use Planet1\Emails as em;
+use Planet1\telefone as tel;
+use Planet1\documento as doc;
+?>
 
-        <div class="row">
-            <div class="col-md-12">
-                Grupos<br>
-                <ul>
-                    <?php
-                    $dados = DataBase::ListaGeral(array("tabela" => "grupos"));
-                    foreach ($dados as $x):
-                        ?> 
-                        <li class="gruposCheck"><input type="checkbox" name=cliente[clientegrupos][] value="<?php echo $x['id'] ?>"> <?php echo $x['nome']; ?></li>
-                    <?php endforeach; ?>
-                </ul>
-            </div>
-        </div>
-
-    </div>
-    <input type="submit" value="Salvar">
-</form>
-
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 <style>
-    .gruposCheck{
-        border: 1px solid #dadada;
-        width: 24%;
-        float: left;
-        padding: 1rem;
-        margin: 2px;
-        border-radius: 3px;
+    label{
+        font-size: 11px;
+        margin-bottom: 1px!important;
+        margin-top: 8px;
     }
+    input, select{
+        font-size: 12px!important;
+        padding: 5px!important;
+    }
+    select{height: 30px!important;}
+    p{margin-bottom: 23px!important;}
+
 </style>
+
+<div class="container-fluid" id="app">
+    <h2>{{mensagem}}</h2>    
+    <form action="" method="post" name="dados">
+        <div class="row">
+            <div class="col-lg-4">
+
+                <p><label>id</label><input style="width: 89%; float: right;" id='id' type='text' name=dados[clientes][id] class='form-control'></p>
+                <p><label>Nome</label><input style="width: 84%; float: right;" required='required' id='nome' type='text' name=dados[clientes][nome] class='form-control'></p>
+                <!-------->
+                <p><label>Tipo de pessoa</label>
+                    <select name=dados[clientes][tipo_de_pessoa  style="width: 76%; float: right;" v-model="tipo_de_pessoa" class='form-control'>
+                        <option value='f'>fisica</option>
+                        <option value='j'>jurídica</option>
+                    </select></p>
+                <!------->
+                <p><label>Sexo</label>
+                    <select style="width: 91%; float: right;" name=dados[clientes][sexo] v-model="sexo" class='form-control'>
+                        <option value='m'>masculino</option>
+                        <option value='f'>feminino</option>
+                    </select></p>
+                <p><label>Data de Nascimento</label><input style="width: 70%; float: right;" v-model="dataNascimento" required='required' id='nascimento' type='date' name=dados[clientes][dataNascimento] class='form-control'></p>
+                <!------->
+
+
+            </div>
+
+            <div class="col-lg-4">
+                <!------->
+                <p><label>Cpf</label><input type='text' style="width: 91%; float: right;" v-model="cpf" required='required' id='cpf' name=dados[clientes][cpf] class='form-control'></p>
+                <!------->
+                <p><label>Rg</label><input type='text' style="width: 91%; float: right;" v-model="rg" required='required' id='rg' name=dados[clientes][rg] class='form-control'></p>
+                <!------->
+                <p><label>Data de expedição</label><input style="width: 73%; float: right;" v-model="dataExpedicao" required='required' type='date' id='data_de_expedicao' name=dados[clientes][dataExpedicao] class='form-control'></p>
+                <!------->    
+            </div>
+
+            <div class="col-lg-4">
+                <p><label>Documento</label>
+                    <select style="width: 80%; float: right;" name=dados[clientes][documento] v-model="documento" class="form-control">
+                        <?php foreach (doc::lista_documento() as $li): ?>
+                            <option value="<?php echo $li['id'] ?>"> <?php echo $li['documento'] ?></option>
+                        <?php endforeach; ?>
+                    </select></p>
+                <!------->
+                <p><label>Telefone</label><input required='required' style="width: 87%; float: right;" v-model="telefone" type='text' name=dados[telefone][telefone][] id='telefone' class='form-control'></p>
+                <p><label>referencia</label><input required='required' style="width: 84%; float: right;" v-model="referencia_telefone" type='text' name=dados[telefone][referencia][] id='telefone' class='form-control'></p>
+                <!------->
+                <p><label>E-mail</label><input required='required' style="width: 87%; float: right;" v-model="email" type='email' id='email' name=dados[email][email][] class='form-control'></p>
+                <!------->
+                <p><label>endereço</label><input required='required' style="width: 85%; float: right;" v-model="endereco" type='text' id='email' name=dados[email][email][] class='form-control'></p>
+                <!------->
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+
+
+        </div>
+        <hr>
+        <br><input type="submit" value="Salvar" class="btn btn-primary">    
+    </form>
+
+
+
+
+</div>   
+
+
+
+<script src="<?php echo Vue; ?>" ></script>
 <script>
-    angular.module('NovoCliente', []);
-    angular.module('NovoCliente').controller('dados', fctnDAdos);
-
-    dados.$inject['$scope']
-
-    function fctnDAdos($scope) {
-        var vm = this;
-        vm.info = " 2345sdlfsdlf ";
-
-        vm.email = ['1'];
-        vm.telefone = ['1'];
-        var tell = 1;
-        var mail = 1;
-
-        vm.Email = function (i) {
-            vm.email.push(mail);
-            mail++;
-        }
-
-        vm.Telefone = function (i) {
-            vm.telefone.push(tell);
-            tell++;
-            console.log(" novo campo de telefone ");
-        }
+var app = new Vue({
+    el: '#app',
+    data: {
+        mensagem: "Cadastrar novo cliente",
+        id: '',
+        nome: '',
+        tipo_de_pessoa: '',
+        sexo: '',
+        cpf: '',
+        rg: '',
+        dataExpedicao: '',
+        dataNascimento: '',
+        documento: '',
+        email: '',
+        telefone: '',
+        referencia_telefone: '',
+        ativo: '',
+        produto: '',
+        endereco: '',
     }
-
-
+});
 </script>
+<!------------------------------------------------------------>
+<!------------------------------------------------------------>
+<!------------------------------------------------------------>
+<!------------------------------------------------------------>
+<!------------------------------------------------------------>
+<!------------------------------------------------------------>
 
-<!--------------------google --------------------------------->
-<!------------------------------------------------------------>
-<!------------------------------------------------------------>
-<!------------------------------------------------------------>
-<!------------------------------------------------------------>
-<script>
 
-    var placeSearch, autocomplete;
-    var componentForm = {
-        street_number: 'short_name',
-        route: 'long_name',
-        locality: 'long_name',
-        administrative_area_level_1: 'short_name',
-        country: 'long_name',
-        postal_code: 'short_name'
-    };
 
-    function initAutocomplete() {
-        // Create the autocomplete object, restricting the search to geographical
-        // location types.
-        autocomplete = new google.maps.places.Autocomplete(
-                /** @type {!HTMLInputElement} */(document.getElementById('autocomplete')),
-                {types: ['geocode']});
-
-        // When the user selects an address from the dropdown, populate the address
-        // fields in the form.
-        autocomplete.addListener('place_changed', fillInAddress);
-    }
-
-    function fillInAddress() {
-        // Get the place details from the autocomplete object.
-        var place = autocomplete.getPlace();
-
-        for (var component in componentForm) {
-            document.getElementById(component).value = '';
-            document.getElementById(component).disabled = false;
-        }
-
-        // Get each component of the address from the place details
-        // and fill the corresponding field on the form.
-        for (var i = 0; i < place.address_components.length; i++) {
-            var addressType = place.address_components[i].types[0];
-            if (componentForm[addressType]) {
-                var val = place.address_components[i][componentForm[addressType]];
-                document.getElementById(addressType).value = val;
-            }
-        }
-    }
-
-    // Bias the autocomplete object to the user's geographical location,
-    // as supplied by the browser's 'navigator.geolocation' object.
-    function geolocate() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function (position) {
-                var geolocation = {
-                    lat: position.coords.latitude,
-                    lng: position.coords.longitude
-                };
-                var circle = new google.maps.Circle({
-                    center: geolocation,
-                    radius: position.coords.accuracy
-                });
-                autocomplete.setBounds(circle.getBounds());
-            });
-        }
-    }
-</script>
-<script src="https://maps.googleapis.com/maps/api/js?key=<?php echo keyGoogleApi; ?>&libraries=places&callback=initAutocomplete"
-async defer></script>
-<!------------------------------------------------------------>
-<!------------------------------------------------------------>
-<!------------------------------------------------------------>
-<!------------------------------------------------------------>
-<!------------------------------------------------------------>
-<!------------------------------------------------------------>
 <?php
-if (isset($_POST['cliente'])):
+if (isset($_POST['dados'])):
+
+    $dados             = $_POST['dados'];
+    new cl();
+    cl::create();
     
-    $_POST['cliente']['dataNascimento']  = $_POST['cliente']['nascimento'];
-      
-    save::$entrada = 'cliente';
-    save::SalvaForm();
-    save::clientesGrupos("cliente");//clientesGrupos("cliente");
+    foreach ($dados['email']['email'] as $e):
+        if (!empty($e)):
+            em::$entradaDados = array("email" => $e);
+            em::$id_cliente   = cl::$IdCliente;
+            em::Create();
+        endif;
+    endforeach;
+
+    foreach ($dados['telefone']['telefone'] as $t):
+        if (!empty($t)):
+            tel::$dados_entrada = array("telefone" => $t);
+            tel::$id_cliente    = cl::$IdCliente;
+            tel::Create();
+        endif;
+    endforeach;
+
 endif;
-
-
-
-
-/* * ********************** */
 ?>

@@ -210,7 +210,7 @@
                  $headers .= "X-Mailer: PHP" . phpversion() . "\r\n";
                  $status  = mail(self::$email, self::$titulo, self::$conteudo_email, $headers);
                  if ($status == TRUE) {
-                     echo "\r\n e-mail enviado para " . self::$email;
+                     //echo "\r\n e-mail enviado para " . self::$email;
                      self::$retorno_email = $status;
                      self::$status        = 1;
                      self::salva_dados();

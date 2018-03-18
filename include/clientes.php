@@ -34,6 +34,7 @@ class clientes
         global $wpdb;
         $sel2    = " select cliente from logemail where month(data)='" . date("m") . "' and day(data)='" . date("d") . "' and year(data)='" . date("Y") . "' and tipoEmail='1'";
         $Sel     = "SELECT id,nome FROM `clientes` WHERE day(dataNascimento) = '" . date("d") . "' and month(dataNascimento)='" . date("m") . "' and id not in($sel2) limit 15";
+        
         $dados   = $wpdb->get_results($Sel, ARRAY_A);
         $cliente = array();
         foreach ($dados as $d):
@@ -60,9 +61,16 @@ class clientes
 
     public static function ClientesNovos() {
         global $wpdb;
-        $anterior = date('Y-m-d H:i:s', strtotime('-' . configuracao['cliente_novo'] . ' days'));
-        $hoje     = date("Y-m-d h:i:s");
-        $sel      = "select id, nome from clientes where entrada between '$anterior' and '$hoje'  limit 20";
+        
+        if(!empty(configuracao['cliente_novo'])){
+            $anterior = date('Y-m-d H:i:s', strtotime('-' . configuracao['cliente_novo'] . ' DAYS'));
+        }else{
+            $anterior = date('Y-m-d H:i:s', strtotime('-0 DAYS'));
+        }
+        
+        $hoje     = date("Y-m-d H:i:s");
+        $sel      = "select id, nome from clientes where entrada between '$anterior' and '$hoje' limit 20";
+        
         $dados    = $wpdb->get_results($sel, ARRAY_A);
         $cliente  = array();
         foreach ($dados as $d):
@@ -80,6 +88,7 @@ class clientes
         $dias2  = date('Y-m-d 23:59:59', strtotime("-" . $dias . " days"));
         $Sel    = "select cliente from logemail where tipoEmail='5' and data between '" . date("y-m-d 00:00:00") . "' and '" . date("y-m-d 23:59:59") . "'";
         $select = "select cl.id, cl.nome from clientes as cl where cl.id not in($Sel) and  cl.entrada between '$dias1' and '$dias2'group by cl.id  limit 20 ";
+        
         $dados  = $wpdb->get_results($select, ARRAY_A);
         foreach ($dados as $d):
             $emails    = em::EmailCliente($d['id']);

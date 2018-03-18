@@ -51,14 +51,14 @@ function ConfiguracoesEmailEnvioCliente() {
     ?>
     <div class="metaboxes">
         <p><input type="radio" name=email[email_setting] value='1' <?php if ($opcaoEmail == "1") { ?>checked='checked'<?php } ?> >aniversário do cliente</p>
+        <!--
         <p><input type="radio" name=email[email_setting] value='2' <?php if ($opcaoEmail == "2") { ?>checked='checked'<?php } ?> >enviar este email quando o cliente se cadastrar</p>
+        -->
         <p><input type="radio" name=email[email_setting] value='3' <?php if ($opcaoEmail == "3") { ?>checked='checked'<?php } ?> >enviar no dia <input type='date' value="<?php echo date("Y-m-d", $agendada); ?>" name=email[DataEnvio] style='width: 138px;' ></p>
         <p><input type="radio" name=email[email_setting] value='4' <?php if ($opcaoEmail == "4") { ?>checked='checked'<?php } ?> >desativar este email</p>
 
 
-
-
-                                    <p><!--<input type="radio" name=email[email_setting] value='5'>--> enviar para o grupo:</p>
+       <p><!--<input type="radio" name=email[email_setting] value='5'>--> enviar para o grupo:</p>
         <ul>
             <?php
             $dados = DataBase::ListaGeral(array("tabela" => "grupos"));
@@ -67,7 +67,7 @@ function ConfiguracoesEmailEnvioCliente() {
                 <li class="gruposCheck"><input type="checkbox" name=email[clientegrupos][] value="<?php echo $x['id'] ?>"> <?php echo $x['nome']; ?></li>
             <?php endforeach; ?>
         </ul>
-        <p><input type="radio" name=email[email_setting] value='5' <?php if ($opcaoEmail == "5") { ?>checked='checked'<?php } ?> >enviar <input name=email[diasApos] value="<?php echo $diasApos[0]; ?>" type='number' max="365" style='width: 59px;' > dias após o cadastro</p>
+        <p><input type="radio" name=email[email_setting] value='5' <?php if ($opcaoEmail == "5") { ?>checked='checked'<?php } ?> >enviar <input name=email[diasApos] value="<?php echo $diasApos[0]; ?>" type='number' max="365" style='width: 59px;' > dias após o cadastro(em caso de email após o cadastro, informar o valor '0')</p>
 
     </div>
     <?php

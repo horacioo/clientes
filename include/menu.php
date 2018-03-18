@@ -15,12 +15,15 @@ function MenuClienteLateral() {
     add_menu_page('cliente', 'clientes', 'administrator', 'clientes', clienteFunct, 'dashicons-admin-users', 1);
     add_submenu_page('clientes', 'novo_cliente', "novo cliente", 'administrator', 'novo_cliente', NovoclienteFunct);
     add_submenu_page('clientes', 'editar_cliente', "editar cliente", 'administrator', 'editar_cliente', Editar_cliente);
+    add_submenu_page('clientes', 'form', "instruções de formulário", 'administrator', 'form', Form);
 }
 
 
 
 
-
+function Form(){
+    require 'arquivos/guiaForm.php';
+}
 
 
 

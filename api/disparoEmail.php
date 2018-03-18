@@ -6,12 +6,18 @@ require_once '../include/clientes.php';
 require_once '../include/Emails.php';
 require_once '../include/grupos.php';
 
-use emailsProcessosEDados\Emails as em;
-use Clientes\clientes as cliente;
-use Grupos\grupos as gr;
+use Planet1\Emails as em;
+use Planet1\clientes as cliente;
+use Planet1\grupos as gr;
+
+/*
+  use emailsProcessosEDados\Emails as em;
+  use Clientes\clientes as cliente;
+  use Grupos\grupos as gr;
+ */
 
 $espera = 0;
-$pro    = 01;
+$pro    = 1;
 /* * *****start dos processos******* */
 
 em::$Email_Return_Path  = "contato@regisepennaseguros.com.br";
@@ -22,26 +28,34 @@ em::$Email_replyto_name = "Regis e Penna corretora de seguros";
 
 
 $x     = 0;
-$total = 30;
+$total = 1;
 
-echo"<br>". date("H:i:s");
+//echo"<br>". date("H:i:s");
 
 while ($x < $total):
 
     EnviaAniversario();
-    sleep(5);
+    sleep(1);
+    /*     * ******************** */
     EnvioAgendado();
-    sleep(5);
+    sleep(1);
+    /*     * ******************** */
     EnvioClientesNovos();
-    sleep(5);
-
+    sleep(1);
+    /*     * ******************** */
+   // EnvioEmailCadastrosRecentes();
+    //sleep(1);
+    /*     * ******************** */
     $x++;
-    sleep(30);
+    sleep(1);
+/* * ******************** */
 
-    echo"<br>processo $x realizado";
+///echo"<br>processo $x realizado";
 endwhile;
 
-echo"<br>". date("H:i:s");
+
+
+///echo"<br>". date("H:i:s");
 
 
 
@@ -88,13 +102,6 @@ function EnviaAniversario() {
 
 
 
-
-
-
-
-
-
-
 function EnvioAgendado() {
     $clientes = cliente::ClientesEnvioEmail();
     $texto    = em::EnvioAgendado();
@@ -136,14 +143,9 @@ function EnvioAgendado() {
 
 
 
-
-
-
-
-
-
-
 /* * quando na administração for informado que o e-mail será enviado após X dias, é esse método que será responsável pelo envio do e-mail */
+
+
 
 function EnvioClientesNovos() {
     global $wpdb;
@@ -196,12 +198,3 @@ function EnvioClientesNovos() {
 
     endforeach;
 }
-
-
-
-
-
-
-
-
-

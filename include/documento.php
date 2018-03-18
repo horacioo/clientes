@@ -32,6 +32,15 @@ class documento
 
 
 
+    static function lista_documento() {
+        global $wpdb;
+        $query = "select * from documento";
+        $x     = $wpdb->get_results($query, ARRAY_A);
+        return $x;
+    }
+
+
+
     public static function documento_salva() {
         DataBase::$tabela = "documento";
         DataBase::$campos = ['documento', 'nome'];

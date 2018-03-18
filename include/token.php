@@ -20,7 +20,7 @@ class token
         global $wpdb;
         $ip       = md5($_SERVER['REMOTE_ADDR']);
         self::$ip = $ip;
-        $past     = date("Y-m-d H:i:s", strtotime("-5 minutes"));
+        $past     = date("Y-m-d H:i:s", strtotime("-35 minutes"));
         $data     = time();
         $token    = substr(md5($ip . $data), 0, 20); //substr(md5($_SERVER['REMOTE_ADDR']), 4, 11);
         $del      = "delete from token where data < '$past'";

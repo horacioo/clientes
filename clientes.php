@@ -14,6 +14,7 @@ define('clienteSemEmail', "15 dias");
 define("apiLista", plugin_dir_url('cliente.php') . "clientes/api/api_lista.php");
 define("keyGoogleApi", "AIzaSyCJZaknPwDWQ4HplUGPvTwpaLtMEASvbgI");
 define("meuIp", md5($_SERVER["REMOTE_ADDR"]));
+define("Vue", plugin_dir_url('clientes/')."clientes/js/vue.min.js");
 
 
 date_default_timezone_set('Brazil/East');
@@ -46,7 +47,7 @@ require_once 'include/clientes.php';
 require_once 'include/Emails.php';
 require_once 'include/DataBase.php';
 require_once 'include/menu.php';
-////require_once 'include/form.php';
+require_once 'include/form.php';
 require_once 'include/mecanicas.php';
 require_once 'include/EstadoCivil.php';
 require_once 'include/endereco.php';
@@ -64,8 +65,10 @@ use Planet1\token;
 add_action('admin_menu', 'MenuClientes');
 add_shortcode("Recebe-Form", 'entradaForm');
 add_shortcode("token", function() {
+
     $token = token::Token();
-    $x     = "<input type='hidden' name='token' value='" . $token['token'] . "'>";
+    print_r($token);
+
     return $x;
 });
 register_activation_hook(__FILE__, CriaTabelas);
@@ -163,7 +166,16 @@ function CriaTabelas() {
     $wpdb->query($sql);
 
     /*     * *********************************************************************************** */
-    $sql = "CREATE TABLE if not exists  `token` (id` int(11) NOT NULL AUTO_INCREMENT,`token` varchar(200) NOT NULL,`data` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,`ip` varchar(200) NOT NULL, PRIMARY KEY (`id`), UNIQUE KEY `ip` (`ip`,`token`) USING BTREE ) ENGINE=InnoDB AUTO_INCREMENT=52 DEFAULT CHARSET=latin1;";
+
+    $sql = "CREATE TABLE if not exists `token` (
+                  `id` int(11) NOT NULL AUTO_INCREMENT,
+                  `token` varchar(200) NOT NULL,
+                  `data` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                  `ip` varchar(200) NOT NULL,
+                  PRIMARY KEY (`id`),
+                  UNIQUE KEY `ip` (`ip`,`token`) USING BTREE
+                ) ENGINE=InnoDB AUTO_INCREMENT=75 DEFAULT CHARSET=latin1;";
     $wpdb->query($sql);
 }
+
 
