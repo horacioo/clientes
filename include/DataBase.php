@@ -86,6 +86,13 @@ class DataBase
 
 
 
+
+    
+    /*** preciso passar uma array de campos, o nome da tabela e a array com os campos e dados, exemplo:<br>
+     * <br><b>db::$tabela = uma tabela qualquer; a tabela</b> 
+     * <br><b>db::$campos = ['clientes', 'email']; os campos</b> 
+     * <br><b>db::Salva(array("clientes" => self::$id_cliente, "email" => db::$array['email'][0]));</b> 
+     * **/
     public static function Salva($array) {
         global $wpdb;
         if (is_array($array)):

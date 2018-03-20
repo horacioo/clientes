@@ -2,12 +2,12 @@
 
 use Planet1\htmlRender as form;
 
+
+
 function MenuClientes() {
     MenuClienteLateral();
     functionGrupos();
 }
-
-
 
 
 
@@ -16,15 +16,20 @@ function MenuClienteLateral() {
     add_submenu_page('clientes', 'novo_cliente', "novo cliente", 'administrator', 'novo_cliente', NovoclienteFunct);
     add_submenu_page('clientes', 'editar_cliente', "editar cliente", 'administrator', 'editar_cliente', Editar_cliente);
     add_submenu_page('clientes', 'form', "instruções de formulário", 'administrator', 'form', Form);
+    add_submenu_page('clientes', 'produtos', "Produtos", 'administrator', 'produtos', produtos);
 }
 
 
 
+function produtos() {
+    require 'arquivos/produtos.php';
+}
 
-function Form(){
+
+
+function Form() {
     require 'arquivos/guiaForm.php';
 }
-
 
 
 
@@ -32,8 +37,6 @@ function clienteFunct() {
     BootStrap();
     Angular();
 }
-
-
 
 
 
@@ -45,13 +48,10 @@ function NovoclienteFunct() {
 
 
 
-
-
 function Editar_cliente() {
-     BootStrap();
+    BootStrap();
     require_once 'arquivos/listaClientes.php'; // echo form::Editar();
 }
-
 
 
 
@@ -60,5 +60,16 @@ function functionGrupos() {
     add_submenu_page("grupos", 'novo grupo', 'criar grupo', 'administrator', 'criarGrupo', NovoGrupoFctn);
 }
 
-function Grupofunct(){}
-function NovoGrupoFctn(){    require_once 'arquivos/grupo.php';}
+
+
+function Grupofunct() {
+    
+}
+
+
+
+function NovoGrupoFctn() {
+    require_once 'arquivos/grupo.php';
+}
+
+

@@ -30,11 +30,18 @@ class clientes
 
 
 
+    public function __construct() {
+        $dados             = $_POST['dados'];
+        self::$dados_entrada = $dados;
+    }
+
+
+
     public static function Aniversario() {
         global $wpdb;
-        $sel2    = " select cliente from logemail where month(data)='" . date("m") . "' and day(data)='" . date("d") . "' and year(data)='" . date("Y") . "' and tipoEmail='1'";
-        $Sel     = "SELECT id,nome FROM `clientes` WHERE day(dataNascimento) = '" . date("d") . "' and month(dataNascimento)='" . date("m") . "' and id not in($sel2) limit 15";
-        
+        $sel2 = " select cliente from logemail where month(data)='" . date("m") . "' and day(data)='" . date("d") . "' and year(data)='" . date("Y") . "' and tipoEmail='1'";
+        $Sel  = "SELECT id,nome FROM `clientes` WHERE day(dataNascimento) = '" . date("d") . "' and month(dataNascimento)='" . date("m") . "' and id not in($sel2) limit 15";
+
         $dados   = $wpdb->get_results($Sel, ARRAY_A);
         $cliente = array();
         foreach ($dados as $d):
@@ -61,18 +68,18 @@ class clientes
 
     public static function ClientesNovos() {
         global $wpdb;
-        
-        if(!empty(configuracao['cliente_novo'])){
+
+        if (!empty(configuracao['cliente_novo'])) {
             $anterior = date('Y-m-d H:i:s', strtotime('-' . configuracao['cliente_novo'] . ' DAYS'));
-        }else{
+        } else {
             $anterior = date('Y-m-d H:i:s', strtotime('-0 DAYS'));
         }
-        
-        $hoje     = date("Y-m-d H:i:s");
-        $sel      = "select id, nome from clientes where entrada between '$anterior' and '$hoje' limit 20";
-        
-        $dados    = $wpdb->get_results($sel, ARRAY_A);
-        $cliente  = array();
+
+        $hoje = date("Y-m-d H:i:s");
+        $sel  = "select id, nome from clientes where entrada between '$anterior' and '$hoje' limit 20";
+
+        $dados   = $wpdb->get_results($sel, ARRAY_A);
+        $cliente = array();
         foreach ($dados as $d):
             $cliente[] = array("nome" => $d['nome'], "id" => $d['id']);
         endforeach;
@@ -88,8 +95,8 @@ class clientes
         $dias2  = date('Y-m-d 23:59:59', strtotime("-" . $dias . " days"));
         $Sel    = "select cliente from logemail where tipoEmail='5' and data between '" . date("y-m-d 00:00:00") . "' and '" . date("y-m-d 23:59:59") . "'";
         $select = "select cl.id, cl.nome from clientes as cl where cl.id not in($Sel) and  cl.entrada between '$dias1' and '$dias2'group by cl.id  limit 20 ";
-        
-        $dados  = $wpdb->get_results($select, ARRAY_A);
+
+        $dados = $wpdb->get_results($select, ARRAY_A);
         foreach ($dados as $d):
             $emails    = em::EmailCliente($d['id']);
             $cliente[] = array("nome" => $d['nome'], "id" => $d['id'], "email" => $emails);
@@ -151,8 +158,13 @@ class clientes
 
 
 
+    /*     * *não esqueça de marcar os atributos da classe, isso é importante para a execução desse código */
+
+
+
     public static function create() {
         $dados = self::$dados_entrada;
+
         /*         * *********************************************************************** */
         if (!empty($dados['estado_civil'])) {
             ec::$estado_civil = $dados['estado_civil'];
@@ -172,25 +184,31 @@ class clientes
         /*         * *********************************************************************** */
         self::CpfCliente($dados);
         /*         * *********************************************************************** */
-        $dados['clientes']['cpf']          = self::$cpf;
+        $dados['clientes']['cpf']            = self::$cpf;
+        $dados['clientes']['nome']           = self::$nome;
+        $dados['clientes']['rg']             = self::$rg;
+        $dados['clientes']['dataNascimento'] = self::$dataNascimento;
+        $dados['clientes']['sexo']           = self::$sexo;
+        $dados['clientes']['dataExpedicao']  = self::$dataExpedicao;
         /*         * *********************************************************************** */
-        DataBase::$tabela                  = self::$tabela;
-        DataBase::$campos                  = self::$campos;
-        $entrada                           = DataBase::$array;
+        DataBase::$tabela                    = self::$tabela;
+        DataBase::$campos                    = self::$campos;
+        $entrada                             = DataBase::$array;
         /*         * *********************************************************************** */
-        $dados['clientes']['estado_civil'] = $entrada['estado_civil'][0];
-        $dados['clientes']['documento']    = $entrada['documento'][0];
+        $dados['clientes']['estado_civil']   = $entrada['estado_civil'][0];
+        $dados['clientes']['documento']      = $entrada['documento'][0];
         /*         * *********************************************************************** */
+
         DataBase::Salva($dados['clientes']);
         /*         * *********************************************************************** */
-        self::$IdCliente                   = DataBase::$array['clientes'][0];
+        self::$IdCliente = DataBase::$array['clientes'][0];
         /*         * *********************************************************************************** */
     }
 
 
 
     private static function CpfCliente($dados = '') {
-        if (empty($dados['clientes']['cpf'])) {
+        if (is_null(self::$cpf)) {
             if (is_null($_SESSION['dadoalternativos']['cpf'])) {
                 $_SESSION['dadoalternativos']['data'] = time();
                 $cpf                                  = substr(md5($_SERVER['REMOTE_ADDR']), 4, 11);

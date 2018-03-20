@@ -14,7 +14,7 @@ define('clienteSemEmail', "15 dias");
 define("apiLista", plugin_dir_url('cliente.php') . "clientes/api/api_lista.php");
 define("keyGoogleApi", "AIzaSyCJZaknPwDWQ4HplUGPvTwpaLtMEASvbgI");
 define("meuIp", md5($_SERVER["REMOTE_ADDR"]));
-define("Vue", plugin_dir_url('clientes/')."clientes/js/vue.min.js");
+define("Vue", plugin_dir_url('clientes/') . "clientes/js/vue.min.js");
 
 
 date_default_timezone_set('Brazil/East');
@@ -44,6 +44,8 @@ define("data", date("Y-m-d H:i:s"));
 require_once 'config.php';
 require_once 'include/grupos.php';
 require_once 'include/clientes.php';
+require_once 'include/indicacoes.php';
+require_once 'include/produto.php';
 require_once 'include/Emails.php';
 require_once 'include/DataBase.php';
 require_once 'include/menu.php';
@@ -175,6 +177,36 @@ function CriaTabelas() {
                   PRIMARY KEY (`id`),
                   UNIQUE KEY `ip` (`ip`,`token`) USING BTREE
                 ) ENGINE=InnoDB AUTO_INCREMENT=75 DEFAULT CHARSET=latin1;";
+    $wpdb->query($sql);
+
+    /*     * ******************************************************************************************************* */
+    $sql = " CREATE TABLE  if not exists  `clientesprodutos` (
+                  `id` int(11) NOT NULL AUTO_INCREMENT,
+                  `clientes` int(11) NOT NULL,
+                  `produtos` int(11) NOT NULL,
+                  `data` datetime NOT NULL,
+                  `valor` float(10,2) NOT NULL,
+                  `ativo` char(1) NOT NULL,
+                  PRIMARY KEY (`id`),
+                  KEY `clienteProduto` (`clientes`,`produtos`),
+                  KEY `produto` (`produtos`),
+                  KEY `cliente` (`id`),
+                  CONSTRAINT `produtos_cliente` FOREIGN KEY (`clientes`) REFERENCES `clientes` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+                  CONSTRAINT `produtos_produtos` FOREIGN KEY (`produtos`) REFERENCES `produtos` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+                ) ENGINE=InnoDB DEFAULT CHARSET=latin1;";
+    $wpdb->query($sql);
+    /*     * ******************************************************************************************************* */
+    $sql="CREATE TABLE   if not exists  `indicacao` (
+                  `id` int(11) NOT NULL,
+                  `quemIndicou` int(11) NOT NULL,
+                  `indicado` int(11) NOT NULL,
+                  `data` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+                  UNIQUE KEY `cliente` (`quemIndicou`,`indicado`),
+                  KEY `ref_cliente` (`indicado`),
+                  KEY `quemIndica` (`quemIndicou`),
+                  CONSTRAINT `cliente_que_inidicou` FOREIGN KEY (`quemIndicou`) REFERENCES `clientes` (`id`) ON DELETE CASCADE,
+                  CONSTRAINT `cliente_ref` FOREIGN KEY (`indicado`) REFERENCES `clientes` (`id`) ON DELETE CASCADE
+                ) ENGINE=InnoDB DEFAULT CHARSET=latin1;";
     $wpdb->query($sql);
 }
 
