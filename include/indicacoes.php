@@ -22,12 +22,26 @@ class indicacoes
     static $campos      = ['quemIndicou', 'indicado'];
     static $cliente;
     static $quemIndicou = "";
-    
+
+
 
     public static function Create() {
         DataBase::$tabela = self::$tabela;
         DataBase::$campos = self::$campos;
-        DataBase::Salva(array("quemIndicou"=>self::$quemIndicou,"indicado"=>self::$cliente));
+        DataBase::Salva(array("quemIndicou" => self::$quemIndicou, "indicado" => self::$cliente));
+    }
+
+
+
+    /**     * apenas informe o id do cliente que deseja saber por quem foi indicado! */
+    public static function IndicadoPor($id) {
+        if ($id != "" AND ! is_null($id)):
+            $x                   = "select * from indicacao where indicado=$id";
+            global $wpdb;
+            $indicado            = $wpdb->get_row($x, ARRAY_A);
+            clientes::$IdCliente = $indicado['quemIndicou'];
+            clientes::DadosCliente();
+        endif;
     }
 
 

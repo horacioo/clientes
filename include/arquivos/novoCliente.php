@@ -6,17 +6,23 @@ use Planet1\telefone as tel;
 use Planet1\documento as doc;
 use Planet1\produto;
 use Planet1\indicacoes;
+
+global $_wp_admin_css_colors
 ?>
 
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 <style>
     .row{
-        border: 1px solid #b9b9b9;
+        font-family: arial;
+        font-size: 11px;
+        line-height: 26px;
+        font-weight: 400;
+        /*border: 1px solid #b9b9b9;
         padding:29px 0px 0px 0px;
         background-color: #ececec;
         border-radius: 15px 15px 8px 8px;
         margin-bottom: 28px;
-        margin-top: 18px;
+        margin-top: 18px;*/
     }
     label{
         font-size: 11px;
@@ -35,17 +41,53 @@ use Planet1\indicacoes;
         width: 100%; text-align: center;
         font-size: 20px!important;
     }
+    .listaClientes{
+        position: absolute;
+        z-index: 2;
+        max-width: 100%;
+        width: 500px;
+    }
+    .listaClientes li{
+        border: 1px solid #c7c7c7;
+        background-color: #f1f1f1;
+        padding: 6px;
+        margin-bottom: 1px;
+        text-transform: capitalize;
+    }
+    .listaClientes li:hover{
+        background-color: #a9d8ff;;
+    }
 </style>
 
 <div class="container-fluid" id="app">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <label>pesquise um cliente:</label><input v-model="pesquisa" type="text" v-on:keyup="localizaCliente()" name="pesquisa" class="form-control">
+                <div class="resultadoDePesquisa" style="position: relative;">
+                    <ul class="listaClientes">
+                        <li v-for="item in resultadoPesquisa">{{item.nome}} <input type="radio" v-on:click="AtribuiValores(item)" v-model="clienteRef" :value="item.id"></li>
+                    </ul>
+                </div>
+                <hr>
+            </div>
+        </div>
+    </div>
+    <!--------------------------------------------------------------------------->
     <h2>{{mensagem}}</h2>    
     <form action="" method="post" name="dados">
+        <input v-if="edit" v-model="id" type="hidden" >
+        <!--------------------------------------------------------------------------->
+
+
+
+
+
+        <!--------------------------------------------------------------------------->
         <div class="row">
             <div class="col-lg-3">
-
-                <!--<p><label>id</label><input style="width: 89%; float: right;" id='id' type='text' name=dados[clientes][id] class='form-control'></p>-->
                 <!-------->
-                <p><label>Nome</label><input style="width: 84%; float: right;" required='required' id='nome' type='text' name=dados[clientes][nome] class='form-control'></p>
+                <p><label>Nome</label><input style="width: 84%; float: right;" v-model="nome" required='required' id='nome' type='text' name=dados[clientes][nome] class='form-control'></p>
                 <!-------->
                 <p><label>Tipo de pessoa</label>
                     <select name=dados[clientes][tipo_de_pessoa]  style="width: 70%; float: right;" v-model="tipo_de_pessoa" class='form-control'>
@@ -54,14 +96,13 @@ use Planet1\indicacoes;
                     </select></p>
                 <!------->
                 <p><label>Sexo</label>
-                    <select style="width: 85%; float: right;" name=dados[clientes][sexo] v-model="sexo" class='form-control'>
+                    <select style="width: 85%; float: right;"  name=dados[clientes][sexo] v-model="sexo" class='form-control'>
                         <option value='m'>masculino</option>
                         <option value='f'>feminino</option>
                     </select></p>
                 <p><label>Data de Nascimento</label><input style="width: 61%; float: right;" v-model="dataNascimento" required='required' id='nascimento' type='date' name=dados[clientes][dataNascimento] class='form-control'></p>
                 <!------->
             </div>
-
             <div class="col-lg-3">
                 <!------->
                 <p><label>Cpf</label><input type='text' style="width: 91%; float: right;" v-model="cpf" required='required' id='cpf' name=dados[clientes][cpf] class='form-control'></p>
@@ -71,32 +112,80 @@ use Planet1\indicacoes;
                 <p><label>Data de expedição</label><input style="width: 64%; float: right;" v-model="dataExpedicao" required='required' type='date' id='data_de_expedicao' name=dados[clientes][dataExpedicao] class='form-control'></p>
                 <!------->    
             </div>
-
             <div class="col-lg-3">
                 <p><label>Documento</label>
                     <select style="width: 75%; float: right;" name=dados[clientes][documento] v-model="documento" class="form-control">
                         <?php foreach (doc::lista_documento() as $li): ?>
                             <option value="<?php echo $li['id'] ?>"> <?php echo $li['documento'] ?></option>
                         <?php endforeach; ?>
-                    </select></p>
+                    </select>
+                </p>
                 <!------->
-                <p><label>Telefone</label><input required='required' style="width: 81%; float: right;" v-model="telefone" type='text' name=dados[telefone][telefone][] id='telefone' class='form-control'></p>
                 <p><label>referencia</label><input required='required' style="width: 79%; float: right;" v-model="referencia_telefone" type='text' name=dados[telefone][referencia][] id='telefone' class='form-control'></p>
-                <!------->
-                <p><label>E-mail</label><input required='required' style="width: 85%; float: right;" v-model="email" type='email' id='email' name=dados[email][email][] class='form-control'></p>
+
+                <span v-if="cadastra">      
+                    <!------->
+                    <p >
+                        <label>Telefone</label><input required='required' style="width: 83%; float: right;" v-model="email" type='email' id='email' class='form-control' name=dados[telefone][telefone][] >
+                    </p>
+                    <!------->
+                    <p>
+                        <label>E-mail</label><input required='required' style="width: 83%; float: right;" v-model="email" type='email' id='email' name=dados[email][email][] class='form-control'>
+                    </p>
+                    <!------->
+                </span>
+
+
+
+
+                <span v-if="edit" >
+                    <telefones-edit></telefones-edit>
+                    <span>Telefones<br>
+                        <input required='required' style="width: 100%; float: right;" type='email'  class='form-control'  >
+                        <span v-for="item in telefones">
+                            <input required='required' style="width: 100%; float: right;" type='email'  class='form-control' :value="item.telefone" >
+                        </span>
+                    </span>
+
+
+                    <span class="emails">Emails<br>
+                        <input type="email" style="width: 100%; float: right;">
+                        <span v-for="item in emails">
+                            <input type="email" style="width: 100%; float: right;" :value="item.email">
+                        </span>
+                    </span>
+                </span>
+
+
+
+
                 <!------->
                 <p><label>endereço</label><input required='required' style="width: 80%; float: right;" v-model="endereco" type='text' id='endereco' name=dados[endereco] class='form-control'></p>
                 <!------->
             </div>
             <div class="col-lg-3">
-                <label>cliente indicado por:</label><input  class="form-control" name=dados[indicacao][quemIndica] type="text">
+                indicado por <input type="text" v-model="indicacao" @keyup="indicacaoFcn()" class="form-control">
+                <ul>
+                    <li v-for="item in pessoaQueIndicou">{{item.nome}}\{{item.cpf}} <br> <input type="hidden"  :value="item.id"  name=dados[indicacao][quemIndica] ></li>
+                </ul>
+                <!---name=dados['indicacao']['quemIndica']---->
             </div>
         </div>
-        
-       
-       
-        <div class="row">
-            <div class="col-md-3">
+        <!--------------------------------------------------------------------------->
+
+
+
+
+
+
+
+
+
+
+
+        <!--------------------------------------------------------------------------->
+        <div class="row"  >
+            <div class="col-md-4">
                 <h2>cadastrar produto desse cliente:</h2>
                 <p><label>produto</label>
                     <select class="form-control" type="text" name=dados[produtos][produto]>
@@ -106,57 +195,152 @@ use Planet1\indicacoes;
                     </select>
                 </p>
                 <p><label>valor</label><input class="form-control" type="text" name=dados[produtos][valor]></p>
+                <p><label>comissão</label><input class="form-control" type="text" name=dados[produtos][comissao]></p>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <h2>Cliente ativo?</h2>
                 <p>
                     <label>não ativo</label><input type="radio" value="0"  name=dados[produtos][ativo]>
                     <label>ativo</label><input checked="checked" type="radio" value="1" name=dados[produtos][ativo]>
                 </p>
             </div>
-            <div class="col-md-4">
-                <h2>lista de produtos desse cliente:</h2>
-                <ul>
-                    <li>alidasa</li>
-                    <li>alidasa</li>
-                </ul>
+            <div class="col-md-6">
+                <h3>produtos </h3>
+                <produto-lista class="produto-lista" :total="item.total" :ativo="item.ativo" :id="item.id" :produto="item.produto" :valor="item.valor" :comissao="item.comissao" v-for="item in produto"></produto-lista>
             </div>
         </div>
-        
-        <br><input type="submit" value="Salvar" class="btn btn-primary">    
+        <!--------------------------------------------------------------------------->
+
+
+
+        <br><input type="submit" value="Salvar" class="btn btn-primary">  
+        <nome-info></nome-info>
+        <!--------------------------------------------------------------------------->
     </form>
 
 
 
-    <Component></Component>
-</div>   
 
+</div>   
+<style>
+    .produto-lista{border:0px solid red; margin-bottom: 2px;}
+</style>
 
 
 <script src="<?php echo Vue ?>"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.js"></script>
 <script>
-
-new Vue({
-    el: '#app',
-    data: {
-        mensagem: "Cadastrar novo cliente",
-        id: '',
-        nome: '',
-        tipo_de_pessoa: '',
-        sexo: '',
-        cpf: '',
-        rg: '',
-        dataExpedicao: '',
-        dataNascimento: '',
-        documento: '',
-        email: '',
-        telefone: '',
-        referencia_telefone: '',
-        ativo: '',
-        produto: '',
-        endereco: ''
+Vue.component('telefones-edit', {
+    template: `<div class='email'>info {{info}}</div>`,
+    data: function () {
+        return {info: 'teste'}
     }
-});
+}),
+        Vue.component('caixa-dados', {template: `<div style="text-align: center; display: inline-block; border: 1px solid #c5c5c5; width: 19.3%;"><slot></slot><div>`}, ),
+        Vue.component(
+                'produto-lista', {
+                    template: `<div>
+                   <caixa-dados><input type='checkbox' checked='checked' name=dados[produtos][produto][]>{{produto}}</caixa-dados>
+                   <caixa-dados>{{ativo}}</caixa-dados>
+                   <caixa-dados>{{comissao}}</caixa-dados>
+                   <caixa-dados>{{valor}}</caixa-dados>
+                   <caixa-dados>{{total}}</caixa-dados>
+               <div>`,
+                    props: ['produto', 'valor', 'ativo', 'comissao', 'id', 'total'],
+                },
+                ),
+        new Vue({
+            el: '#app',
+            data: {
+                mensagem: "Cadastrar novo cliente",
+                id: '',
+                nome: '',
+                tipo_de_pessoa: '',
+                sexo: '',
+                cpf: '',
+                rg: '',
+                dataExpedicao: '',
+                dataNascimento: '',
+                documento: '',
+                email: '',
+                telefone: '',
+                referencia_telefone: '',
+                ativo: '',
+                produto: '',
+                endereco: '',
+                indicacao: '',
+                nome: '',
+                pesquisa: '',
+                resultadoPesquisa: [],
+                pessoaQueIndicou: [],
+                indicadoPor: [],
+                clienteRef: '',
+                telefones: '',
+                emails: '',
+                produto: '',
+                edit: false,
+                cadastra: true,
+            },
+            methods: {
+                /***********************************************************************/
+                AtribuiValores: function (i) {
+                    console.log(i);
+                    var App = this;
+                    App.resultadoPesquisa = [];
+                    App.id = i.id;
+                    App.nome = i.nome;
+                    App.cpf = i.cpf;
+                    App.tipo_de_pessoa = i.tipo_de_pessoa;
+                    App.sexo = i.sexo;
+                    App.dataNascimento = i.dataNascimento;
+                    App.rg = i.rg;
+                    App.dataExpedicao = i.dataExpedicao;
+                    App.documento = i.documento;
+                    App.indicadoPor = i.indicacao;
+                    App.telefones = i.telefone;
+                    App.emails = i.email;
+                    App.edit = true;
+                    App.cadastra = false;
+                    App.pesquisa = i.nome;
+                    App.produto = i.produto;
+                },
+                /***********************************************************************/
+                localizaCliente: function () {
+                    var App = this;
+                    axios.get("http://localhost/corretorawp/wp-content/plugins/clientes/api/encontraClientes.php?dados=1&nome=" + App.pesquisa + "").then(
+                            function (response) {
+                                App.resultadoPesquisa = response.data;
+                            }
+                    );
+                },
+                /***********************************************************************/
+                indicacaoFcn: function () {
+                    var CurrentApp = this;
+                    var url = "http://localhost/corretorawp/wp-content/plugins/clientes/api/api_clientes.php?cliente=" + CurrentApp.indicacao + " ";
+                    axios.get(url).then(
+                            function (response) {
+                                console.log(response.data);//
+                                console.log(url);
+                                CurrentApp.pessoaQueIndicou = response.data;
+                            }
+                    );
+
+                }
+                /***********************************************************************/
+            },
+            watch: {
+                pesquisa: function () {
+                    var App;
+                    App = this;
+
+                    if (App.pesquisa === "") {
+                        App.id = "";
+                        App.edit = false;
+                        App.cadastra = true;
+                    }
+                }
+            }
+        });
 </script>
 <!------------------------------------------------------------>
 <!------------------------------------------------------------>
@@ -182,23 +366,28 @@ if (isset($_POST['dados'])):
     cl::$dataExpedicao  = $_POST['dados']['clientes']['dataExpedicao'];
     cl::create();
     /*     * ******************************************** */
-    foreach ($dados['email']['email'] as $e):
-        if (!empty($e)):
-            em::$entradaDados = array("email" => $e);
-            em::$id_cliente   = cl::$IdCliente;
-            em::Create();
-        endif;
-    endforeach;
+    if (is_array($dados['email']['email']) && isset($dados['email']['email'])) {
+        foreach ($dados['email']['email'] as $e):
+            if (!empty($e)):
+                em::$entradaDados = array("email" => $e);
+                em::$id_cliente   = cl::$IdCliente;
+                em::Create();
+            endif;
+        endforeach;
+    }
     /*     * ******************************************** */
-    foreach ($dados['telefone']['telefone'] as $t):
-        if (!empty($t)):
-            tel::$dados_entrada = array("telefone" => $t);
-            tel::$id_cliente    = cl::$IdCliente;
-            tel::Create();
-        endif;
-    endforeach;
+    if (is_array($dados['telefone']['telefone']) && isset($dados['telefone']['telefone'])) {
+        foreach ($dados['telefone']['telefone'] as $t):
+            if (!empty($t)):
+                tel::$dados_entrada = array("telefone" => $t);
+                tel::$id_cliente    = cl::$IdCliente;
+                tel::Create();
+            endif;
+        endforeach;
+    }
     /*     * ******************************************** */
     if (!is_null($dados['indicacao']['quemIndica'])):
+        print_r($dados['indicacao']['quemIndica']);
         indicacoes::$cliente     = cl::$IdCliente;
         indicacoes::$quemIndicou = $dados['indicacao']['quemIndica']; //dados[indicacao][quemIndica]
         indicacoes::Create();
@@ -208,6 +397,7 @@ if (isset($_POST['dados'])):
     produto::$id_produto = $dados['produtos']['produto'];
     produto::$valor      = $dados['produtos']['valor'];
     produto::$ativo      = $dados['produtos']['ativo'];
+    produto::$comissao   = $dados['produtos']['comissao'];
     produto::AssociaProdutos();
 /* * ******************************************** */
 endif;

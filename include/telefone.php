@@ -53,6 +53,7 @@ class telefone
 
 
 
+    /** Eu apenas preciso informar a variável "$id_cliente" antes de chamar o método ********* */
     public static function Telefone_do_cliente() {
         $id_cliente = self::$id_cliente;
         if (!is_null($id_cliente)):

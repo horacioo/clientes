@@ -23,18 +23,22 @@ class produto
     static $descricao;
     static $data_produto;
     static $id_produto;
-    static $tabela       = "produtos";
-    /*     * ************************* */
-    static $id_cliente;
+    static $comissao;
+    static $tabela = "produtos";
+    static $campos = ['produto', 'apelido', 'descricao', 'data'];
     /*     * ************************* */
     static $clientes;
     static $produtos_pivot;
     static $data;
     static $valor;
     static $ativo;
-    static $tabela_pivot = "clientesprodutos";
-    static $campos       = ['produto', 'apelido', 'descricao', 'data'];
-    static $campos_pivot = ['clientes', 'produtos', 'data', 'valor', 'ativo'];
+
+    /**     * ****************************** */
+    static $id_cliente;
+    /*     * ************************* */
+    static $tabela_pivot               = "clientesprodutos";
+    static $campos_pivot               = ['clientes', 'produtos', 'data', 'valor', 'ativo', 'comissao'];
+    /**     * ******************************** */
     static $dadosEntrada;
     /*     * ************************* */
     static $dados_entrada;
@@ -61,6 +65,24 @@ class produto
 
 
 
+    public static function Update() {
+        DataBase::$tabela  = self::$tabela;
+        DataBase::$campos  = self::$campos;
+        DataBase::$entrada = array("id" => self::$id_produto, "produto" => self::$produto, "apelido" => self::$apelido, "descricao" => self::$descricao);
+        DataBase::Update();
+    }
+
+
+
+    public static function Exclude() {
+        DataBase::$del_valor = self::$id_produto;
+        DataBase::$del_campo = "id";
+        DataBase::$tabela    = self::$tabela;
+        DataBase::Del();
+    }
+
+
+
     public static function ListaProdutos() {
         return DataBase::ListaGeral(array("tabela" => self::$tabela));
     }
@@ -70,8 +92,7 @@ class produto
     public static function AssociaProdutos() {
         DataBase::$tabela = self::$tabela_pivot;
         DataBase::$campos = self::$campos_pivot;
-        $dados            = array("clientes" => self::$id_cliente, "produtos" => self::$id_produto, "valor" => self::$valor, "ativo" => self::$ativo);
-        print_r($dados);
+        $dados            = array("clientes" => self::$id_cliente, "produtos" => self::$id_produto, "comissao" => self::$comissao, "valor" => self::$valor, "ativo" => self::$ativo);
         DataBase::Salva($dados);
     }
 
@@ -83,7 +104,45 @@ class produto
         DataBase::Salva(self::$dadosEntrada);
     }
 
-    
 
 
+    public static function detalheProduto() {
+        database::$id_base = self::$id_produto;
+        DataBase::$tabela  = self::$tabela;
+        return DataBase::detalhe();
+    }
+
+
+
+    public static function ProdutoDoCliente() {
+        DataBase::$campos_da_tabela_principal = self::$campos;
+        DataBase::$tabela                     = self::$tabela;
+        DataBase::$tabela_pivot               = self::$tabela_pivot;
+        DataBase::$campos_pivot               = ['clientes', 'produtos', 'data', 'valor', 'ativo', 'comissao'];
+        DataBase::$tabela2                    = "clientes";
+        DataBase::$campo_pivot                = "produtos";
+        DataBase::$id_base                    = 59;
+        return self::calcula_producao(DataBase::temMuitos());
+    }
+
+
+
+    private static function calcula_producao($dados) {
+        $faturamento               = "";
+        $totalDaCorretora          = "";
+        $totalDaCorretoraAcumulado = "";
+        $array                     = array();
+        foreach ($dados as $d):
+            $faturamento               = $faturamento + $d['valor'];
+            $totalDaCorretora          = $d['valor'] * $d['comissao'] / 100;
+            $totalDaCorretoraAcumulado = $totalDaCorretoraAcumulado + $totalDaCorretora;
+            $d["total"]                = $totalDaCorretora;
+            $array[]                   = $d;
+        endforeach;
+        return $array;
+    }
+
+
+
+    /**     * ************************************************ */
     }

@@ -9,6 +9,7 @@
  */
 
 $url_atual = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+define("urlApi", plugin_dir_url("clientes/")."clientes/api/");
 define("urlAdmin", $url_atual);
 define('clienteSemEmail', "15 dias");
 define("apiLista", plugin_dir_url('cliente.php') . "clientes/api/api_lista.php");

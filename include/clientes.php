@@ -27,11 +27,13 @@ class clientes
     static $documento;
     static $tabela        = 'clientes';
     static $dados_entrada;
+    static $listaDeClientes;
+    static $limiteDados   = 10;
 
 
 
     public function __construct() {
-        $dados             = $_POST['dados'];
+        $dados               = $_POST['dados'];
         self::$dados_entrada = $dados;
     }
 
@@ -112,6 +114,11 @@ class clientes
 
 
 
+    /** 
+     * preciso informar apenas o id do cliente através da variável $idCliente
+     * <br><b style="color:red">DETALHE IMPORTANTE</b>
+     * <br>para ter acesso aos dados, você deve chamar os atributos da classe,por exemplo, <b style="color:green">$nome<b>, <b style="color:green">$cpf</>, etc
+     *  */
     public static function DadosCliente() {
         $id = self::$IdCliente;
         if (!is_null($id)) {
@@ -223,5 +230,20 @@ class clientes
     }
 
 
+
+    /** aqui, você precisa informar um valor para a variável <b>$nome</b> dessa classe e ele vai retornar a variavel <b>$listadeclientes</b>
+      <br><br>
+      se quiser aumentar o limite de dados é só alterar o valor de <b>$limiteDeDados</b> , por padrão, deixei <b style='color:red'>10</b>
+     *      */
+    public static function localizaClientes() {
+        db::$tabela            = self::$tabela;
+        db::$limit             = self::$limiteDados;
+        $dados                 = db::like(array("campo" => "nome", "like" => self::$nome));
+        self::$listaDeClientes = db::$response;
+    }
+
+
+    
+    
 
     }

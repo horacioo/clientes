@@ -18,11 +18,28 @@ class DataBase
     public static $id_base;
     public static $exclude_from_form;
     public static $label_form;
+    public static $response;
+    public static $limit = 10;
+    /*     * *************** */
+    public static $pivot;
+    public static $mae;
+    public static $filha;
 
-    /*     * * enviar por parametro array("tabela"=>"nome da tabela,"limite"=>"10"), senfo que o limite é opcional */
+    /*     * *************** */
 
 
 
+    /**     * Essa função vai retornar um registro baseado em um id informado...<br>
+     * deve ser marcado a variável "$tabela" e "$id_base" , daí, chamar o método* */
+    public static function detalhe() {
+        $sel = "select * from `" . self::$tabela . "` where id='" . self::$id_base . "' ";
+        global $wpdb;
+        return $wpdb->get_row($sel, ARRAY_A);
+    }
+
+
+
+    /**     * enviar por parametro array("tabela"=>"nome da tabela,"limite"=>"10"), senfo que o limite é opcional */
     public static function ListaGeral($array = '') {
         if (is_array($array)):
             $tabela = $array['tabela'];
@@ -86,13 +103,26 @@ class DataBase
 
 
 
+    /** Esse método vai me retornar consultas do tipo 'like'  
+     * <br><br>
+     * enviar <b style='color:green'>array("campo"=>"nome", "like"=>"hor")</b> e informar a tabela na variável <b style='color:green'>$tabela</b> 
+     * <br> os dados serão resgatados na variável <b style='color:green'>$response</b>* */
+    public static function like($dados) {
+        global $wpdb;
+        $campo          = $dados['campo'];
+        $valor          = $dados['like'];
+        $sel            = "select * from `" . self::$tabela . "` where " . $campo . " like'%" . $valor . "%' limit " . self::$limit . " ";
+        self::$consulta = $sel;
+        self::$response = $wpdb->get_results($sel, ARRAY_A);
+    }
 
-    
-    /*** preciso passar uma array de campos, o nome da tabela e a array com os campos e dados, exemplo:<br>
+
+
+    /**     * preciso passar uma array de campos, o nome da tabela e a array com os campos e dados, exemplo:<br>
      * <br><b>db::$tabela = uma tabela qualquer; a tabela</b> 
      * <br><b>db::$campos = ['clientes', 'email']; os campos</b> 
      * <br><b>db::Salva(array("clientes" => self::$id_cliente, "email" => db::$array['email'][0]));</b> 
-     * **/
+     * * */
     public static function Salva($array) {
         global $wpdb;
         if (is_array($array)):
@@ -136,7 +166,7 @@ class DataBase
 
 
 
-    /*     * **
+    /**     * *
      * para esse metodo funcionar, vc precisa passar a entrada os parametros:<br>
      * segue um exemplo:<br>
       db::$id_base = self::$IdCliente;<br>
@@ -144,10 +174,21 @@ class DataBase
       db::$campos  = self::$campos;<br>
       db::$entrada = $formulario;<br>
      */
+    /*     * *
+      informar a tabela na variável <b style='color:green'>$tabela</b> <br>
+      informar os campos na variável <b style='color:green'>$campos</b> <br>
+      <br>
+      passar a array com os dados que serão alterados, essa array deve ser passada pela variável <b style='color:green'>self::$entrada</b>
+      <br> exemplo<b style='color:orange'>objeto::$entrada = array("produto" => self::$produto, "descricao" => self::$descricao);</b>
+      <br>chamar o método <b style='color:green'>Update()</b>
+     * * */
 
 
 
     public static function Update() {
+
+        //print_r(self::$entrada);
+
         $chaves        = array_keys(self::$entrada);
         $update        = "";
         self::$id_base = self::$entrada['id'];
@@ -170,10 +211,9 @@ class DataBase
     public static $del_campo;
     public static $del_valor;
 
-    /*     * *informar antes de executar essa função, os valores de $del_campo e $del_valor** */
 
 
-
+    /**     * informar antes de executar essa função, os valores de $del_campo e $del_valor, além, claro, da tabela** */
     public static function Del() {
         global $wpdb;
         if (!empty(self::$del_campo) && !empty(self::$del_valor)) {
@@ -186,7 +226,7 @@ class DataBase
 
     public static function Query($query = '') {
         global $wpdb;
-        $wpdb->query($query);
+        $wpdb->query($query, ARRAY_A);
     }
 
 
@@ -250,6 +290,67 @@ class DataBase
                 }
             endforeach;
         endif;
+    }
+
+
+
+    /** Essa $variavel representa a tabela principal da classe, 
+     * <br>ex.:database\$campos_da_tabela_principal = self::$campos */
+    static $campos_da_tabela_principal;
+   
+    
+    
+    /** é a tabela que vai interagir com a sua tabela principal, 
+     <br>ex.:a tabela principal é <b style='color:green'>produtos</b>, e vai interagir com essa tabela, é a <b style='color:green'>clientes</b>, tabela2 então, é <b style='color:green'>clientes</b> */
+    static $tabela2; //      = "clientes";
+    
+    static $campo_pivot; //  = "produtos";
+    static $tabela_pivot; // = "clientesprodutos";
+    static $campos_pivot;//  = ['clientes', 'produtos', 'data', 'valor', 'ativo', 'comissao'];
+
+    /**
+     <br>campos essenciais para o funcionanento do metodo
+     <br>static $campo_pivot  = "produtos";
+     <br>static $campos_da_tabela_principal;
+     <br>static $tabela
+     <br>static $tabela_pivot;
+     <br>static $campos_pivot;
+     <br>static $tabela2;
+     <br>static $campo_pivot; 
+     * 
+     * 
+     * 
+     *  ************************************************* */
+
+
+
+    public static function temMuitos() {
+        $camposPivot = self::$campos_pivot;
+        $campos      = self::$campos_da_tabela_principal;
+        /**         * ************************************* */
+        $campo       = "";
+        /**         * ************************************* */
+        foreach ($camposPivot as $x):
+            $campo .= "z." . $x . ", ";
+        endforeach;
+        /**         * ************************************* */
+        foreach ($campos as $x):
+            $campo .= "x." . $x . ", ";
+        endforeach;
+        /**         * ************************************* */
+        $campo .= "**";
+        /**         * ************************************* */
+        $campo = str_replace(", **", " ", $campo);
+        /**         * ************************************* */
+        $sel     = "SELECT 
+                $campo
+                FROM `" . self::$tabela_pivot . "` as z
+                inner join `" . self::$tabela . "` as x on x.id = " . self::$campo_pivot . "
+                WHERE `" . self::$tabela2 . "` = " . self::$id_base . "";
+        
+        global $wpdb;
+        self::$consulta = $sel;
+        return $wpdb->get_results($sel,ARRAY_A);
     }
 
 
