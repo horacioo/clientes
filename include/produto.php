@@ -114,6 +114,7 @@ class produto
 
 
 
+    /** informar o $id_cliente antes de chamar a função***/
     public static function ProdutoDoCliente() {
         DataBase::$campos_da_tabela_principal = self::$campos;
         DataBase::$tabela                     = self::$tabela;
@@ -121,16 +122,16 @@ class produto
         DataBase::$campos_pivot               = ['clientes', 'produtos', 'data', 'valor', 'ativo', 'comissao'];
         DataBase::$tabela2                    = "clientes";
         DataBase::$campo_pivot                = "produtos";
-        DataBase::$id_base                    = 59;
+        DataBase::$id_base                    = self::$id_cliente;
         return self::calcula_producao(DataBase::temMuitos());
     }
 
 
 
     private static function calcula_producao($dados) {
-        $faturamento               = "";
-        $totalDaCorretora          = "";
-        $totalDaCorretoraAcumulado = "";
+        $faturamento               = 0;
+        $totalDaCorretora          = 0;
+        $totalDaCorretoraAcumulado = 0;
         $array                     = array();
         foreach ($dados as $d):
             $faturamento               = $faturamento + $d['valor'];

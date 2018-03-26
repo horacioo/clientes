@@ -60,21 +60,9 @@ global $_wp_admin_css_colors
 </style>
 
 <div class="container-fluid" id="app">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-12">
-                <label>pesquise um cliente:</label><input v-model="pesquisa" type="text" v-on:keyup="localizaCliente()" name="pesquisa" class="form-control">
-                <div class="resultadoDePesquisa" style="position: relative;">
-                    <ul class="listaClientes">
-                        <li v-for="item in resultadoPesquisa">{{item.nome}} <input type="radio" v-on:click="AtribuiValores(item)" v-model="clienteRef" :value="item.id"></li>
-                    </ul>
-                </div>
-                <hr>
-            </div>
-        </div>
-    </div>
+    
     <!--------------------------------------------------------------------------->
-    <h2>{{mensagem}}</h2>    
+    <h2>Cadastra Cliente</h2>    
     <form action="" method="post" name="dados">
         <input v-if="edit" v-model="id" type="hidden" >
         <!--------------------------------------------------------------------------->
@@ -123,10 +111,10 @@ global $_wp_admin_css_colors
                 <!------->
                 <p><label>referencia</label><input required='required' style="width: 79%; float: right;" v-model="referencia_telefone" type='text' name=dados[telefone][referencia][] id='telefone' class='form-control'></p>
 
-                <span v-if="cadastra">      
+                <span >      
                     <!------->
                     <p >
-                        <label>Telefone</label><input required='required' style="width: 83%; float: right;" v-model="email" type='email' id='email' class='form-control' name=dados[telefone][telefone][] >
+                        <label>Telefone</label><input required='required' style="width: 83%; float: right;" v-model="telefone" type='text' id='email' class='form-control' name=dados[telefone][telefone][] >
                     </p>
                     <!------->
                     <p>
@@ -138,23 +126,6 @@ global $_wp_admin_css_colors
 
 
 
-                <span v-if="edit" >
-                    <telefones-edit></telefones-edit>
-                    <span>Telefones<br>
-                        <input required='required' style="width: 100%; float: right;" type='email'  class='form-control'  >
-                        <span v-for="item in telefones">
-                            <input required='required' style="width: 100%; float: right;" type='email'  class='form-control' :value="item.telefone" >
-                        </span>
-                    </span>
-
-
-                    <span class="emails">Emails<br>
-                        <input type="email" style="width: 100%; float: right;">
-                        <span v-for="item in emails">
-                            <input type="email" style="width: 100%; float: right;" :value="item.email">
-                        </span>
-                    </span>
-                </span>
 
 
 
@@ -222,126 +193,11 @@ global $_wp_admin_css_colors
 
 
 </div>   
-<style>
-    .produto-lista{border:0px solid red; margin-bottom: 2px;}
-</style>
+
 
 
 <script src="<?php echo Vue ?>"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.js"></script>
-<script>
-Vue.component('telefones-edit', {
-    template: `<div class='email'>info {{info}}</div>`,
-    data: function () {
-        return {info: 'teste'}
-    }
-}),
-        Vue.component('caixa-dados', {template: `<div style="text-align: center; display: inline-block; border: 1px solid #c5c5c5; width: 19.3%;"><slot></slot><div>`}, ),
-        Vue.component(
-                'produto-lista', {
-                    template: `<div>
-                   <caixa-dados><input type='checkbox' checked='checked' name=dados[produtos][produto][]>{{produto}}</caixa-dados>
-                   <caixa-dados>{{ativo}}</caixa-dados>
-                   <caixa-dados>{{comissao}}</caixa-dados>
-                   <caixa-dados>{{valor}}</caixa-dados>
-                   <caixa-dados>{{total}}</caixa-dados>
-               <div>`,
-                    props: ['produto', 'valor', 'ativo', 'comissao', 'id', 'total'],
-                },
-                ),
-        new Vue({
-            el: '#app',
-            data: {
-                mensagem: "Cadastrar novo cliente",
-                id: '',
-                nome: '',
-                tipo_de_pessoa: '',
-                sexo: '',
-                cpf: '',
-                rg: '',
-                dataExpedicao: '',
-                dataNascimento: '',
-                documento: '',
-                email: '',
-                telefone: '',
-                referencia_telefone: '',
-                ativo: '',
-                produto: '',
-                endereco: '',
-                indicacao: '',
-                nome: '',
-                pesquisa: '',
-                resultadoPesquisa: [],
-                pessoaQueIndicou: [],
-                indicadoPor: [],
-                clienteRef: '',
-                telefones: '',
-                emails: '',
-                produto: '',
-                edit: false,
-                cadastra: true,
-            },
-            methods: {
-                /***********************************************************************/
-                AtribuiValores: function (i) {
-                    console.log(i);
-                    var App = this;
-                    App.resultadoPesquisa = [];
-                    App.id = i.id;
-                    App.nome = i.nome;
-                    App.cpf = i.cpf;
-                    App.tipo_de_pessoa = i.tipo_de_pessoa;
-                    App.sexo = i.sexo;
-                    App.dataNascimento = i.dataNascimento;
-                    App.rg = i.rg;
-                    App.dataExpedicao = i.dataExpedicao;
-                    App.documento = i.documento;
-                    App.indicadoPor = i.indicacao;
-                    App.telefones = i.telefone;
-                    App.emails = i.email;
-                    App.edit = true;
-                    App.cadastra = false;
-                    App.pesquisa = i.nome;
-                    App.produto = i.produto;
-                },
-                /***********************************************************************/
-                localizaCliente: function () {
-                    var App = this;
-                    axios.get("http://localhost/corretorawp/wp-content/plugins/clientes/api/encontraClientes.php?dados=1&nome=" + App.pesquisa + "").then(
-                            function (response) {
-                                App.resultadoPesquisa = response.data;
-                            }
-                    );
-                },
-                /***********************************************************************/
-                indicacaoFcn: function () {
-                    var CurrentApp = this;
-                    var url = "http://localhost/corretorawp/wp-content/plugins/clientes/api/api_clientes.php?cliente=" + CurrentApp.indicacao + " ";
-                    axios.get(url).then(
-                            function (response) {
-                                console.log(response.data);//
-                                console.log(url);
-                                CurrentApp.pessoaQueIndicou = response.data;
-                            }
-                    );
-
-                }
-                /***********************************************************************/
-            },
-            watch: {
-                pesquisa: function () {
-                    var App;
-                    App = this;
-
-                    if (App.pesquisa === "") {
-                        App.id = "";
-                        App.edit = false;
-                        App.cadastra = true;
-                    }
-                }
-            }
-        });
-</script>
 <!------------------------------------------------------------>
 <!------------------------------------------------------------>
 <!------------------------------------------------------------>

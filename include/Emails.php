@@ -157,8 +157,9 @@
 
 
 
-
+             /** informar o id do cliente <b style="color:green;">email::$id_cliente</b>, depois**/
              static public function EmailCliente($id = '') {
+                 $id=self::$id_cliente; 
                  if (!is_null($id)) {
                      $sel    = "SELECT e.email, e.id FROM `clientesemail` as ce inner join email as e on e.id = ce.email WHERE ce.clientes = '" . $id . "'";
                      global $wpdb;
