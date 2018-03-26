@@ -216,7 +216,7 @@
             <div class="col-md-4">
                 <h2>cadastrar novo produto para esse cliente:</h2>
                 <p><label>produto</label>
-                    <select class="form-control" type="text" name=dados[MeusProdutos][0]>
+                    <select class="form-control" type="text" name=dados[MeusProdutos][0][produto]>
                         <?php foreach (produto::ListaProdutos() as $p): ?><!---[MeusProdutos]-->
                                      <option value="<?php echo $p['id'] ?>"><?php echo $p['produto'] ?></option>
                                  <?php endforeach; ?>
