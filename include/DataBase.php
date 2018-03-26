@@ -24,6 +24,8 @@ class DataBase
     public static $pivot;
     public static $mae;
     public static $filha;
+    public static $campo;
+    public static $valor;
 
     /*     * *************** */
 
@@ -185,6 +187,7 @@ class DataBase
 
 
 
+    /** para este método funcionar,<b style='color:red'>o valor do id deve ir no formulário</b> , como um campo, apenas informar o id não funciona */
     public static function Update() {
 
         //print_r(self::$entrada);
@@ -297,26 +300,23 @@ class DataBase
     /** Essa $variavel representa a tabela principal da classe, 
      * <br>ex.:database\$campos_da_tabela_principal = self::$campos */
     static $campos_da_tabela_principal;
-   
-    
-    
+
     /** é a tabela que vai interagir com a sua tabela principal, 
-     <br>ex.:a tabela principal é <b style='color:green'>produtos</b>, e vai interagir com essa tabela, é a <b style='color:green'>clientes</b>, tabela2 então, é <b style='color:green'>clientes</b> */
+      <br>ex.:a tabela principal é <b style='color:green'>produtos</b>, e vai interagir com essa tabela, é a <b style='color:green'>clientes</b>, tabela2 então, é <b style='color:green'>clientes</b> */
     static $tabela2; //      = "clientes";
-    
     static $campo_pivot; //  = "produtos";
     static $tabela_pivot; // = "clientesprodutos";
-    static $campos_pivot;//  = ['clientes', 'produtos', 'data', 'valor', 'ativo', 'comissao'];
+    static $campos_pivot; //  = ['clientes', 'produtos', 'data', 'valor', 'ativo', 'comissao'];
 
     /**
-     <br>campos essenciais para o funcionanento do metodo
-     <br>static $campo_pivot  = "produtos";
-     <br>static $campos_da_tabela_principal;
-     <br>static $tabela
-     <br>static $tabela_pivot;
-     <br>static $campos_pivot;
-     <br>static $tabela2;
-     <br>static $campo_pivot; 
+      <br>campos essenciais para o funcionanento do metodo
+      <br>static $campo_pivot  = "produtos";
+      <br>static $campos_da_tabela_principal;
+      <br>static $tabela
+      <br>static $tabela_pivot;
+      <br>static $campos_pivot;
+      <br>static $tabela2;
+      <br>static $campo_pivot;
      * 
      * 
      * 
@@ -342,15 +342,30 @@ class DataBase
         /**         * ************************************* */
         $campo = str_replace(", **", " ", $campo);
         /**         * ************************************* */
-        $sel     = "SELECT 
+        $sel   = "SELECT 
                 $campo
                 FROM `" . self::$tabela_pivot . "` as z
                 inner join `" . self::$tabela . "` as x on x.id = " . self::$campo_pivot . "
                 WHERE `" . self::$tabela2 . "` = " . self::$id_base . "";
-        
+
         global $wpdb;
         self::$consulta = $sel;
-        return $wpdb->get_results($sel,ARRAY_A);
+        return $wpdb->get_results($sel, ARRAY_A);
+    }
+
+
+
+    /**
+     * para este método funcionar adequadamente, você precisa informar as variáveis
+      <br>$tabela,
+      <br>$campo,
+      <br>$valor,
+      <br>chamar o método
+     */
+    public static function MuitosParaUm() {
+        $sel = "select * from `" . self::$tabela . "` where " . self::$campo . "='" . self::$valor . "' order by id desc ";
+        global $wpdb;
+        return $wpdb->get_results($sel, ARRAY_A);
     }
 
 

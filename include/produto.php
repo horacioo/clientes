@@ -25,7 +25,7 @@ class produto
     static $id_produto;
     static $comissao;
     static $tabela = "produtos";
-    static $campos = ['produto', 'apelido', 'descricao', 'data'];
+    static $campos = ['id', 'produto', 'apelido', 'descricao'];
     /*     * ************************* */
     static $clientes;
     static $produtos_pivot;
@@ -36,8 +36,9 @@ class produto
     /**     * ****************************** */
     static $id_cliente;
     /*     * ************************* */
-    static $tabela_pivot               = "clientesprodutos";
-    static $campos_pivot               = ['clientes', 'produtos', 'data', 'valor', 'ativo', 'comissao'];
+    static $tabela_pivot = "clientesprodutos";
+    static $campos_pivot = ['clientes', 'produtos', 'data', 'valor', 'ativo', 'comissao'];
+
     /**     * ******************************** */
     static $dadosEntrada;
     /*     * ************************* */
@@ -114,7 +115,7 @@ class produto
 
 
 
-    /** informar o $id_cliente antes de chamar a função***/
+    /** informar o $id_cliente antes de chamar a função** */
     public static function ProdutoDoCliente() {
         DataBase::$campos_da_tabela_principal = self::$campos;
         DataBase::$tabela                     = self::$tabela;
@@ -141,6 +142,46 @@ class produto
             $array[]                   = $d;
         endforeach;
         return $array;
+    }
+
+
+
+    /**
+     * <br>informar o valor da variável "$dadosEntrada"
+     * <br>informar o valor da variável "$id_cliente"
+     * <br> passar o array com os dados que serão salvos, apenas,
+     *  não o array "global", exemplo "$_POST['produtosCliente']" e não $_post[][][]['produtosCliente'] */
+    public static function AssociacaoDeClientes() {
+
+        $entrada          = self::$dadosEntrada;
+        $cliente          = self::$id_cliente;
+        
+        
+        DataBase::$tabela = self::$tabela_pivot;
+        DataBase::$campos = self::$campos_pivot;
+        
+        DataBase::$del_campo = "clientes";
+        DataBase::$del_valor = $cliente;
+        DataBase::Del();
+
+        foreach ($entrada as $en):
+            if ( $en['ativo']!=0 ) {
+                $dados['clientes'] = self::$id_cliente;
+                $dados['produtos'] = $en['produto'];
+                $dados['valor']    = $en['valor'];
+                $dados['ativo']    = $en['ativo'];
+                $dados['comissao'] = $en['comissao'];
+                self::SalvaAssociacao($dados);
+            }
+        endforeach;
+    }
+
+
+
+    private static function SalvaAssociacao($array = '') {
+        DataBase::$tabela = self::$tabela_pivot;
+        DataBase::$campos = self::$campos_pivot; 
+        DataBase::Salva($array);
     }
 
 

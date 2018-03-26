@@ -148,7 +148,7 @@ class clientes
         $dados = $_POST[self::$tabela];
         if (isset($dados)):
             db::$id_base = self::$IdCliente;
-            db::$tabela  = clientes;
+            db::$tabela  = "clientes";
             db::$campos  = self::$campos;
             db::$entrada = $dados;
             db::Update();

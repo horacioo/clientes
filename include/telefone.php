@@ -8,10 +8,12 @@ class telefone
     {
 
     public static $id_cliente;
-    private static $campos = ['telefone'];
-    private static $tabela = "telefone";
+    private static $campos      = ['telefone'];
+    private static $tabela      = "telefone";
     private static $entradaDados;
     public static $dados_entrada;
+    public static $tabela_pivot = "clientestelefone";
+    public static $campos_pivot = ['clientes', 'telefone', 'referencia'];
 
 
 
@@ -79,6 +81,44 @@ class telefone
         db::$tabela = self::$tabela;
         db::$campos = self::$campos;
         return db::form($array);
+    }
+
+
+
+    /**
+     * <br>informar o valor da variável "$dadosEntrada"
+     * <br>informar o valor da variável "$id_cliente"
+     * <br> passar o array com os dados que serão salvos, apenas,
+     *  não o array "global", exemplo "$_POST['produtosCliente']" e não $_post[][][]['produtosCliente'] */
+    public static function AssociacaoDeClientes() {
+        $entrada       = self::$dados_entrada;
+        db::$tabela    = self::$tabela_pivot;
+        db::$campos    = self::$campos_pivot;
+        db::$del_campo = "clientes";
+        db::$del_valor = self::$id_cliente;
+        db::Del();
+        $linha         = -1;
+        foreach (self::$dados_entrada as $d):
+            if (!empty($d)) {
+                $linha++;
+                $dados['telefone'] = $d;
+                db::$tabela        = self::$tabela;
+                db::$campos        = self::$campos;
+                db::Salva(array("telefone" => $d));
+                $dados['telefone'] = db::$array['telefone'][$linha];
+                $dados['clientes'] = self::$id_cliente;
+                self::SalvaAssociacao($dados);
+            }
+        endforeach;
+    }
+
+
+
+    private static function SalvaAssociacao($array = '') {
+
+        db::$tabela = self::$tabela_pivot;
+        db::$campos = self::$campos_pivot;
+        db::Salva($array);
     }
 
 
