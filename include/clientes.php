@@ -11,9 +11,10 @@ use Planet1\documento as dc;
 class clientes
     {
 
-    static public $campos = ['nome', 'tipo_de_pessoa', 'estado_civil', 'sexo', 'cpf', 'rg', 'dataExpedicao', 'dataNascimento', 'ip', 'entrada', 'documento'];
+    static public $campos = ['indicado','nome', 'tipo_de_pessoa', 'estado_civil', 'sexo', 'cpf', 'rg', 'dataExpedicao', 'dataNascimento', 'ip', 'entrada', 'documento'];
     static public $cliente;
     static public $IdCliente;
+    static $indicado;
     static $nome;
     static $tipo_de_pessoa;
     static $estado_civil;
