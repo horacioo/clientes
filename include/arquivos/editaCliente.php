@@ -35,11 +35,11 @@ if (is_array($_POST['dados']['MeusProdutos'])):
     }
     /*     * ******************************************************** */
 
-    if ($_POST['dados']['email']['email'] != "") {
+    /*if ($_POST['dados']['email']['email'] != "") {
         em::$id_cliente   = cl::$IdCliente;
         em::$entradaDados = $_POST['dados']['email']['email'];
         em::AssociacaoDeClientes();
-    }
+    }*/
     /*     * ******************************************************** */
 
 
@@ -65,8 +65,10 @@ cl::DadosCliente();
 tel::$id_cliente     = cl::$IdCliente;
 $telefones_clientes  = tel::Telefone_do_cliente();
 /* * ****************** */
+/*
 em::$id_cliente      = cl::$IdCliente;
 $emailsCliente       = em::EmailCliente();
+*/
 /* * ****************** */
 tel::$id_cliente     = cl::$IdCliente;
 /* * ****************** */
@@ -179,7 +181,6 @@ global $_wp_admin_css_colors
                         </p>
 
 
-
                         <div v-for="item in telefones">
                             <div style="height: auto;overflow: auto; margin-bottom: 2px;">
                                 <input style=" margin: 7px 1px 1px 15px;float: left;" checked="checked" type="checkbox"  :value="item.id"  v-on:click="deletaTel(item,$event.target.value)" >
@@ -191,15 +192,14 @@ global $_wp_admin_css_colors
                         <!------->
                         <p>
                             <label>E-mail</label>
-                            <input style="width: 83%; float: right;"  type='email' id='email' name=dados[email][email][] class='form-control'>
+                            <input style="width: 83%; float: right;" v-model="email" v-on:change="criarEmail()" type='email' id='email' name=dados[email][email][] class='form-control'>
                         </p>
-
 
 
                         <div v-for="item in emails">
                             <div style="height: auto;overflow: auto; margin-bottom: 2px;">
-                                <input style=" margin: 7px 1px 1px 15px;float: left;" checked="checked" type="checkbox"  :value="item.id" @onclick="deletaEmail(item)" >
-                                <input style="width: 95%; float: right;" v-on:change="editaEmail(item)" class="form-control" type="text" :value="item.email"  name=dados[email][email][] >
+                                <input style=" margin: 7px 1px 1px 15px;float: left;" checked="checked" type="checkbox"  :value="item.id" @click="deletaEmail(item)" >
+                                <input style="width: 95%; float: right;" v-on:change="editaEmail(item,$event.target.value)" class="form-control" type="text" :value="item.email"  name=dados[email][email][] >
                             </div>
                         </div>
 
@@ -319,88 +319,201 @@ global $_wp_admin_css_colors
         <br><input type="submit" value="Salvar" class="btn btn-primary">  
         <!--------------------------------------------------------------------------->
     </form>
+    <p v-if="processando" style="
+       align-content: center;
+       text-align: center;
+       position: fixed;
+       width: 100%;
+       top: 0px;
+       z-index: 4;
+       background-color: rgba(0, 0, 0, 0.65);
+       height: 100%;
+       padding-top: 15%;
+       margin-left: -35px;">
+        <img src=" <?php echo plugin_dir_url('clientes') . "clientes/include/arquivos/imagens/load.gif" ?>">
+    </p>
 </div>   
 <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.js"></script>
 <script src="<?php echo Vue ?>"></script>
 <script >
-                                    new Vue({
-                                        el: "#app",
-                                        data: {
-                                            id: "",
-                                            nome: "<?php echo cl::$nome ?>",
-                                            tipo_de_pessoa: "<?php echo cl::$tipo_de_pessoa ?>",
-                                            sexo: "<?php echo cl::$sexo ?>",
-                                            dataNascimento: "<?php echo cl::$dataNascimento ?>",
-                                            dataExpedicao: "<?php echo cl::$dataExpedicao; ?>",
-                                            documento: "<?php echo cl::$documento ?>",
-                                            indicacao: "<?php echo cl::$indicado; ?>",
-                                            pessoaQueIndicou: "",
-                                            telefone: "",
-                                            caixaComentario: "",
-                                            id_cliente: "<?php echo cl::$IdCliente ?>",
-                                            cpf: "<?php echo cl::$cpf; ?>",
-                                            rg: "<?php echo cl::$rg; ?>",
-                                            documento: "<?php echo cl::$documento; ?>",
-                                            endereco: "<?php echo "%%"; ?>",
-                                            comentarios: ["a informacao", "chuva"],
-                                            emails:<?php echo json_encode($emailsCliente); ?>,
-                                            telefones:<?php echo json_encode($telefones_clientes) ?>,
-                                            refEmail: "",
 
-                                        },
-                                        watch: {},
-                                        methods: {
+new Vue({
+    el: "#app",
+    data: {
+        id: "",
+        nome: "<?php echo cl::$nome ?>",
+        tipo_de_pessoa: "<?php echo cl::$tipo_de_pessoa ?>",
+        sexo: "<?php echo cl::$sexo ?>",
+        dataNascimento: "<?php echo cl::$dataNascimento ?>",
+        dataExpedicao: "<?php echo cl::$dataExpedicao; ?>",
+        documento: "<?php echo cl::$documento ?>",
+        indicacao: "<?php echo cl::$indicado; ?>",
+        pessoaQueIndicou: "",
+        telefone: "",
+        caixaComentario: "",
+        id_cliente: "<?php echo cl::$IdCliente ?>",
+        cpf: "<?php echo cl::$cpf; ?>",
+        rg: "<?php echo cl::$rg; ?>",
+        documento: "<?php echo cl::$documento; ?>",
+        endereco: "<?php echo "%%"; ?>",
+        comentarios: ["a informacao", "chuva"],
+        emails: [], //emails:<?php echo json_encode($emailsCliente); ?>,
+        telefones: [], //<?php echo json_encode($telefones_clientes) ?>,
+        refEmail: "",
+        email: "",
+        processando: false,
+        stand: true,
 
-                                            deletaEmail: function (item) {},
-                                            editaEmail: function (item) {},
-                                            /**********/
-                                            editaTel: function (item,dados) {
-                                                console.log("telefone novo "+dados);
-                                                var item = {
-                                                    "telefone": dados,
-                                                    "id_telefone": item.id,
-                                                    "comando": "editar"
-                                                };
-                                                console.log("\n \r"+item.telefone);
-                                                var dados = btoa(JSON.stringify(item));
-                                                var url = "http://localhost/corretorawp/wp-content/plugins/clientes/api/telAdm.php?dados=" + dados + " ";
-                                                axios.get(url).then();
-                                            },
-                                            deletaTel: function (item,dados) {
-                                                var item = {
-                                                    "cliente":this.id_cliente,
-                                                    "telefone": dados,
-                                                    "id_telefone": item.id,
-                                                    "comando": "deletar"
-                                                };
-                                                var dados = btoa(JSON.stringify(item));
-                                                var url = "http://localhost/corretorawp/wp-content/plugins/clientes/api/telAdm.php?dados=" + dados + " ";
-                                                console.log(url);
-                                                axios.get(url).then();
-                                            },
-
-                                            /*********/
-                                            CadComent: function () {
-                                                var App;
-                                                App = this;
-                                                var url = "http://localhost/corretorawp/wp-content/plugins/clientes/api/comentarios.php?acao=salva&comentario=" + App.caixaComentario + "&cliente=" + App.id_cliente + "";
-                                                axios.get(url).then(function (response) {
-                                                    console.log(url);
-                                                    App.comentarios = response.data;
-                                                    App.caixaComentario = "";
-                                                })
-                                            }
-                                        },
-                                        created: function () {
-                                            var App;
-                                            App = this;
-                                            axios.get('http://localhost/corretorawp/wp-content/plugins/clientes/api/comentarios.php?acao=lista&cliente=' + App.id_cliente + '').then(function (response) {
-                                                App.comentarios = [{comentario: "teste apenas"}];
-                                                console.log(response.data);
-                                                App.comentarios = response.data;
-                                            })
-                                        },
-                                    });
+    },
+    watch: {},
+    methods: {
+        /***********************************************************/
+        criarEmail: function () {
+            var Url;
+            var App;
+            var ItemSv;
+            App = this;
+            App.emails = '';
+            App.processando = true;
+            ItemSv = {
+                "cliente": App.id_cliente,
+                "email": App.email,
+                "comando": "salva",
+            };
+            var dadosSv = btoa(JSON.stringify(ItemSv));
+            Url = 'http://localhost/corretorawp/wp-content/plugins/clientes/api/emailsAdm.php?dados=' + dadosSv + '';
+            axios.get(Url).then(function (response) {
+                App.emails = response.data;
+                console.log(response.data);
+                App.processando = false,
+                        App.email = '';
+            });
+        },
+        /***********************************************************/
+        deletaEmail: function (item) {
+            var Url;
+            var App;
+            var ItemdE;
+            App = this;
+            App.processando = true;
+            App.emails = '';
+            ItemdE = {
+                "cliente": App.id_cliente,
+                "id": item.id,
+                "comando": "deletar"
+            }
+            var dadosDE = btoa(JSON.stringify(ItemdE));
+            Url = 'http://localhost/corretorawp/wp-content/plugins/clientes/api/emailsAdm.php?dados=' + dadosDE + '';
+            axios.get(Url).then(function (response) {
+                console.log(Url);
+                App.processando = false;
+                App.emails = response.data
+            }); //console.log(Url);
+        },
+        /***********************************************************/
+        editaEmail: function (item, dados) {
+            var Url;
+            var App;
+            var Item;
+            App = this;
+            App.processando = true;
+            ItemEE = {
+                'cliente': App.id_cliente,
+                'email': dados,
+                'id': item.id,
+                'comando': "editar"
+            };
+            App.emails = "";
+            var dadosEEm = btoa(JSON.stringify(ItemEE));
+            Url = 'http://localhost/corretorawp/wp-content/plugins/clientes/api/emailsAdm.php?dados=' + dadosEEm + '';
+            console.log('\n \r' + dados);
+            console.log('\n \r' + Url);
+            axios.get(Url).then(function (response) {
+                App.processando = false;
+                App.emails = response.data;
+            });
+        },
+        /***********************************************************/
+        editaTel: function (item, dados) {
+            console.log("telefone novo " + dados);
+            var item = {
+                "cliente": this.id_cliente,
+                "telefone": dados,
+                "id_telefone": item.id,
+                "comando": "editar"
+            };
+            console.log("\n \r" + item.telefone);
+            var dados = btoa(JSON.stringify(item));
+            var url = "http://localhost/corretorawp/wp-content/plugins/clientes/api/telAdm.php?dados=" + dados + " ";
+            axios.get(url).then(function (response) {
+                this.telefones = response.data
+            });
+            console.log(url);
+        },
+        /**********************************************/
+        deletaTel: function (item, dados) {
+            var App;
+            App = this;
+            App.telefones = [];
+            var item = {
+                "cliente": this.id_cliente,
+                "telefone": dados,
+                "id_telefone": item.id,
+                "comando": "deletar"
+            };
+            var dados = btoa(JSON.stringify(item));
+            var url = "http://localhost/corretorawp/wp-content/plugins/clientes/api/telAdm.php?dados=" + dados + " ";
+            console.log(url);
+            axios.get(url).then(function (response) {
+                App.telefones = response.data; //[{"telefone": 222, "id": 2}]
+            },
+                    );
+        },
+        /**********************************************/
+        /*********/
+        CadComent: function () {
+            var App;
+            App = this;
+            var url = "http://localhost/corretorawp/wp-content/plugins/clientes/api/comentarios.php?acao=salva&comentario=" + App.caixaComentario + "&cliente=" + App.id_cliente + "";
+            axios.get(url).then(function (response) {
+                console.log(url);
+                App.comentarios = response.data;
+                App.caixaComentario = "";
+            })
+        }
+    },
+    created: function () {
+        var App;
+        App = this;
+        /*********************************************************************/
+        var dadosx = {
+            "cliente": App.id_cliente,
+            "comando": "listar"
+        };
+        var dados = btoa(JSON.stringify(dadosx));
+        var url = 'http://localhost/corretorawp/wp-content/plugins/clientes/api/emailsAdm.php?dados=' + dados + '';
+        axios.get(url).then(function (response) {
+            console.log(url);
+            App.emails = response.data;
+        });
+        /*****************************************/
+        var dadostel = {
+            "cliente": 69,
+            "comando": "lista"
+        };
+        var dadosy = btoa(JSON.stringify(dadostel));
+        axios.get('http://localhost/corretorawp/wp-content/plugins/clientes/api/telAdm.php?dados=' + dadosy + '').then(
+                function (response) {
+                    console.log("acesso a pagina" + 'http://localhost/corretorawp/wp-content/plugins/clientes/api/telAdm.php?dados=' + dadosy + '');
+                    App.telefones = response.data;
+                });
+        /*****************************************/
+        axios.get('http://localhost/corretorawp/wp-content/plugins/clientes/api/comentarios.php?acao=lista&cliente=' + App.id_cliente + '').then(function (response) {
+            App.comentarios = [{comentario: "teste apenas"}];
+            App.comentarios = response.data;
+        })
+    },
+});
 </script>
 
 

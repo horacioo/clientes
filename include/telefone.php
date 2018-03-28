@@ -68,8 +68,13 @@ class telefone
 
 
 
+    /** preciso passar um array com os dados necessários, ex.:
+     * <br>array("telefone"=>"2323", "id"=>12,"informacao"=>"teste") */
     public static function Update() {
-        db::$entrada = $_POST[self::$tabela];
+        if(isset($_POST[self::$tabela]))
+          {db::$entrada = $_POST[self::$tabela];}
+            else
+          {db::$entrada = self::$dados_entrada;}
         db::$campos  = self::$campos;
         db::$tabela  = self::$tabela;
         db::Update();

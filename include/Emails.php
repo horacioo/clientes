@@ -32,8 +32,8 @@ class Emails
     public static $id_texto;
     public static $tipo_do_email;
     public static $retorno_email;
-    public static $campos_pivot = ['clientes','email'];
-   
+    public static $campos_pivot  = ['clientes', 'email'];
+
 
 
     function __construct() {
@@ -51,7 +51,11 @@ class Emails
     }
 
 
-
+/** são necessários 2 parametros para esse método ser executado corretamente:
+ * <br><br> <b>\Planet1\Emails::$entradaDados = array("email"=>"meuemail@uol.com.br");</b>
+ * <br><br> <b> \Planet1\Emails::$id_cliente   = "codigo do cliente que vai receber este email;"</b>
+ * <br> create();
+ */
     public static function Create() {
         db::$tabela = self::$tabela;
         db::$campos = self::$campos;
@@ -289,9 +293,9 @@ class Emails
 
 
     public static function Update() {
-        db::$entrada = $_POST[self::$tabela];
-        db::$campos  = self::$campos;
-        db::$tabela  = self::$tabela;
+        if(isset($_POST[self::$tabela])) {db::$entrada = $_POST[self::$tabela];} else {db::$entrada = self::$entradaDados;}
+        db::$campos = self::$campos;
+        db::$tabela = self::$tabela;
         db::Update();
     }
 
@@ -316,16 +320,16 @@ class Emails
         db::$campos    = self::$campos_pivot;
         db::$del_campo = "clientes";
         db::$del_valor = self::$id_cliente;
-        db::Del();  
+        db::Del();
         $linha         = -1;
         foreach (self::$entradaDados as $d):
             if (!empty($d)) {
                 $linha++;
-                $dados['email'] = $d;
+                $dados['email']    = $d;
                 db::$tabela        = self::$tabela;
                 db::$campos        = self::$campos;
                 db::Salva(array("email" => $d));
-                $dados['email'] = db::$array['email'][$linha];
+                $dados['email']    = db::$array['email'][$linha];
                 $dados['clientes'] = self::$id_cliente;
                 self::SalvaAssociacao($dados);
             }

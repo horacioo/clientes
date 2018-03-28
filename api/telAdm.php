@@ -1,4 +1,5 @@
 <?php
+use Planet1\telefone;
 
 require_once '../../../../wp-config.php';
 
@@ -11,6 +12,7 @@ if ($_GET['dados']):
 
     $dados = $_GET['dados'];
 
+
     $x = base64_decode($dados);
     $x = json_decode($x);
     //$z = (array) $x;
@@ -19,19 +21,22 @@ if ($_GET['dados']):
     $telefone = $x->telefone;
     $id       = $x->id_telefone;
     $cliente  = $x->cliente;
-
     
-    print_r($x);
+
+    function Lista() {
+        global $cliente;
+        telefone::$id_cliente = $cliente;
+        echo json_encode( telefone::Telefone_do_cliente() );
+    }
 
 
 
     function Atualiza() {
         global $telefone;
         global $id;
-        global $wpdb;
-        $up = "UPDATE `telefone` SET `telefone` = '$telefone' WHERE `telefone`.`id` = 31974; ";
-        $wpdb->query($up);
-        echo json_encode(array("info" => "333"));
+        telefone::$dados_entrada = array("telefone"=>$telefone,"id"=>$id); 
+        telefone::Update();
+        lista();
     }
 
 
@@ -40,9 +45,9 @@ if ($_GET['dados']):
         global $wpdb;
         global $cliente;
         global $id;
-        $del = "delete from 'clientestelefone' where clientes='$cliente' and telefone = $id";
-        echo "<hr>".$del;
+        $del = "delete from `clientestelefone` where clientes='$cliente' and telefone = $id";
         $wpdb->query($del);
+        lista();
     }
 
 
@@ -52,6 +57,9 @@ if ($_GET['dados']):
             break;
         case"deletar": desassociar();
             break;
+        case"lista": lista();
+            break;
+        
     }
 
     
