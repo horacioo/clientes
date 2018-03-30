@@ -34,6 +34,11 @@ class telefone
 
 
 
+    /** são necessários 2 parametros para esse método ser executado corretamente:
+     * <br><br> <b>\Planet1\Emails::$entradaDados = array("email"=>"meuemail@uol.com.br");</b>
+     * <br><br> <b> \Planet1\Emails::$id_cliente   = "codigo do cliente que vai receber este email;"</b>
+     * <br> create();
+     */
     public static function Create() {
         db::$tabela = self::$tabela;
         db::$campos = self::$campos;
@@ -71,12 +76,13 @@ class telefone
     /** preciso passar um array com os dados necessários, ex.:
      * <br>array("telefone"=>"2323", "id"=>12,"informacao"=>"teste") */
     public static function Update() {
-        if(isset($_POST[self::$tabela]))
-          {db::$entrada = $_POST[self::$tabela];}
-            else
-          {db::$entrada = self::$dados_entrada;}
-        db::$campos  = self::$campos;
-        db::$tabela  = self::$tabela;
+        if (isset($_POST[self::$tabela])) {
+            db::$entrada = $_POST[self::$tabela];
+        } else {
+            db::$entrada = self::$dados_entrada;
+        }
+        db::$campos = self::$campos;
+        db::$tabela = self::$tabela;
         db::Update();
     }
 

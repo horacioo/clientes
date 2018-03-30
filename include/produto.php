@@ -146,43 +146,52 @@ class produto
 
 
 
+    public static $DeletaOutros = TRUE;
+
+
+
     /**
+     * <br>este método só associa um produto por vez...
      * <br>informar o valor da variável "$dadosEntrada"
+     * <br>se for apenas cadastrar um produto, mude a variável $DeletaOutros para false ex.:produto::$DeletaOutros=FALSE;
      * <br>informar o valor da variável "$id_cliente"
      * <br> passar o array com os dados que serão salvos, apenas,
      *  não o array "global", exemplo "$_POST['produtosCliente']" e não $_post[][][]['produtosCliente'] */
     public static function AssociacaoDeClientes() {
 
-        $entrada          = self::$dadosEntrada;
-        $cliente          = self::$id_cliente;
-        
-        
+        $entrada = self::$dadosEntrada;
+        $cliente = self::$id_cliente;
+
+
         DataBase::$tabela = self::$tabela_pivot;
         DataBase::$campos = self::$campos_pivot;
-        
-        DataBase::$del_campo = "clientes";
-        DataBase::$del_valor = $cliente;
-        DataBase::Del();
 
-        foreach ($entrada as $en):
-            if ( $en['ativo']!=0 ) {
-                $dados['clientes'] = self::$id_cliente;
-                $dados['produtos'] = $en['produto'];
-                $dados['valor']    = $en['valor'];
-                $dados['ativo']    = $en['ativo'];
-                $dados['comissao'] = $en['comissao'];
-                self::SalvaAssociacao($dados);
-            }
-        endforeach;
+        if (self::$DeletaOutros) {
+            DataBase::$del_campo = "clientes";
+            DataBase::$del_valor = $cliente;
+            DataBase::Del();
+        }
+
+        if ($entrada['ativo'] != 0) {
+            $dados['clientes'] = self::$id_cliente;
+            $dados['produtos'] = $entrada['produto'];
+            $dados['valor']    = $entrada['valor'];
+            $dados['ativo']    = $entrada['ativo'];
+            $dados['comissao'] = $entrada['comissao'];
+            self::SalvaAssociacao($dados);
+        }
     }
 
 
 
     private static function SalvaAssociacao($array = '') {
         DataBase::$tabela = self::$tabela_pivot;
-        DataBase::$campos = self::$campos_pivot; 
+        DataBase::$campos = self::$campos_pivot;
         DataBase::Salva($array);
     }
+
+
+
 
 
 

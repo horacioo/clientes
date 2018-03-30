@@ -1,4 +1,5 @@
 <?php
+
 use Planet1\telefone;
 
 require_once '../../../../wp-config.php';
@@ -21,12 +22,13 @@ if ($_GET['dados']):
     $telefone = $x->telefone;
     $id       = $x->id_telefone;
     $cliente  = $x->cliente;
-    
+
+
 
     function Lista() {
         global $cliente;
         telefone::$id_cliente = $cliente;
-        echo json_encode( telefone::Telefone_do_cliente() );
+        echo json_encode(telefone::Telefone_do_cliente());
     }
 
 
@@ -34,7 +36,7 @@ if ($_GET['dados']):
     function Atualiza() {
         global $telefone;
         global $id;
-        telefone::$dados_entrada = array("telefone"=>$telefone,"id"=>$id); 
+        telefone::$dados_entrada = array("telefone" => $telefone, "id" => $id);
         telefone::Update();
         lista();
     }
@@ -52,6 +54,17 @@ if ($_GET['dados']):
 
 
 
+    function Criar() {
+        global $telefone;
+        global $cliente;
+        telefone::$dados_entrada=array("telefone"=>$telefone);
+        telefone::$id_cliente=$cliente;
+        telefone::Create();
+        Lista();
+    }
+
+
+
     switch ($comando) {
         case"editar": Atualiza();
             break;
@@ -59,7 +72,8 @@ if ($_GET['dados']):
             break;
         case"lista": lista();
             break;
-        
+        case"salva":Criar();
+            break;
     }
 
     
