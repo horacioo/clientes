@@ -63,29 +63,22 @@ endif;
 
 <?php
 /* * ****************** */
-cl::$IdCliente       = "69";
-cl::DadosCliente();
+//cl::$IdCliente       = "69";
+//cl::DadosCliente();
 /* * *********************** */
-tel::$id_cliente     = cl::$IdCliente;
+//tel::$id_cliente     = cl::$IdCliente;
 /* * ****************** */
-produto::$id_cliente = cl::$IdCliente;
+//produto::$id_cliente = cl::$IdCliente;
 /* * ********************* */
 ?>
 <?php
 global $_wp_admin_css_colors;
-$estilo              = get_user_option('admin_color');
-$estilo_css          = $_wp_admin_css_colors[$estilo]->colors;
-$cor0                = $estilo_css[0];
-$cor1                = $estilo_css[1];
-$cor2                = $estilo_css[2];
-$cor3                = $estilo_css[3];
-/*
-  echo get_user_option( 'admin_color' );
-  print_r($_wp_admin_css_colors);
-  echo"<hr>";
-  print_r($_wp_admin_css_colors['fresh']->colors);
-  echo"<hr>";
- */
+$estilo     = get_user_option('admin_color');
+$estilo_css = $_wp_admin_css_colors[$estilo]->colors;
+$cor0       = $estilo_css[0];
+$cor1       = $estilo_css[1];
+$cor2       = $estilo_css[2];
+$cor3       = $estilo_css[3];
 ?>
 
 <!-------------------------------------------------------------------->
@@ -97,20 +90,22 @@ $cor3                = $estilo_css[3];
     <div class="container">
         <div class="row">
             <div class="col-lg-12">
-                <p><label>pesquise um cliente</label><input type="text" class="form-control" v-model="pesquisaDeCliente" ></p>
-                <ul style="    position: absolute;
+
+
+
+
+                <p><label>pesquise um cliente</label><input type="text" v-on:click="mostraLista()" v-on:keyup="PesquisaCliente()" class="form-control" v-model="pesquisaDeCliente" ></p>
+                <ul v-if="listaClientesPesquisadosDisplay" style=" position: absolute;
                     background-color: white;
                     z-index: 2;
                     padding: 20px;
                     border: 1px solid #bbbbbb;
                     top: 56px;
                     width: 97%;">
-                    <li>resultado de clientes</li>
-                    <li>resultado de clientes</li>
-                    <li>resultado de clientes</li>
-                    <li>resultado de clientes</li>
-                    <li>resultado de clientes</li>
+                    <li v-if="" v-for="item in listaClientesPesquisados" v-on:click="chamaCliente(item)">{{item.nome}}  </li>
                 </ul>
+
+
             </div>
         </div>
     </div>
@@ -123,15 +118,15 @@ $cor3                = $estilo_css[3];
         <!--------------------------------------------------------------------------->
         <div class="container dadosPessoais">
             <div class="row">
-                <h2>Editar Cliente</h2> 
+                <h2>Editar dados de {{nome}}</h2> 
                 <div class="col-lg-3">
                     <input type="hidden" name=clientes[id] value="<?php echo cl::$IdCliente ?>">
                     <!-------->
-                    <p><label>Nome</label><input v-model="nome" style="width: 84%; float: right;" value="<?php echo cl::$nome; ?>" required='required' id='nome' type='text' name=clientes[nome] class='form-control'></p>
+                    <p><label>Nome</label><input v-change="salvaDadosCliente()" v-model="nome" style="width: 84%; float: right;" value="<?php echo cl::$nome; ?>" required='required' id='nome' type='text' name=clientes[nome] class='form-control'></p>
                     <hr>
                     <!-------->
                     <p><label>Tipo de pessoa</label>
-                        <select name=clientes[tipo_de_pessoa]  v-model="tipo_de_pessoa"   style="width: 70%; float: right;" class='form-control'>
+                        <select name=clientes[tipo_de_pessoa]  v-change="salvaDadosCliente()"  v-model="tipo_de_pessoa"   style="width: 70%; float: right;" class='form-control'>
                             <option value='f'>fisica</option>
                             <option value='j'>jurídica</option>
                         </select>
@@ -139,28 +134,28 @@ $cor3                = $estilo_css[3];
                     <hr>
                     <!------->
                     <p><label>Sexo</label>
-                        <select style="width: 85%; float: right;" v-model="sexo" name=clientes[sexo]  class='form-control'>
+                        <select style="width: 85%; float: right;"  v-change="salvaDadosCliente()"  v-model="sexo" name=clientes[sexo]  class='form-control'>
                             <option value='m'>masculino</option>
                             <option value='f'>feminino</option>
                         </select>
                     </p>
                     <hr>
-                    <p><label>Data de Nascimento</label><input v-model="dataNascimento" style="width: 59%; float: right;"  value='<?php echo cl::$dataNascimento; ?>'  required='required' id='nascimento' type='date' name=clientes[dataNascimento] class='form-control'></p>
+                    <p><label>Data de Nascimento</label><input  v-change="salvaDadosCliente()"  v-model="dataNascimento" style="width: 59%; float: right;"  value='<?php echo cl::$dataNascimento; ?>'  required='required' id='nascimento' type='date' name=clientes[dataNascimento] class='form-control'></p>
                     <!------->
                     <hr>
                 </div>
                 <div class="col-lg-3">
                     <!------->
-                    <p><label>Cpf</label><input type='text' v-model="cpf" style="width: 91%; float: right;" value='<?php echo cl::$cpf ?>' required='required' id='cpf' name=clientes[cpf] class='form-control'></p>
+                    <p><label>Cpf</label><input v-change="salvaDadosCliente()"  type='text' v-model="cpf" style="width: 91%; float: right;" value='<?php echo cl::$cpf ?>' required='required' id='cpf' name=clientes[cpf] class='form-control'></p>
                     <hr><!------->
-                    <p><label>Rg</label><input type='text' v-model="rg" style="width: 91%;  float: right;" value='<?php echo cl::$cpf ?>' required='required' id='rg' name=clientes[rg] class='form-control'></p>
+                    <p><label>Rg</label><input type='text' v-change="salvaDadosCliente()"  v-model="rg" style="width: 91%;  float: right;" value='<?php echo cl::$cpf ?>' required='required' id='rg' name=clientes[rg] class='form-control'></p>
                     <hr><!------->
-                    <p><label>Data de expedição</label><input v-model="dataExpedicao" style="width: 60%; float: right;" value='<?php echo cl::$dataExpedicao ?>' required='required' type='date' id='data_de_expedicao' name=clientes[dataExpedicao] class='form-control'></p>
+                    <p><label>Data de expedição</label><input v-change="salvaDadosCliente()"  v-model="dataExpedicao" style="width: 60%; float: right;" value='<?php echo cl::$dataExpedicao ?>' required='required' type='date' id='data_de_expedicao' name=clientes[dataExpedicao] class='form-control'></p>
                     <hr><!------->    
                 </div>
                 <div class="col-lg-3">
-                    <p><label>Documento!!</label>
-                        <select style="width: 75%; float: right;" name=clientes[documento] class="form-control">
+                    <p><label>Documento!! </label>
+                        <select style="width: 75%; float: right;"  v-change="salvaDadosCliente()"  v-model="documento" name=clientes[documento] class="form-control">
                             <?php foreach (doc::lista_documento() as $li): ?>
                                 <option <?php
                                 if (cl::$documento == $li['id']) {
@@ -175,16 +170,16 @@ $cor3                = $estilo_css[3];
                     <!------->
 
                     <!------->
-                    <p><label>endereço</label><input style="width: 80%; float: right;" v-model="endereco" type='text' id='endereco' name=dados[endereco] class='form-control'></p>
+                    <p><label>endereço</label><input style="width: 80%; float: right;"  v-change="salvaDadosCliente()"  v-model="endereco" type='text' id='endereco' name=dados[endereco] class='form-control'></p>
                     <!------->
                 </div>
                 <div class="col-lg-3">
                     indicado por <input type="text" v-model="indicacao" @keyup="indicacaoFcn()" class="form-control">
                     <ul>
-                        <li v-for="item in pessoaQueIndicou">{{item.nome}}\{{item.cpf}} <br> <input type="hidden"  :value="item.id"  name=clientes[indicado] ></li>
+                        <li v-for="item in pessoaQueIndicou">{{item.nome}}\{{item.cpf}} <br> <input  v-change="salvaDadosCliente()"  type="hidden"  :value="item.id"  name=clientes[indicado] ></li>
                     </ul>
                     <!---name=dados['indicacao']['quemIndica']---->
-                    <label>membro da equipe que atendeu este cliente:</label><input type="text"  class="form-control" >
+                    <label>membro da equipe que atendeu este cliente:</label><input type="text"  v-change="salvaDadosCliente()" class="form-control" >
 
 
                 </div>
@@ -251,8 +246,6 @@ $cor3                = $estilo_css[3];
                         <select class="form-control" v-model="produto" type="text" name=dados[MeusProdutos][0][produto]>
                             <option v-for="item in listaProdutos" :value="item.id" >{{item.produto}}</option>
                         </select>
-
-
                     </p>
                     <p><label>valor</label><input v-model="valor" class="form-control" type="text" name=dados[MeusProdutos][0][valor]></p>
                     <p><label>comissão</label><input v-model="comissao" class="form-control" type="text" name=dados[MeusProdutos][0][comissao]></p>
@@ -367,23 +360,21 @@ new Vue({
     el: "#app",
     data: {
         id: "",
-        nome: "<?php echo cl::$nome ?>",
-        tipo_de_pessoa: "<?php echo cl::$tipo_de_pessoa ?>",
-        sexo: "<?php echo cl::$sexo ?>",
-        dataNascimento: "<?php echo cl::$dataNascimento ?>",
-        dataExpedicao: "<?php echo cl::$dataExpedicao; ?>",
-        documento: "<?php echo cl::$documento ?>",
-        indicacao: "<?php echo cl::$indicado; ?>",
-        id_cliente: "<?php echo cl::$IdCliente ?>",
-        cpf: "<?php echo cl::$cpf; ?>",
-        rg: "<?php echo cl::$rg; ?>",
-        documento: "<?php echo cl::$documento; ?>",
-        endereco: "<?php echo "%%"; ?>",
-
+        nome: "",
+        tipo_de_pessoa: "",
+        sexo: "",
+        dataNascimento: "",
+        dataExpedicao: "",
+        documento: "",
+        indicacao: "",
+        id_cliente: "",
+        cpf: "",
+        rg: "",
+        documento: "",
+        endereco: "",
         pessoaQueIndicou: "",
         telefone: "",
         caixaComentario: "",
-
         comentarios: ["a informacao", "chuva"],
         emails: [],
         telefones: [],
@@ -401,18 +392,104 @@ new Vue({
         listaProdutos: [],
         pesquisaDeCliente: "",
         listaClientesPesquisados: "",
+        listaClientesPesquisadosDisplay: false,
     },
-    watch: {},
+    watch: {
+        id_cliente: function () {
+            var App;
+            App = this;
+            /*********************************************************************************/
+            /*************************pegando a lista de produtos*****************************/
+            var ListaProdutos = {
+                "comando": "listaDeProdutos",
+            };
+            var DadosListaDeProdutos = btoa(JSON.stringify(ListaProdutos));
+            var Urlproduto = "http://localhost/corretorawp/wp-content/plugins/clientes/api/produtosAdm.php?dados=" + DadosListaDeProdutos + "";
+            axios.get(Urlproduto).then(function (response) {
+                App.listaProdutos = response.data;
+                console.log("listagem de produtos -- " + Urlproduto);
+            });
+            /*********************************************************************/
+            /*********************************************************************/
+            var ProItem = {
+                "cliente": App.id_cliente,
+                "comando": "listar",
+            };
+            var dadosPro = btoa(JSON.stringify(ProItem));
+            var urlPro = "http://localhost/corretorawp/wp-content/plugins/clientes/api/produtosAdm.php?dados=" + dadosPro + "";
+            axios.get(urlPro).then(function (response) {
+                console.log(" =>minha url : " + urlPro + " <= ");
+                App.produtosDoClientes = response.data;
+            });
+            /*********************************************************************/
+            var dadosx = {
+                "cliente": App.id_cliente,
+                "comando": "listar"
+            };
+            var dados = btoa(JSON.stringify(dadosx));
+            var url = 'http://localhost/corretorawp/wp-content/plugins/clientes/api/emailsAdm.php?dados=' + dados + '';
+            axios.get(url).then(function (response) {
+                console.log(url);
+                App.emails = response.data;
+            });
+            /*****************************************/
+            var dadostel = {
+                "cliente": App.id_cliente,
+                "comando": "lista"
+            };
+            var dadosy = btoa(JSON.stringify(dadostel));
+            axios.get('http://localhost/corretorawp/wp-content/plugins/clientes/api/telAdm.php?dados=' + dadosy + '').then(
+                    function (response) {
+                        console.log("acesso a pagina" + 'http://localhost/corretorawp/wp-content/plugins/clientes/api/telAdm.php?dados=' + dadosy + '');
+                        App.telefones = response.data;
+                    });
+            /*****************************************/
+            axios.get('http://localhost/corretorawp/wp-content/plugins/clientes/api/comentarios.php?acao=lista&cliente=' + App.id_cliente + '').then(function (response) {
+                App.comentarios = [{comentario: "teste apenas"}];
+                App.comentarios = response.data;
+                /************************************************/
+                /************************************************/
+            })
+        }
+    },
     methods: {
+        mostraLista: function () {
+            var App = this;
+            App.listaClientesPesquisadosDisplay = true;
+        },
+
+        chamaCliente: function (item) {
+            var App;
+            App = this;
+            App.nome = item.nome;
+            App.tipo_de_pessoa = item.tipo_de_pessoa;
+            App.sexo = item.sexo;
+            App.dataNascimento = item.dataNascimento;
+            App.dataExpedicao = item.dataExpedicao;
+            App.documento = item.documento;
+            App.id_cliente = item.id;
+            App.indicacao = item.indicado;
+            App.cpf = item.cpf;
+            App.rg = item.rg;
+            App.documento = item.documento;
+            App.endereco = item.endereco;
+            App.listaClientesPesquisadosDisplay = false;
+        },
+
         PesquisaCliente: function () {
             var App;
             App = this;
             App.processando = true;
-            var itemCliente = {};
+            var itemCliente = {
+                "cliente": App.pesquisaDeCliente,
+                "comando": "pesquisa",
+            };
             var DadosClientesPesquisa = btoa(JSON.stringify(itemCliente));
-            var UrlClientes = "http://localhost/corretorawp/wp-content/plugins/clientes/api/clientesAdm.php=" + DadosClientesPesquisa + "";
+            var UrlClientes = "http://localhost/corretorawp/wp-content/plugins/clientes/api/clientesAdm.php?dados=" + DadosClientesPesquisa + "";
             axios.get(UrlClientes).then(function (response) {
+                console.log(UrlClientes);
                 App.listaClientesPesquisados = response.data;
+                App.processando = false;
             });
         },
         AssociaProduto: function () {
@@ -592,64 +669,36 @@ new Vue({
                 App.comentarios = response.data;
                 App.caixaComentario = "";
             })
-        }
+        },
+        salvaDadosCliente: function (item) {
+            var App;
+            App = this;
+            
+            ///App.processando = true;
+            
+            var itemCliente = {
+                "id_cliente" : App.id_cliente,
+                "comando":"salva",
+                "nome": App.nome,
+                "tipoPessoa": App.tipo_de_pessoa,
+                "sexo": App.sexo,
+                "dataDeNascimento": App.dataNascimento,
+                "cpf":App.cpf,
+                "rg":App.rg,
+                "dataDeExpedicao":App.dataExpedicao,
+                "documento":App.documento,
+                "indicadoPor":App.pessoaQueIndicou,
+            };
+            var dadosCliente = btoa(JSON.stringify(itemCliente));
+            var url = "http://localhost/corretorawp/wp-content/plugins/clientes/api/clientesAdm.php?dados="+dadosCliente+"";
+            console.log("alterando dados do cliente \r \n "+url);
+            axios.get(url).then(function(response){});
+            
+           ///App.processando = false;
+           
+        },
     },
     created: function () {
-        var App;
-        App = this;
-        /*********************************************************************************/
-        /*************************pegando a lista de produtos*****************************/
-        var ListaProdutos = {
-            "comando": "listaDeProdutos",
-        };
-        var DadosListaDeProdutos = btoa(JSON.stringify(ListaProdutos));
-        var Urlproduto = "http://localhost/corretorawp/wp-content/plugins/clientes/api/produtosAdm.php?dados=" + DadosListaDeProdutos + "";
-        axios.get(Urlproduto).then(function (response) {
-            App.listaProdutos = response.data;
-            console.log("listagem de produtos -- " + Urlproduto);
-        });
-        /*********************************************************************/
-        /*********************************************************************/
-        var ProItem = {
-            "cliente": App.id_cliente,
-            "comando": "listar",
-        };
-        var dadosPro = btoa(JSON.stringify(ProItem));
-        var urlPro = "http://localhost/corretorawp/wp-content/plugins/clientes/api/produtosAdm.php?dados=" + dadosPro + "";
-        axios.get(urlPro).then(function (response) {
-            console.log(" =>minha url : " + urlPro + " <= ");
-            App.produtosDoClientes = response.data;
-        });
-        /*********************************************************************/
-        var dadosx = {
-            "cliente": App.id_cliente,
-            "comando": "listar"
-        };
-        var dados = btoa(JSON.stringify(dadosx));
-        var url = 'http://localhost/corretorawp/wp-content/plugins/clientes/api/emailsAdm.php?dados=' + dados + '';
-        axios.get(url).then(function (response) {
-            console.log(url);
-            App.emails = response.data;
-        });
-        /*****************************************/
-        var dadostel = {
-            "cliente": 69,
-            "comando": "lista"
-        };
-        var dadosy = btoa(JSON.stringify(dadostel));
-        axios.get('http://localhost/corretorawp/wp-content/plugins/clientes/api/telAdm.php?dados=' + dadosy + '').then(
-                function (response) {
-                    console.log("acesso a pagina" + 'http://localhost/corretorawp/wp-content/plugins/clientes/api/telAdm.php?dados=' + dadosy + '');
-                    App.telefones = response.data;
-                });
-        /*****************************************/
-        axios.get('http://localhost/corretorawp/wp-content/plugins/clientes/api/comentarios.php?acao=lista&cliente=' + App.id_cliente + '').then(function (response) {
-            App.comentarios = [{comentario: "teste apenas"}];
-            App.comentarios = response.data;
-            /************************************************/
-
-            /************************************************/
-        })
     },
 });
 </script>

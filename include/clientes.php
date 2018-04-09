@@ -145,6 +145,7 @@ class clientes
 
 
 
+    /** informar o id do cliente "$id_base" e os dados "$dados"**/
     public static function Update() {
         $dados = $_POST[self::$tabela];
         if (isset($dados)):
